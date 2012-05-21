@@ -1,0 +1,142 @@
+\hypertarget{Tuner__Proto_8c}{
+\section{Tuner\_\-Proto.c File Reference}
+\label{Tuner__Proto_8c}\index{Tuner\_\-Proto.c@{Tuner\_\-Proto.c}}
+}
+
+
+Program to partially implement the MegaTune serial protocol for sending and receiving engine control parameters.  
+
+
+{\ttfamily \#include $<$stdint.h$>$}\par
+{\ttfamily \#include $<$stdio.h$>$}\par
+{\ttfamily \#include $<$sys/types.h$>$}\par
+{\ttfamily \#include $<$sys/stat.h$>$}\par
+{\ttfamily \#include $<$fcntl.h$>$}\par
+{\ttfamily \#include $<$unistd.h$>$}\par
+{\ttfamily \#include $<$stdlib.h$>$}\par
+{\ttfamily \#include $<$time.h$>$}\par
+{\ttfamily \#include $<$string.h$>$}\par
+\subsection*{Defines}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{Tuner__Proto_8c_a157a956e14c5c44b3f73ef23a4776f64}{
+\#define {\bfseries LINUX}}
+\label{Tuner__Proto_8c_a157a956e14c5c44b3f73ef23a4776f64}
+
+\item 
+\hypertarget{Tuner__Proto_8c_a7a6484eb23be5aa1f139a25d90a86b29}{
+\#define {\bfseries ochBlockSize}~112}
+\label{Tuner__Proto_8c_a7a6484eb23be5aa1f139a25d90a86b29}
+
+\item 
+\hypertarget{Tuner__Proto_8c_acd77570fac78f5eb3635d60e0444d341}{
+\#define {\bfseries OFFSET\_\-pulsewidth}~2}
+\label{Tuner__Proto_8c_acd77570fac78f5eb3635d60e0444d341}
+
+\item 
+\hypertarget{Tuner__Proto_8c_af536c446e45d75b898ce350cdedf7c95}{
+\#define {\bfseries OFFSET\_\-rpm}~6}
+\label{Tuner__Proto_8c_af536c446e45d75b898ce350cdedf7c95}
+
+\item 
+\hypertarget{Tuner__Proto_8c_aa41bcf613431fc284fa3487144462476}{
+\#define {\bfseries OFFSET\_\-spark\_\-advance}~8}
+\label{Tuner__Proto_8c_aa41bcf613431fc284fa3487144462476}
+
+\item 
+\hypertarget{Tuner__Proto_8c_a10ff11878dbe0a30381328beaac65d7f}{
+\#define {\bfseries OFFSET\_\-map}~18}
+\label{Tuner__Proto_8c_a10ff11878dbe0a30381328beaac65d7f}
+
+\item 
+\hypertarget{Tuner__Proto_8c_ae0447324209c8413c06d68d1deb65dc6}{
+\#define {\bfseries OFFSET\_\-tps}~24}
+\label{Tuner__Proto_8c_ae0447324209c8413c06d68d1deb65dc6}
+
+\item 
+\hypertarget{Tuner__Proto_8c_af240c94a9920242fc3f673df6dfbf30c}{
+\#define {\bfseries OFFSET\_\-ego}~74}
+\label{Tuner__Proto_8c_af240c94a9920242fc3f673df6dfbf30c}
+
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{Tuner__Proto_8c_ae2034553879f6a8c5f0fb19e91481914}{
+void {\bfseries send\_\-data} ()}
+\label{Tuner__Proto_8c_ae2034553879f6a8c5f0fb19e91481914}
+
+\item 
+\hypertarget{Tuner__Proto_8c_ae66f6b31b5ad750f1fe042a706a4e3d4}{
+int {\bfseries main} ()}
+\label{Tuner__Proto_8c_ae66f6b31b5ad750f1fe042a706a4e3d4}
+
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{Tuner__Proto_8c_ae244b4aa26fe0b3bf38de1ef885ae611}{
+int {\bfseries speed\_\-rpm} = 1111}
+\label{Tuner__Proto_8c_ae244b4aa26fe0b3bf38de1ef885ae611}
+
+\item 
+\hypertarget{Tuner__Proto_8c_ad774400434f3af35f97ba687b87d7ccc}{
+int {\bfseries MAP\_\-value} = 2222}
+\label{Tuner__Proto_8c_ad774400434f3af35f97ba687b87d7ccc}
+
+\item 
+\hypertarget{Tuner__Proto_8c_afb8f3cbaf4bce57e073920d9ccf04a5f}{
+int {\bfseries Spark\_\-Advance} = 12}
+\label{Tuner__Proto_8c_afb8f3cbaf4bce57e073920d9ccf04a5f}
+
+\end{DoxyCompactItemize}
+\subsection*{Example API Actions}
+\label{_amgrp4c6e7f3ae20f135b425521b2bd094f4f}
+Example actions available.
+
+This API provides certain actions as an example.
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em repeat}]Number of times to do nothing.\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+\item[{\em TRUE}]Successfully did nothing. \item[{\em FALSE}]Oops, did something. \end{DoxyRetVals}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{Tuner__Proto_8c_a83fc65e1af8fe849269e0da29b1f1573}{
+\#define {\bfseries MAX\_\-RECEIVE}~10}
+\label{Tuner__Proto_8c_a83fc65e1af8fe849269e0da29b1f1573}
+
+\item 
+\hypertarget{Tuner__Proto_8c_a51fe916ee902c6988b1488f6b0f13829}{
+\#define {\bfseries CANid}~0}
+\label{Tuner__Proto_8c_a51fe916ee902c6988b1488f6b0f13829}
+
+\item 
+\hypertarget{Tuner__Proto_8c_ac54d65174748adfd6c4061e269178648}{
+void {\bfseries tuner\_\-process\_\-byte} (uint8\_\-t c)}
+\label{Tuner__Proto_8c_ac54d65174748adfd6c4061e269178648}
+
+\item 
+\hypertarget{Tuner__Proto_8c_a66c6533b4e07fd99fbed1a351f9ffdd0}{
+void {\bfseries tuner\_\-poll} ()}
+\label{Tuner__Proto_8c_a66c6533b4e07fd99fbed1a351f9ffdd0}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Program to partially implement the MegaTune serial protocol for sending and receiving engine control parameters. \begin{DoxyAuthor}{Author}
+Jon Zeeff (\href{mailto:jon@zeeff.com}{\tt jon@zeeff.com}) 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+September, 2011 
+\end{DoxyDate}
+\begin{DoxyWarning}{Warning}
+Lots of commands not implemented yet
+\end{DoxyWarning}
+Written as part of the 5554ecu project but applicable to others 
+
+Definition in file \hyperlink{Tuner__Proto_8c_source}{Tuner\_\-Proto.c}.
+

@@ -1,0 +1,11 @@
+*.s19
+*.elf
+*.mot
+*.MAP
+*.tdt
+*.c~
+*.bak
+*.h~
+bin/*
+Open5xxxECU_Data/**/*.tdt
+o5e/src/backup/*

@@ -1,0 +1,75 @@
+/* lcf file for MPC5554                                                       */
+
+
+/*              2 MB Flash, 64KB SRAM                                     */
+
+MEMORY
+{
+    resetvector:        org = 0x00000000,   len = 0x00000008
+    init:               org = 0x00000020,   len = 0x00000FE0
+    exception_handlers: org = 0x00001000,   len = 0x00001000
+    internal_flash:     org = 0x00002000,   len = 0x001FD000
+    internal_ram:       org = 0x40000000,   len = 0x0000A000
+    heap  :             org = 0x4000A000,   len = 0x00002000 /* Heap start location */
+    stack :             org = 0x4000C000,   len = 0x00004000 /* Start location for Stack */
+}
+
+/* This will ensure the rchw and reset vector are not stripped by the linker */
+FORCEACTIVE { "bam_rchw" "bam_resetvector" }
+
+SECTIONS
+{
+    .__bam_bootarea LOAD (0x00000000): {} > resetvector
+
+  GROUP : {
+    .init LOAD (0x00000020) : {}
+    .init_vle (VLECODE) LOAD (_e_init) : {
+        *(.init)
+        *(.init_vle)
+     }
+  } > init
+
+    .__exception_handlers  LOAD (0x00001000): {} > exception_handlers 
+
+    GROUP  : {
+        .text : {} 
+        .text_vle (VLECODE) ALIGN(0x1000): {
+             *(.text)
+             *(.text_vle)
+         }
+        .rodata (CONST) : {
+            *(.rdata)
+            *(.rodata)
+        }
+        .ctors : {}
+        .dtors : {}
+        extab : {}
+        extabindex : {}
+    } > internal_flash
+
+    GROUP : {
+       .__uninitialized_intc_handlertable ALIGN(0x10) : {}
+       .data   : {}
+       .sdata  : {}
+       .sbss   : {}
+       .sdata2 : {}
+       .sbss2  : {}
+       .bss    : {}
+    } > internal_ram
+}
+
+/* Freescale CodeWarrior compiler address designations */
+
+_stack_addr = ADDR(stack)+SIZEOF(stack);
+_stack_end  = ADDR(stack);
+_heap_addr  = ADDR(heap);
+_heap_end   = ADDR(heap)+SIZEOF(heap);
+
+/* Exceptions Handlers Location (used in Exceptions.c for IVPR initialization) */
+
+EXCEPTION_HANDLERS = ADDR(exception_handlers);
+
+
+/* L2 SRAM Location (used for L2 SRAM initialization) */
+
+L2SRAM_LOCATION = 0x40000000;

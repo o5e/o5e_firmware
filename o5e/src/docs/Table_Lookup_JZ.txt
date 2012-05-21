@@ -1,0 +1,49 @@
+
+I'm going to make one change based on how the tuner stuff is shaping up, but this will be correct:
+
+
+** The concept:
+
+The idea was to write one table look up routine that does 1D, 2D, variable axis and fixed axis.  Ie, spend some effort to do it well once and then never have to think about it again (at least until someone wants 3D).
+
+
+** Using it:
+
+z  = table_lookup_jz (x,y,table_name); 
+
+example: fuel_adjust = table_lookup_jz(MAP, RPM, Fuel_Adjust_Table);
+
+
+Based on what table you use, it knows whether you want a 1D lookup or 2D lookup.    In the former case, it ignores "y".
+
+MAP = table_lookup(map_ad,0,Map_Sensor_Table);  // 1D lookup to convert A/D value to pressure
+
+
+
+** Now the slightly harder part - how to set up a table:
+
+Let's assume we are only interested in fixed axis tables.   A table must have a size (x and y for 2D) and the range of the axis needs to be defined.  For example:
+
+rows (aka Y axis) = 3 
+columns (aka X axis) = 3
+Y ranges from 0 to 100
+X ranges from 0 to 1000
+
+So now the C code to create this table in flash:
+
+#include "inc/Table_Lookup_JZ.h"
+
+// fuel adjust based on MAP and RPM
+const struct table_jz fuel_adjust = {
+.rows = 3,
+.cols = 3,
+.min_x = 0,
+.max_x = 1000,
+.min_y = 0,
+.max_y = 100,
+// data for this 3x3 table, a full row on each line (for clarity):
+.data = {
+        { 1, 2, 3 },
+        { 4, 5, 6 },
+        { 7, 8, 9 } }
+}

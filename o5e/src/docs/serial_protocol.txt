@@ -1,0 +1,17 @@
+
+** "a" = send all of the realtime display variables (outpc structure) via txport.
+** "w"+<offset lsb>+<offset msb>+<nobytes>+<newbytes> = 
+** receive updated data parameter(s) and write into offset location
+** relative to start of data block
+** "e" = same as "w" above, followed by "r" below to echo back value
+** "r"+<offset lsb>+<offset msb>+<nobytes>+<newbytes> = read and
+** send back value of a data parameter or block in offset location
+** "y" = verify inpram data block = inpflash data block, return no. bytes different.
+** "b" = jump to flash burner routine and burn a ram data block into a flash 
+** data block.
+** "c" = Test communications - echo back Seconds
+** "Q" = Send over Embedded Code Revision Number
+** "S" = Send program title.
+** "u" = set flag for bootloader, reset app (no powerdown !)
+
+

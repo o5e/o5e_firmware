@@ -1,0 +1,8 @@
+
+GCC does support generating SPE instructions for hardware floating
+point.  You need to compile with the "-te500v1" flag, which enables the
+compiler to use single-precision floating-point SPE instructions.  You
+should not use additional "-mcpu=" flags on the command-line along with
+"-te500v1".
+
+

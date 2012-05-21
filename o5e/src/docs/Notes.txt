@@ -1,0 +1,23 @@
+
+// to get symbols from .elf file
+readelf -s internal_FLASH.elf | grep OBJECT | grep 4000 | grep -v @
+
+// indent on linux for reformating .c files
+indent -linux -nut -i4  -ce -cp20 -ncs -sob -l120 -ppi3 file.c
+
+// clean up Mark's comments
+sed -e "s'//\([^ ]\)'// \1'" -e "s'\([^ ]\)//'\1 //'"  < file.c
+
+// we do not accept GPLv3 code - it's a virus
+
+// so far, we have not used floating point or interrupts.   But nothing wrong with either one.
+
+// gcc can be used to test compilation
+gcc -c -Wall -Iinc -ICocoOS -I FreeScale  -I../../src 
+
+// expand tabs in vim
+%!expand -8
+
+// to checksum files
+md5sum *.c */*.c */*.h | sort > md5sum.txt
+
