@@ -1,38 +1,48 @@
 /*
-***************************************************************************************
-***************************************************************************************
-***
-***     File: os_kernel.c
-***
-***     Project: cocoOS
-***
-***     Copyright 2009 Peter Eckstrand
-***
-***************************************************************************************
-	This file is part of cocoOS.
+ * Copyright (c) 2012 Peter Eckstrand
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted (subject to the limitations in the
+ * disclaimer below) provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
+ * GRANTED BY THIS LICENSE.  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+ * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+ * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This file is part of the cocoOS operating system.
+ * Author: Peter Eckstrand <info@cocoos.net>
+ */
+ 
+/***************************************************************************************
 
-    cocoOS is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    cocoOS is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with cocoOS.  If not, see <http://www.gnu.org/licenses/>.
-***************************************************************************************
-
-
-    Version: 1.0.0
 
     Change log:
     2009-07-06: 1.0.0 First release
 	2011-12-04: Calling the sleep callback when all tasks waiting.
 	2011-12-08: Implemented os_sub_tick
 	2011-12-14: Added os_sub_nTick, for incrementing sub clocks in steps > 1
+    2011-12-22: Added support for round robin scheduling
+    2012-01-04: Released under BSD license.
 
 
 ***************************************************************************************
@@ -44,6 +54,7 @@
 
 
 uint8_t running_tid;
+uint8_t last_running_task;
 uint8_t running;
 
 /*********************************************************************************/
@@ -69,6 +80,7 @@ int main(void) {
 /*********************************************************************************/
 void os_init( void ) {
 	running_tid = NO_TID;
+    last_running_task = NO_TID;
     running = 0;
 }
 
@@ -79,16 +91,20 @@ void os_schedule( void ) {
 
     running_tid = NO_TID;
 
+#ifdef ROUND_ROBIN
+    /* Find next ready task */
+    running_tid = os_task_next_ready_task();
+#else
     /* Find the highest prio task ready to run */
-	running_tid = os_task_highest_prio_ready_task();
-	
-	if ( running_tid != NO_TID) {
-        os_task_run_highest();
-	}
+    running_tid = os_task_highest_prio_ready_task();   
+#endif
+    
+    if ( running_tid != NO_TID ) {
+        os_task_run();
+    }
     else {
         os_cbkSleep();
     }
-    
 }
 
 

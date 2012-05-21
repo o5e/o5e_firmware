@@ -1,32 +1,40 @@
 /*
-***************************************************************************************
-***************************************************************************************
-***
-***     File: os_event.c
-***
-***     Project: cocoOS
-***
-***     Copyright 2009 Peter Eckstrand
-***
-***************************************************************************************
-	This file is part of cocoOS.
+ * Copyright (c) 2012 Peter Eckstrand
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted (subject to the limitations in the
+ * disclaimer below) provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
+ * GRANTED BY THIS LICENSE.  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+ * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+ * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This file is part of the cocoOS operating system.
+ * Author: Peter Eckstrand <info@cocoos.net>
+ */
+ 
+/***************************************************************************************
 
-    cocoOS is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    cocoOS is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with cocoOS.  If not, see <http://www.gnu.org/licenses/>.
-***************************************************************************************
-
-
-    Version: 1.0.0
 
     Change log:
     2009-07-06: 1.0.0 First release
@@ -35,6 +43,10 @@
     uses when refering to an event. The event is just an index into the eventList.
     The user has to define the number of events used by the application with the N_EVENTS
     macro in os_defines.h. Event_t is a struct used by cocoOS when managing events.
+	
+	2011-12-17: Implemented a timeout when waiting for event
+    
+    2012-01-04: Released under BSD license.
 
 
 ***************************************************************************************
@@ -131,10 +143,10 @@ uint8_t event_signaling_taskId_get( Evt_t ev ) {
 }
 
 
-void os_wait_event(uint8_t tid, Evt_t ev, uint8_t waitSingleEvent) {
+void os_wait_event(uint8_t tid, Evt_t ev, uint8_t waitSingleEvent, uint16_t timeout) {
 #if( N_TOTAL_EVENTS > 0 )
     if ( ev < nEvents ) {
-        os_task_wait_event( tid, ev, waitSingleEvent );
+        os_task_wait_event( tid, ev, waitSingleEvent, timeout );
     }
 #endif
 }
@@ -161,7 +173,7 @@ void os_wait_multiple( uint8_t waitAll, ...) {
 	event = va_arg( args, int );
 
 	do {
-		os_task_wait_event( running_tid, (Evt_t)event, !waitAll );
+		os_task_wait_event( running_tid, (Evt_t)event, !waitAll,0 );
 		event = va_arg( args, int );
 	} while ( event != NO_EVENT );
 
