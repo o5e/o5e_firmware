@@ -114,7 +114,7 @@ struct etpu_config_t my_etpu_config = {
 int32_t init_eTPU()
 {
     uint32_t i;
-    // TODO - add cam window stuff to tuner variables
+    // TODO - add cam window stuff to tuner variables, issue #6
     uint24_t Cam_Window_Width = 5000;        // this mght want to move to the tuner - sets the cam window ± 15 degrees from expected location
     uint24_t Engine_Position_eTPU;
     uint24_t Cam_Window_Open;
@@ -122,7 +122,6 @@ int32_t init_eTPU()
     uint8_t Gen_Tooth_open;
     uint8_t Gen_Tooth_close;
     uint24_t Gen_Tooth_Pos;
-    uint24_t Gap_Ratio;
     uint24_t Drop_Dead_Angle_eTPU;
 
     // Load firmware into eTPU
@@ -135,13 +134,12 @@ int32_t init_eTPU()
     if (N_Cyl > 12)
         return -1;              // check for flash misconfig
 
-    // TODO - Cam window stuff should be in the user setup I think
-    // The goal here is to open a cam window that is 30 degrees and centeredaround the expected cam signal
+    // TODO - Cam window stuff should be in the user setup I think. Issue #6
+    // The goal here is to open a cam window that is 50 degrees and centeredaround the expected cam signal
     Engine_Position_eTPU = (72000 - ((uint32_t)Engine_Position << 2));   // adjust bin -2 to bin 0
     Cam_Lobe_Pos_eTPU = (72000 -  ((uint32_t)Cam_Lobe_Pos << 2)) ;      // adjust bin -2 to bin 0
-    // Open cam window 15 degrees before cam signal expected, add 72000 to prevent possible negative numbers
+    // Open cam window 25 degrees before cam signal expected, add 72000 to prevent possible negative numbers
     Cam_Window_Open = (72000 + Cam_Lobe_Pos_eTPU - Cam_Window_Width / 2 ) % 72000;
-    Gap_Ratio =  (1UL << 24)-((1UL << 22) * Missing_Teeth); // calculate  a gap ratio that works with the 3 of missing teeth
 
 // Links cause a stall to notify some other channels and turn them off - 4 packed into each 32 bit word
 // TODO change to variables and some logic to handle different configs (fuel has priority over spark)
@@ -189,6 +187,7 @@ int32_t init_eTPU()
     // Note, users input the number of degrees that the rising edge of cam _precedes_ the rising edge of the next tooth 1
     // User input is always within 0-359 (or less) 
     // Example: 35-1 wheel with lobe position = 0 results in cam rising at the rising edge of tooth 37 (aka tooth 1)
+    // TODO - When falling edge is used in testing the cam signal can be up to 1.5 teeth late becaue the math is base on the rising edge, issue #6
     #define Total_Teeth (N_Teeth + Missing_Teeth) 
     #define Degrees_Per_Tooth_x100 (36000 / Total_Teeth)
     #define Start_Tooth (1 + Total_Teeth - (((uint32_t)Cam_Lobe_Pos << 2) / Degrees_Per_Tooth_x100))  // adjust x100 bin -2 value to x100 bin 0 before using
