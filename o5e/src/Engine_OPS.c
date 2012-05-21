@@ -177,9 +177,10 @@ void Engine10_Task(void)
         uint32_t i;
         MAP_Angle = Table_Lookup_JZ(RPM, Load, MAP_Angle_Table);
         for (i = 0; i < N_MAP_windows; ++i) {
+            // TODO - why is this disabled?
             //MAP_Angles[i * 2] = MAP_Angle + Cyl_Angle_eTPU[i];     // Adjust open point (leave width alone)
             // update eTPU 
-            //fs_etpu_knock_window_update(WINDOW0_CHANNEL, 1, i, MAP_Angles[i * 2], MAP_Angles[i * 2 + 1]);
+            //fs_etpu_knock_window_update(MAP_WINDOW_CHANNEL, 1, i, MAP_Angles[i * 2], MAP_Angles[i * 2 + 1]);
         }                       // for
 
         task_wait(9);           // allow others tasks to run

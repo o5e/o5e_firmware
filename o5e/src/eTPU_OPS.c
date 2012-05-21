@@ -228,7 +228,7 @@ int32_t init_eTPU()
            Cyl_Angle_eTPU[i+N_Cyl] = Cyl_Angle_eTPU[i];
     }
 
-    Drop_Dead_Angle_eTPU = ((Drop_Dead_Angle  << 2 ) + Engine_Position_eTPU) % 72000;
+    Drop_Dead_Angle_eTPU = ((Drop_Dead_Angle  << 2 ) + Engine_Position_eTPU) % 72000;   // << to convert bin -2 x100 to bin 0 x100
 
     // eTPU API Function initialization: 'fuel'-see AN3770, pg7-9
     error_code = fs_etpu_fuel_init_6cylinders(FUEL_CHANNELS_1_6,        // 
@@ -248,9 +248,8 @@ int32_t init_eTPU()
                                               100,                      // min inject time, usec
                                               100                       // min injector off time, usec
         );
-    if (error_code != 0) {
+    if (error_code != 0) 
         system_error(12379, __FILE__, __LINE__, "");
-    }
 
     if (N_Injectors > 6) {
         error_code = fs_etpu_fuel_init_6cylinders(FUEL_CHANNELS_7_12,   // channels  
@@ -270,9 +269,8 @@ int32_t init_eTPU()
                                                   100,                  // min inject time, usec
                                                   100                   // min injector off time, usec
             );
-        if (error_code != 0) {
+        if (error_code != 0) 
             system_error(12479, __FILE__, __LINE__, "");
-        }
     }
 // MPC5554 can have more than 12 fuel
 #   ifdef MPC5554
@@ -294,10 +292,10 @@ int32_t init_eTPU()
                                                   100,                  // min inject time, usec
                                                   100                   // min injector off time, usec
             );
-        if (error_code != 0) {
+        if (error_code != 0) 
             system_error(12579, __FILE__, __LINE__, "");
-        }
     }
+
     if (N_Injectors > 18) {
         error_code = fs_etpu_fuel_init_6cylinders(FUEL_CHANNELS_19_24, 
                                                   1,                    // CAM in engine: A; channel: 1 
@@ -316,9 +314,8 @@ int32_t init_eTPU()
                                                   100,                  // min inject time, usec
                                                   100                   // min injector off time, usec
             );
-        if (error_code != 0) {
+        if (error_code != 0) 
             system_error(12679, __FILE__, __LINE__, "");
-        }
     }
 #   endif
 
@@ -345,9 +342,9 @@ int32_t init_eTPU()
                                                5000,                    // init end angle 1*100
                                                41000                    // init end angle 2*100                                           
         );
-    if (error_code != 0) {
+    if (error_code != 0) 
         system_error(12789, __FILE__, __LINE__, "");
-    }
+
 // 5554 can have more
 #   ifdef MPC5554
     if ((N_Coils > 6) && (N_Injectors < 19)) {
@@ -370,9 +367,8 @@ int32_t init_eTPU()
                                                    5000,                // init end angle 1*100
                                                    41000                // init end angle 2*100                                           
             );
-        if (error_code != 0) {
+        if (error_code != 0) 
             system_error(12889, __FILE__, __LINE__, "");
-        }
         return 0;
     }
 #   endif

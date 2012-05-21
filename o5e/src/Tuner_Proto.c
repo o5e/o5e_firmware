@@ -162,6 +162,7 @@ void tuner_task(void)
             write_serial((const void *)signature, sizeof(signature));
             continue;
         }
+
         // for debugging flash burns
         if (tmp_buf[0] == 'B') {        // test flash burn - assume already erased
             Flash_Program(0, (long long *)"BCDE", 0);   // page 0
@@ -250,20 +251,27 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
             if (page >= nPages)
                 break;
 
-            // note: find an unused page within the current block and burn the new page to that - much faster
-            //if (Burn_Single_Page(page)) {
-            //   make_packet(burn_ok, "", 0);
+            // note: find an unused page within the current block and burn the new page to that - much faster, less wear
+            //uint8_t *location;
+            //if (location = Find_Empty_Page(Flash_Block)) {
+            //     
+            //   if (Burn_Page(page,location)) {
+                    // write invalidation link at old page
+                    // record location of this page
+                    // Page_Ptr[page] = location;
+                    // Ram_Page_Buffer_Page = -1;    // mark as unused
+            //      make_packet(burn_ok, "", 0);
+            //     }
             //   continue;
             //}
 
-            // currently we ignore the page # and burn everything
+            // ignore the page # and burn everything
 
             // select unused flash block (ping pongs 0 or 1)
             static uint8_t new_flash_block;
             new_flash_block = (Flash_Block == 0) ? 1 : 0;       // select one not in use
 
-            // erase new flash block if needed
-            //if (*Flash_Addr[new_flash_block] != 0xff) {
+            // erase new flash block 
             Flash_Erase(new_flash_block);
             while (!Flash_Ready()) ;
             Erase_Finish(new_flash_block);
@@ -271,24 +279,24 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
                 make_packet(sequence_failure_1, "", 0);
                 continue;
             }
-            //}
 
-            static uint32_t flash_index;        // index into block, not a pointer
+            static uint32_t flash_index;                // index into block, not a pointer
             static uint8_t *ptr;
 
             // write & burn each page to new flash, 8 bytes at a time. 
             for (i = 0; i < nPages; ++i) {
 
+                // TODO add header to each page
                 flash_index = 1024 + (uint32_t) (i * Max_Page_Size);    // skip over header
-                ptr = (uint8_t *)(Page_Ptr[i]);      // current values, usually in old flash, could be ram
+                ptr = (uint8_t *)(Page_Ptr[i]);         // current values, usually in old flash, could be ram
 
                 // write and program 8 bytes at a time 
                 for (count = 0; count < pageSize[i]; count += 8) {
-                    static long long tmp;       // 8 bytes, properly aligned in ram
+                    static long long tmp;               // 8 bytes, properly aligned in ram
                     tmp = *(long long *)ptr;
 
                     Flash_Program(new_flash_block, &tmp, flash_index);  // setup + copy
-                    while (!Flash_Ready())      // wait till ready
+                    while (!Flash_Ready())              // wait till ready
                         ;
                     Flash_Finish(new_flash_block);      // terminate 
 
@@ -305,7 +313,7 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
                     flash_index += 8;
                 }               // for
 
-                //task_wait(1);   // let other tasks run
+                task_wait(1);   // let other tasks run
 
             }                   // for
 
@@ -329,8 +337,8 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
 
             // update all Page_Ptrs to point to new, freshly written flash
             Set_Page_Locations(new_flash_block);        // update pointers to new flash
-            // we are now running with all variables in the new flash
 
+            // we are now running with all variables in the new flash
             make_packet(burn_ok, "", 0);
 
             continue;
@@ -345,7 +353,7 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
             continue;
         }
 
-        // transfer packet to CAN bus
+        // transfer (pass through) packet to CAN bus
         if (tmp_buf[2] == 'C') {
             if ((count = check_crc(tmp_buf)) == -1)      // check crc on packet
                 continue;
@@ -421,7 +429,7 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
             continue;
         }
 
-        // crc32 of flash page
+        // send crc32 of flash page
         if (tmp_buf[2] == 'k') {        
             if ((count = check_crc(tmp_buf)) == -1)      // check crc on packet
                 continue;
@@ -453,6 +461,7 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
             make_packet(OK, (const void *)&crc, sizeof(crc));
             continue;
         }
+
         // no match to command
         make_packet(unrecognized_command, "", 0);
 

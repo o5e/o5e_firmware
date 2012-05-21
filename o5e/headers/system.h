@@ -29,7 +29,8 @@
     #define FUEL_PUMP_PIN 		179 // fuel pump
     //for testing - Blink based on engine position status
     #define SYNC_STATUS_PIN             190  // RPM Blink task
-    #define WINDOW0_CHANNEL             26    // eTPU channel to output MAP sample windows on (and trigger A/D)
+    #define MAP_WINDOW_CHANNEL          26    // eTPU channel to output MAP sample windows on - fixed, do not change
+    #define KNOCK_WINDOW_CHANNEL        28    // eTPU channel to output MAP sample windows on - fixed
 #endif
 
 // standard CPU used
@@ -52,12 +53,13 @@
     #define FUEL_PUMP_PIN               197 	// fuel pump
     //for testing - Blink based on engine position status
     #define SYNC_STATUS_PIN             190  // RPM Blink task
-    #define WINDOW0_CHANNEL             26    // eTPU channel to output MAP sample windows on (and trigger A/D)
+    #define MAP_WINDOW_CHANNEL          26    // eTPU channel to output MAP sample windows on - fixed, do not change
+    #define KNOCK_WINDOW_CHANNEL        28    // eTPU channel to output MAP sample windows on - fixed
 #endif
 
 // used for serial port A and tuner communications
 #define BAUD_RATE	115200		// speed of serial port comm
-#define SERIAL_BUFFER_SIZE 2048+10
+#define SERIAL_BUFFER_SIZE (2048+10)
 
 // servo motor or idle air control
 #define PWM1_CHANNEL 17 		// eTPU channel to use for servo motor output 
