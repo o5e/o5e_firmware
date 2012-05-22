@@ -61,7 +61,6 @@ void Set_Page_Locations(uint8_t block);
 //                       "123456789.123456789"
 
 #define  nPages  	14
-#define Max_Page_Size 2048
 
 EXTERN const uint16_t pageSize[nPages]
 #ifndef NOINIT
@@ -405,6 +404,11 @@ EXTERN struct Outputs Output_Channels;
 
 // Below here does not come from the .ini file
 
+// A page is 2048 bytes, a block is 128K.  
+// Only one block is in use at a time. This allows a flip/flop use/erase & burn strategy
+
+#define Max_Page_Size 2048
+
 // Variables not in .ini
 EXTERN uint8_t Error_String[100];	// message about latest error - watch this in the debugger
 
@@ -416,6 +420,7 @@ EXTERN int8_t Ram_Page_Buffer_Page;	// which page # is in the buffer (-1 means n
 EXTERN _Bool Flash_OK;		// is flash empty or has values
 EXTERN uint8_t Burn_Count;		// how many flash burns 
 
+#define BLOCK_HEADER_SIZE 1024  // bigger than needed
 // This 8 byte structure is written as a header to the beginning of a used flash block
 struct Flash_Header {
     uint8_t Cookie[4];          // set to ABCD to indicate block is not blank
@@ -424,9 +429,8 @@ struct Flash_Header {
     uint8_t Last_Page_Burned;   // page burned in this block
     uint8_t x;
     // directory of which flash pages are used for which ecu pages - 0xff... means unused
-    //long long Flash_Directory[64];   // 8 bytes each since that's the min flash burn size
+    // long long Flash_Directory[64];   // 8 bytes each since that's the min flash burn size
 } ;
-
 
 EXTERN uint8_t Flash_Block;		// flash block currently being used - 0=M0 or 1=H0 block
 //EXTERN uint8_t Flash_Moved[nPages]; 	// set to 1 if page has been written to new flash block
