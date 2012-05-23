@@ -163,11 +163,11 @@ void tuner_task(void)
 
         // for debugging flash burns
         if (tmp_buf[0] == 'B') {        // test flash burn - assume already erased
-            Flash_Program(0, (long long *)"BCDE", 0);   // page 0
+            Flash_Program(0, (uint64_t *)"BCDE", 0);   // page 0
             while (!Flash_Ready()) ;
             Flash_Finish(0);
 
-            Flash_Program(1, (long long *)"CDEF", 0);   // page 1
+            Flash_Program(1, (uint64_t *)"CDEF", 0);   // page 1
             while (!Flash_Ready()) ;
             Flash_Finish(1);
 
@@ -250,14 +250,15 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
                 break;
 
             // optimization: find an unused page within the current block and burn the new page to that - much faster, less wear
-            // a burn to page 0 causes a complete rewrite that is valid after an ecu reboot
-            uint8_t *location;
-            if (page > 0 && (location = Find_Empty_Page(Flash_Block))) {
+            // a burn to page 0 causes a complete block burn so things look cleaner
+            uint32_t empty_page;
+            if (page > 0 && (empty_page = Find_Empty_Page(Flash_Block))) {
 
-               if (Burn_Page(Flash_Block,page,location)) {
-                    // TODO record location of this page in the directory
-                    Page_Ptr[page] = location;
-                    Ram_Page_Buffer_Page = -1;    // mark as unused
+               uint8_t *location = Flash_Addr[Flash_Block] + BLOCK_HEADER_SIZE + (empty_page * Max_Page_Size);   // convert from page # to address 
+
+               if (Burn_Page(Flash_Block,page,(uint_fast16_t)empty_page)) {
+                    Page_Ptr[page] = location;          // variables are now moved
+                    Ram_Page_Buffer_Page = -1;          // mark as unused
                     make_packet(burn_ok, "", 0);
                     continue;           // done
                } // if
@@ -285,14 +286,13 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
             // write & burn each page to new flash, 8 bytes at a time. 
             for (i = 0; i < nPages; ++i) {
 
-                // TODO add header to each page
                 flash_index = BLOCK_HEADER_SIZE + (uint32_t) (i * Max_Page_Size);    // skip over header
                 ptr = (uint8_t *)(Page_Ptr[i]);         // current values, usually in old flash, could be ram
 
                 // write and program 8 bytes at a time 
                 for (count = 0; count < pageSize[i]; count += 8) {
-                    static long long tmp;               // 8 bytes, properly aligned in ram
-                    tmp = *(long long *)ptr;
+                    static uint64_t tmp;               // 8 bytes, properly aligned in ram
+                    tmp = *(uint64_t *)ptr;
 
                     Flash_Program(new_flash_block, &tmp, flash_index);  // setup + copy
                     while (!Flash_Ready())              // wait till ready
@@ -300,7 +300,7 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
                     Flash_Finish(new_flash_block);      // terminate 
 
                     // check it by reading it back
-                    if (tmp != *(long long *)(Flash_Addr[new_flash_block] + flash_index)) {
+                    if (tmp != *(uint64_t *)(Flash_Addr[new_flash_block] + flash_index)) {
                         uint8_t string[100];
                         sprintf(string, "BAD BURN @%d:%x\n", new_flash_block, flash_index);
                         write_serial((const void *)string, (uint_fast16_t) strlen(string));
@@ -318,17 +318,22 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
 
             // done burning pages
 
-            // write a signature at the beginning of this flash block
+            // write a 8 byte signature at the beginning of this flash block
             {
                 static struct Flash_Header header;
+
+                // fill in first 8 bytes of header
                 memcpy(header.Cookie, "ABCD", 4);
                 header.Burn_Count = ++Burn_Count;
                 header.n_Pages = nPages;
                 header.Last_Page_Burned = (uint8_t) page;
-                Flash_Program(new_flash_block, (long long *)&header, 0);
-                while (!Flash_Ready()) ;        // wait till burn is done
+                // burn first portion of header
+                Flash_Program(new_flash_block, (uint64_t *)&header, 0);
+                while (!Flash_Ready()) ;                        // wait till burn is done
                 Flash_Finish(new_flash_block);
-                if (*Flash_Addr[new_flash_block] != 'A') {      // check for success
+                // let first nPages directory entries be defaults (all 0xff)
+                // check for success 
+                if (*Flash_Addr[new_flash_block] != 'A') {     
                     make_packet(sequence_failure_2, "", 0);
                     continue;
                 }
@@ -521,21 +526,24 @@ int16_t check_crc(uint8_t * packet)
 
 
 // search through a flash block for a page that is empty
-uint8_t * 
+uint8_t  
 Find_Empty_Page(uint8_t block) 
 {
-uint8_t *location = Flash_Addr[block];         // base address
-uint8_t *end = location + ((128-1) * 1024) ;   // blocks are 128K long
+uint8_t *location = Flash_Addr[block];                  // base address
+uint8_t *end = location + ((128-1) * Max_Page_Size) ;   // blocks are 128K long
+uint8_t page = nPages;                                  // skip always used pages
 
 // skip over the block header and the pages that are always used
 location +=  BLOCK_HEADER_SIZE +  Max_Page_Size * nPages;
 
 while (location < end) {
       if (Page_Is_Blank(location))
-         return location;   // found a usable page
+         return page;   // found a usable page
 
       // try the next page in this block
       location += Max_Page_Size;
+      ++page;
+
 }     // while
 
 return 0;   // no pages are usable
@@ -563,30 +571,36 @@ Page_Is_Blank(uint8_t *ptr)
 // Note, task_wait() cannot be called from task subroutines
 
 uint8_t 
-Burn_Page(uint8_t block,  uint_fast16_t page, uint8_t *to)
+Burn_Page(uint8_t block,  uint_fast16_t page, uint_fast16_t destination_page)
 {
 int count;
-uint8_t *from = (uint8_t *)(Page_Ptr[page]);
-uint32_t flash_index =  (uint32_t)(to - Flash_Addr[block]);   // index into block vs absolute address
+uint8_t *from = (uint8_t *)(Page_Ptr[page]);                                  // from address
+uint32_t flash_index = BLOCK_HEADER_SIZE + destination_page * Max_Page_Size;  // to index
 
-              // write and program 8 bytes at a time 
+                // write and program 8 bytes at a time 
                 for (count = 0; count < pageSize[page]; count += 8) {
-                    long long tmp;               // 8 bytes, properly aligned in ram
-                    tmp = *(long long *)from;
+                    uint64_t tmp;               // 8 bytes, properly aligned in ram
+                    tmp = *(uint64_t *)from;
 
-                    Flash_Program(block, &tmp, flash_index);  // setup + copy
-                    while (!Flash_Ready())              // wait till ready
+                    Flash_Program(block, &tmp, flash_index);    // setup + copy
+                    while (!Flash_Ready())                      // wait till ready
                         ;
-                    Flash_Finish(block);      // terminate 
+                    Flash_Finish(block);        // terminate 
 
                     // check it by reading it back
-                    if (tmp != *(long long *)(Flash_Addr[block] + flash_index)) {
-                        return 0;  // failure
+                    if (tmp != *(uint64_t *)(Flash_Addr[block] + flash_index)) {
+                        return 0;               // failure
                     }
 
-                    from += 8;   // inc byte pointer to next 8 byte word
-                    flash_index += 8;
+                    from += 8;                  // inc byte pointer to next 8 byte word
+                    flash_index += 8;           // inc destination
                 }               // for
+
+                // record location of this page in the directory
+                uint64_t i = page;              // 8 byte version
+                Flash_Program(block, &i, BLOCK_HEADER_DIRECTORY  + (destination_page * sizeof(uint64_t)));  // find offset to correct entry
+                while (!Flash_Ready()) ;        // wait till burn is done
+                Flash_Finish(block);
 
                 return 1; // success
 

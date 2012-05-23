@@ -420,8 +420,9 @@ EXTERN int8_t Ram_Page_Buffer_Page;	// which page # is in the buffer (-1 means n
 EXTERN _Bool Flash_OK;		// is flash empty or has values
 EXTERN uint8_t Burn_Count;		// how many flash burns 
 
-#define BLOCK_HEADER_SIZE 1024  // bigger than needed
-// This 8 byte structure is written as a header to the beginning of a used flash block
+#define BLOCK_HEADER_SIZE       1024    // bigger than needed
+#define BLOCK_HEADER_DIRECTORY  8       // offset to directory in below structure
+// This 8 byte (not counting directory) structure is written as a header to the beginning of a used flash block
 struct Flash_Header {
     uint8_t Cookie[4];          // set to ABCD to indicate block is not blank
     uint8_t Burn_Count;        	// how many flash burns 
@@ -429,8 +430,11 @@ struct Flash_Header {
     uint8_t Last_Page_Burned;   // page burned in this block
     uint8_t x;
     // directory of which flash pages are used for which ecu pages - 0xff... means unused
-    // long long Flash_Directory[64];   // 8 bytes each since that's the min flash burn size
+    uint64_t Flash_Directory[64];   // 8 bytes each since that's the min flash burn size
 } ;
+
+// Note: first nPages entries in the directory are assumed to be 0,1,2,... and aren't actually used
+
 
 EXTERN uint8_t Flash_Block;		// flash block currently being used - 0=M0 or 1=H0 block
 //EXTERN uint8_t Flash_Moved[nPages]; 	// set to 1 if page has been written to new flash block
