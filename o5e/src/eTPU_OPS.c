@@ -1,6 +1,6 @@
 /*********************************************************************************
 
-    @file      Engine_OPS.c                                                              
+    @file      eTPU_OPS.c                                                              
     @date      December, 2011
     @brief     Open5xxxECU - This file contains functions to initialize AND operate the eTPU
     @note      www.Open5xxxECU.org
@@ -11,6 +11,7 @@
 /*=============================================================================*/
 /* REV      AUTHOR         DATE          DESCRIPTION OF                        */
 /* ---      -----------    ----------    ---------------------                 */
+/* 4.7jz    J. Zeeff       22/May/12     add mke comment changes               */
 /* 4.6jz    J. Zeeff       18/May/12     open window to get sync               */
 /* 4.5jz    J. Zeeff       18/May/12     cleanup                               */
 /* 4.4me    M.Eberhardt    18/May/12     fixed cam windowing                   */
@@ -114,7 +115,7 @@ struct etpu_config_t my_etpu_config = {
 int32_t init_eTPU()
 {
     uint32_t i;
-    // TODO - add cam window stuff to tuner variables
+    // TODO - add cam window stuff to tuner variables, issue #6
     uint24_t Cam_Window_Width = 5000;        // this mght want to move to the tuner - sets the cam window ± 15 degrees from expected location
     uint24_t Engine_Position_eTPU;
     uint24_t Cam_Window_Open;
@@ -122,7 +123,6 @@ int32_t init_eTPU()
     uint8_t Gen_Tooth_open;
     uint8_t Gen_Tooth_close;
     uint24_t Gen_Tooth_Pos;
-    uint24_t Gap_Ratio;
     uint24_t Drop_Dead_Angle_eTPU;
 
     // Load firmware into eTPU
@@ -135,13 +135,12 @@ int32_t init_eTPU()
     if (N_Cyl > 12)
         return -1;              // check for flash misconfig
 
-    // TODO - Cam window stuff should be in the user setup I think
-    // The goal here is to open a cam window that is 30 degrees and centeredaround the expected cam signal
+    // TODO - Cam window stuff should be in the user setup I think. Issue #6
+    // The goal here is to open a cam window that is 50 degrees and centeredaround the expected cam signal
     Engine_Position_eTPU = (72000 - ((uint32_t)Engine_Position << 2));   // adjust bin -2 to bin 0
     Cam_Lobe_Pos_eTPU = (72000 -  ((uint32_t)Cam_Lobe_Pos << 2)) ;      // adjust bin -2 to bin 0
-    // Open cam window 15 degrees before cam signal expected, add 72000 to prevent possible negative numbers
+    // Open cam window 25 degrees before cam signal expected, add 72000 to prevent possible negative numbers
     Cam_Window_Open = (72000 + Cam_Lobe_Pos_eTPU - Cam_Window_Width / 2 ) % 72000;
-    Gap_Ratio =  (1UL << 24)-((1UL << 22) * Missing_Teeth); // calculate  a gap ratio that works with the 3 of missing teeth
 
 // Links cause a stall to notify some other channels and turn them off - 4 packed into each 32 bit word
 // TODO change to variables and some logic to handle different configs (fuel has priority over spark)
@@ -189,6 +188,7 @@ int32_t init_eTPU()
     // Note, users input the number of degrees that the rising edge of cam _precedes_ the rising edge of the next tooth 1
     // User input is always within 0-359 (or less) 
     // Example: 35-1 wheel with lobe position = 0 results in cam rising at the rising edge of tooth 37 (aka tooth 1)
+    // TODO - When falling edge is used in testing the cam signal can be up to 1.5 teeth late becaue the math is base on the rising edge, issue #6
     #define Total_Teeth (N_Teeth + Missing_Teeth) 
     #define Degrees_Per_Tooth_x100 (36000 / Total_Teeth)
     #define Start_Tooth (1 + Total_Teeth - (((uint32_t)Cam_Lobe_Pos << 2) / Degrees_Per_Tooth_x100))  // adjust x100 bin -2 value to x100 bin 0 before using
@@ -229,7 +229,7 @@ int32_t init_eTPU()
            Cyl_Angle_eTPU[i+N_Cyl] = Cyl_Angle_eTPU[i];
     }
 
-    Drop_Dead_Angle_eTPU = ((Drop_Dead_Angle  << 2 ) + Engine_Position_eTPU) % 72000;
+    Drop_Dead_Angle_eTPU = ((Drop_Dead_Angle  << 2 ) + Engine_Position_eTPU) % 72000;   // << to convert bin -2 x100 to bin 0 x100
 
     // eTPU API Function initialization: 'fuel'-see AN3770, pg7-9
     error_code = fs_etpu_fuel_init_6cylinders(FUEL_CHANNELS_1_6,        // 
@@ -249,9 +249,8 @@ int32_t init_eTPU()
                                               100,                      // min inject time, usec
                                               100                       // min injector off time, usec
         );
-    if (error_code != 0) {
+    if (error_code != 0) 
         system_error(12379, __FILE__, __LINE__, "");
-    }
 
     if (N_Injectors > 6) {
         error_code = fs_etpu_fuel_init_6cylinders(FUEL_CHANNELS_7_12,   // channels  
@@ -271,9 +270,8 @@ int32_t init_eTPU()
                                                   100,                  // min inject time, usec
                                                   100                   // min injector off time, usec
             );
-        if (error_code != 0) {
+        if (error_code != 0) 
             system_error(12479, __FILE__, __LINE__, "");
-        }
     }
 // MPC5554 can have more than 12 fuel
 #   ifdef MPC5554
@@ -295,10 +293,10 @@ int32_t init_eTPU()
                                                   100,                  // min inject time, usec
                                                   100                   // min injector off time, usec
             );
-        if (error_code != 0) {
+        if (error_code != 0) 
             system_error(12579, __FILE__, __LINE__, "");
-        }
     }
+
     if (N_Injectors > 18) {
         error_code = fs_etpu_fuel_init_6cylinders(FUEL_CHANNELS_19_24, 
                                                   1,                    // CAM in engine: A; channel: 1 
@@ -317,9 +315,8 @@ int32_t init_eTPU()
                                                   100,                  // min inject time, usec
                                                   100                   // min injector off time, usec
             );
-        if (error_code != 0) {
+        if (error_code != 0) 
             system_error(12679, __FILE__, __LINE__, "");
-        }
     }
 #   endif
 
@@ -346,9 +343,9 @@ int32_t init_eTPU()
                                                5000,                    // init end angle 1*100
                                                41000                    // init end angle 2*100                                           
         );
-    if (error_code != 0) {
+    if (error_code != 0) 
         system_error(12789, __FILE__, __LINE__, "");
-    }
+
 // 5554 can have more
 #   ifdef MPC5554
     if ((N_Coils > 6) && (N_Injectors < 19)) {
@@ -371,9 +368,8 @@ int32_t init_eTPU()
                                                    5000,                // init end angle 1*100
                                                    41000                // init end angle 2*100                                           
             );
-        if (error_code != 0) {
+        if (error_code != 0) 
             system_error(12889, __FILE__, __LINE__, "");
-        }
         return 0;
     }
 #   endif
