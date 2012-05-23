@@ -1,6 +1,6 @@
 /*********************************************************************************
 
-    @file      Engine_OPS.c                                                              
+    @file      eTPU_OPS.c                                                              
     @date      December, 2011
     @brief     Open5xxxECU - This file contains functions to initialize AND operate the eTPU
     @note      www.Open5xxxECU.org
@@ -11,6 +11,7 @@
 /*=============================================================================*/
 /* REV      AUTHOR         DATE          DESCRIPTION OF                        */
 /* ---      -----------    ----------    ---------------------                 */
+/* 4.7jz    J. Zeeff       22/May/12     add mke comment changes               */
 /* 4.6jz    J. Zeeff       18/May/12     open window to get sync               */
 /* 4.5jz    J. Zeeff       18/May/12     cleanup                               */
 /* 4.4me    M.Eberhardt    18/May/12     fixed cam windowing                   */

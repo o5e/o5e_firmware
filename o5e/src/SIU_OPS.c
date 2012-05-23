@@ -195,22 +195,22 @@ void init_SIU(void)
         SIU.PCR[127].R = B0001 | OUTPUT; 	// eTPU[13] injector 6
         SIU.PCR[128].R = GPIO | UNUSED; 	// eTPU[14] pin available but etpu channel reserved forinjector 9
         SIU.PCR[129].R = GPIO | UNUSED; 	// eTPU[15] pin available but etpu channel reserved forinjector 10
-        SIU.PCR[130].R = B0001 | OUTPUT;    // eTPU[16] Tach signal
-        SIU.PCR[131].R = B0001 | INPUT;     // eTPU[17] wheelspeed FL
-        SIU.PCR[132].R = B0001 | INPUT;     // eTPU[18] wheelspeed FR
-        SIU.PCR[133].R = B0001 | INPUT;     // eTPU[19] wheelspeed RL
-        SIU.PCR[134].R = B0001 | INPUT;     // eTPU[20] wheelspeed RR
+        SIU.PCR[130].R = B0001 | OUTPUT;        // eTPU[16] Tach signal
+        SIU.PCR[131].R = B0001 | INPUT;         // eTPU[17] wheelspeed FL
+        SIU.PCR[132].R = B0001 | INPUT;         // eTPU[18] wheelspeed FR
+        SIU.PCR[133].R = B0001 | INPUT;         // eTPU[19] wheelspeed RL
+        SIU.PCR[134].R = B0001 | INPUT;         // eTPU[20] wheelspeed RR
         SIU.PCR[135].R = B0001 | OUTPUT; 	// eTPU[21] injector 7
         SIU.PCR[136].R = B0001 | OUTPUT; 	// eTPU[22] injector 8
         SIU.PCR[137].R = GPIO | UNUSED; 	// eTPU[23]
         SIU.PCR[138].R = GPIO | UNUSED; 	// eTPU[24]
         SIU.PCR[139].R = GPIO | UNUSED; 	// eTPU[25]  
         SIU.PCR[140].R = B0001 | OUTPUT; 	// eTPU[26] MAP window
-        SIU.PCR[141].R = GPIO | UNUSED; 	// eTPU[27] pin available but etpu channle reserved for injector 11
-        SIU.PCR[142].R = B0001 | OUTPUT	; 	// eTPU[28] Knock window
-        SIU.PCR[143].R = GPIO | UNUSED; 	// eTPU[29] pin available but etpu channle reserved for injector 12
-        SIU.PCR[144].R = B0011 | OUTPUT;      	// eTPU_A[30] toothgen simulator, eTPU30 hardwired to eTPU1 
-        SIU.PCR[145].R = B0011 | OUTPUT;      	// eTPU_A[31] toothgen simulator, eTPU31 hardwired to eTPU0 
+        SIU.PCR[141].R = GPIO | UNUSED; 	// eTPU[27] pin available but etpu channel reserved for injector 11
+        SIU.PCR[142].R = B0001 | OUTPUT; 	// eTPU[28] Knock window
+        SIU.PCR[143].R = GPIO | UNUSED; 	// eTPU[29] pin available but etpu channel reserved for injector 12
+        SIU.PCR[144].R = B0011 | OUTPUT;      	// eTPU[30] toothgen simulator, eTPU30 hardwired to eTPU1 
+        SIU.PCR[145].R = B0011 | OUTPUT;      	// eTPU[31] toothgen simulator, eTPU31 hardwired to eTPU0 
 
         //EMIOS primary
         SIU.PCR[179].R = GPIO | OUTPUT; 	// eMIOS 0 fuel pump
@@ -218,17 +218,17 @@ void init_SIU(void)
         SIU.PCR[181].R = GPIO | UNUSED; 	// eMIOS 2
         SIU.PCR[183].R = B0001 | OUTPUT; 	// eMIOS 4 (B0001)
 
-        SIU.PCR[187].R = B0001 | OUTPUT;    // eMIOS 8 (B0001) or injector 9 eTPU[8] (B0010) 
-        SIU.PCR[188].R = B0001 | OUTPUT;    // eMIOS 9 (B0001) or injector 10 eTPU[9] (B0010)    
+        SIU.PCR[187].R = B0001 | OUTPUT;        // eMIOS 8 (B0001) or injector 9 eTPU[8] (B0010) 
+        SIU.PCR[188].R = B0001 | OUTPUT;        // eMIOS 9 (B0001) or injector 10 eTPU[9] (B0010)    
         SIU.PCR[189].R = GPIO | OUTPUT; 	// flashing LED or eMIOS (10)  
         SIU.PCR[190].R = GPIO | OUTPUT; 	// flashing LED or eMIOS (11)  
-        SIU.PCR[191].R = B0001 | OUTPUT;    // eMIOS 12 (B0001) or injector 11 eTPU[27](B0100)
+        SIU.PCR[191].R = B0001 | OUTPUT;        // eMIOS 12 (B0001) or injector 11 eTPU[27](B0100)
 
         SIU.PCR[192].R = B0001 | OUTPUT; 	// eMIOS 13 (B0001) or GPIO 
-        SIU.PCR[193].R = B0001 | OUTPUT;    // eMIOS 14 (B0001) or injector 12 eTPU[29](B0100)
+        SIU.PCR[193].R = B0001 | OUTPUT;        // eMIOS 14 (B0001) or injector 12 eTPU[29](B0100)
         SIU.PCR[194].R = B0001 | OUTPUT; 	// eMIOS 15 (B0001)
 
-        SIU.PCR[202].R = GPIO | UNUSED;     // eMIOS (23)
+        SIU.PCR[202].R = GPIO | UNUSED;         // eMIOS (23)
          
         //AN channel functions (do not require PCR settings)
         //AN1 - Knock +
