@@ -54,6 +54,14 @@ CS pin must be held low while any operation is performed and returned high when 
 detect available packet via polling
 Packets read have to be stripped of header, crc, etc.
 
+Notes about MC33888
+2 Mhz max
+most commands are 16 bits
+slave only
+output data will transition on the rising edges of SCLK
+CS is active low
+
+
 */
 
 static void Init_SPI(void)
