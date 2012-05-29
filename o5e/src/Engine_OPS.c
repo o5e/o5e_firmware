@@ -311,17 +311,16 @@ void Set_Fuel(void)
 
         // apply various multiplier adjustments
 
-        // apply corrections calculated by the enrichment code here
-
-        // engine temp & post start cycles correction  - this is basically fuel that goes through the engine unburned when the engine is cold
-        // Corr = Table_Lookup_JZ(CLT, Post_Start_Cycles, Fuel_Temp_Corr_Table);
-        // Pulse_Width = (Pulse_Width * Corr) >> 14;   // correct bin point back to bin 0
-
         // RPM correction based on engine model - this is the primary tuning
-        Corr = Table_Lookup_JZ(RPM, 0, Eng_Model_Table);
-        Pulse_Width = (Pulse_Width * Corr) >> 14;
-
+        if Engine_Model_Enable{
+           Corr = Table_Lookup_JZ(RPM, 0, Eng_Model_Table);
+           Pulse_Width = (Pulse_Width * Corr) >> 14;
+        }
+//look at bin points
         // Adjust according to load
+        if Load_Model_Enable {
+           Corr = Table_Lookup_JZ(RPM, 0, Load_Model_Table);
+           Pulse_Width = (Pulse_Width * Corr) >> 14;
         Pulse_Width = (Pulse_Width * Load) >> 14;
 
         // Main fuel table corection - this is used to fine tuning

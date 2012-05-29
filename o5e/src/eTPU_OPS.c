@@ -157,12 +157,12 @@ int32_t init_eTPU()
 
     error_code = fs_etpu_app_eng_pos_init(1,                            /* CAM in engine: A; channel: 1 */
                                         FS_ETPU_CAM_PRIORITY_MIDDLE,    /* cam_priority: Middle */
-                                        FS_ETPU_CAM_FM0_FALLING_EDGE,   /* cam_edge_polarity: falling edge */
+                                        Cam_Edge_Select,                /* cam_edge_polarity: falling edge = 0, rising = 1 */
                                         Cam_Window_Open,                /* cam_angle_window_start: cam_window_open*100   */
                                         Cam_Window_Width,               /* cam_angle_window_width: cam_window_width*100   */
                                         0,                              /* CRANK in engine: A; channel: 0 */
                                         FS_ETPU_CRANK_PRIORITY_MIDDLE,  /* crank_priority: Middle */
-                                        FS_ETPU_CAM_FM0_FALLING_EDGE,   /* crank_edge_polarity: falling edge */
+                                        Crank_Edge_Select,              /* crank_edge_polarity: falling edge = 0, rising = 1 */
                                         N_Teeth,                        /* crank_number_of_physical_teeth: crank_number_of_physical_teeth */
                                         Missing_Teeth,                  /* crank_number_of_missing_teeth: crank_number_of_missing_teeth */
                                         10,                             /* crank_blank_tooth_count: crank_blank_tooth_count */
