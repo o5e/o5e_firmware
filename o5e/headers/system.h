@@ -9,9 +9,8 @@
 #include "stdint.h"
 
 // low cost development CPU
-#ifdef MPC5634
+#ifdef TRK_MPC5634
     #define CPU_CLOCK 		        80000000     // 80 Mhz
-    #define RPM_SIGNAL_PIN  	        32      // pin to indicate RPM TODO FIX!
     #define TOOTHGEN_PIN1  		31      // which eTPU channel to use for crank simulator
     #define TOOTHGEN_PIN2  		30      // which eTPU channel to use for crank simulator
     #define LED_PIN PIN_EMIOS10    		// LED to flash for testing
@@ -33,10 +32,9 @@
     #define KNOCK_WINDOW_CHANNEL        28    // eTPU channel to output MAP sample windows on - fixed
 #endif
 
-// standard CPU used
-#ifdef MPC5554
+// faster, dual eTPU CPU 
+#ifdef PHYCORE
     #define CPU_CLOCK 132000000     // 132 Mhz
-    #define RPM_SIGNAL_PIN  	32      // pin to indicate RPM
     #define TOOTHGEN_PIN1  31     	// which eTPU channel to use for crank simulator
     #define TOOTHGEN_PIN2  30     	// which eTPU channel to use for crank simulator
     #define LED_PIN 179	        // LED to flash for testing
@@ -55,6 +53,34 @@
     #define SYNC_STATUS_PIN             190  // RPM Blink task
     #define MAP_WINDOW_CHANNEL          26    // eTPU channel to output MAP sample windows on - fixed, do not change
     #define KNOCK_WINDOW_CHANNEL        28    // eTPU channel to output MAP sample windows on - fixed
+#endif
+
+// Chrysler OEM ECU
+#ifdef NGC4
+    #define CPU_CLOCK 		        80000000        // 80 Mhz
+    #define TOOTHGEN_PIN1  		31              // which eTPU channel to use for crank simulator
+    #define TOOTHGEN_PIN2  		30              // which eTPU channel to use for crank simulator
+    #define LED_PIN PIN_EMIOS10    		        // LED to flash for testing
+    // TODO define eTPU channels to use here
+    // Note: what is here must match what is in SIU_OPS.c
+    #define FUEL_CHANNELS_1_6           5,6,7,8,9,10            // per B7
+    #define FUEL_CHANNELS_7_12  	11,12,8,9,27,29         // last 4 not used
+    #define FUEL_CHANNELS_13_18  	24,24,24,24,24,24       // not used 
+    #define FUEL_CHANNELS_19_24  	25,25,25,25,25,25       // not used 
+    #define SPARK_CHANNELS_1_6  	23,24,25,26,27,14       // per B7
+    #define SPARK_CHANNELS_7_12  	15,16,25,25,25,25       // last 4 not used  
+    #define TACH_CHANNEL 		16      // Tach Output (pwm) eTPU chan
+    #define FUEL_PUMP_PIN 		179     // fuel pump 
+    //for testing - Blink based on engine position status
+    #define SYNC_STATUS_PIN             190     // RPM Blink task
+    #define MAP_WINDOW_CHANNEL          26      // eTPU channel to output MAP sample windows on - fixed, do not change
+    #define KNOCK_WINDOW_CHANNEL        28      // eTPU channel to output MAP sample windows on - fixed
+
+//Map sensor AN 11
+//O2 1/1 AN 16
+//O2 2/2 AN 23
+//TPS 1 AN 19
+
 #endif
 
 // used for serial port A and tuner communications

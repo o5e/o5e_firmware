@@ -67,7 +67,7 @@
 void init_SIU(void)
 {
 
-#ifdef MPC5554
+#ifdef PHYCORE
     //Configure  for CRANK (TCRCLKA)
     SIU.PCR[113].R = PRIMARY | INPUT;
 
@@ -174,7 +174,7 @@ void init_SIU(void)
 #endif
 
 /*****************************************************************************************/
-#ifdef MPC5634
+#ifdef TRK_MPC5634
 
     // Note: AN12-AN15 have pad numbers and use B0011 to make them AN pins
 
