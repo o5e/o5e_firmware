@@ -76,8 +76,8 @@ void Slow_Vars_Task(void)
 
 
 // Generate a cam pulse for engines that don't have one.  
-// Note: this forces semi-sequential fuel and wasted spark.
-// Disable in main.c if not needed (most engines)
+// Note: this implies semi-sequential fuel and wasted spark.
+// Doesn't have to be very accurate - cam is not used for timing
 
 #ifdef FAKE_CAM_PIN
 
@@ -86,23 +86,26 @@ void Cam_Pulse_Task(void)
     task_open();                // standard OS entry
     task_wait(1);
 
-    static uint_fast8_t tooth;
+    register uint_fast8_t tooth;        // not saved across an OS call
     static uint_fast8_t prev_tooth;
+    static uint_fast8_t position;
+
+    position =  N_Teeth / 2;    // doesn't matter where, but this is a good spot
 
     for (;;) {
-        // output pulse once per two crank revs by calling this every 2 msec or so
+        // output pulse once per two crank revs
 
-        tooth = fs_etpu_eng_pos_get_tooth_number();
-        if (tooth >= N_Teeth/2 && prev_tooth < N_Teeth/2)  // detect passing tooth N/2
+        tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to 2x total number of teeth
+
+        if (prev_tooth < position && tooth >= position) // detect passing tooth N/2
            Set_Pin(FAKE_CAM_PIN,1);
         else
            Set_Pin(FAKE_CAM_PIN,0);
 
         prev_tooth = tooth;
 
-        task_wait(2);
-    }
-
+        task_wait(2); 
+    } // for
 
     task_close();
 }      

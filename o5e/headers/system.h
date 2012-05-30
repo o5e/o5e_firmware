@@ -60,14 +60,15 @@
     #define CPU_CLOCK 		        80000000        // 80 Mhz
     #define TOOTHGEN_PIN1  		31              // which eTPU channel to use for crank simulator
     #define TOOTHGEN_PIN2  		30              // which eTPU channel to use for crank simulator
-    #define LED_PIN PIN_EMIOS10    		        // LED to flash for testing
+    #define LED_PIN                     128	        // LED to flash for testing
     // TODO define eTPU channels to use here
     // Note: what is here must match what is in SIU_OPS.c
     #define FUEL_CHANNELS_1_6           5,6,7,8,9,10            // per B7
     #define FUEL_CHANNELS_7_12  	11,12,8,9,27,29         // last 4 not used
     #define FUEL_CHANNELS_13_18  	24,24,24,24,24,24       // not used 
     #define FUEL_CHANNELS_19_24  	25,25,25,25,25,25       // not used 
-    #define SPARK_CHANNELS_1_6  	23,24,25,26,27,14       // per B7
+//    #define SPARK_CHANNELS_1_6  	23,24,25,26,27,14       // per B7
+    #define SPARK_CHANNELS_1_6  	23,24,25,26,27,28       //  for testing, use 14 for LED
     #define SPARK_CHANNELS_7_12  	15,16,25,25,25,25       // last 4 not used  
     #define TACH_CHANNEL 		16      // Tach Output (pwm) eTPU chan
     #define FUEL_PUMP_PIN 		179     // fuel pump 

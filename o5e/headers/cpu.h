@@ -11,7 +11,7 @@
 #endif
 
 #ifdef MPC5554
-#include "mpc5554.h"
+#include "MPC5554.h"
 #endif
 
 #ifdef MPC5602

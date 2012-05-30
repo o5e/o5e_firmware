@@ -87,12 +87,14 @@ static void initCAN_A(void)
     };
 
     // Initialize the Module Configuration Register (CAN_MCR)
+#ifdef MPC5634
     CAN_A.MCR.B.MBFEN = 0;        // Enable the individual filtering per MB and reception queue features by setting
     CAN_A.MCR.B.WRNEN = 0;        // Enable the warning interrupts by setting 
     //CAN_A.MCR.B.SRXDIS = 1;       // Disable frame self reception by setting 
     CAN_A.MCR.B.FEN = 0;          // Enable the FIFO by setting 
     CAN_A.MCR.B.AEN = 0;          // Enable the abort mechanism by setting CAN_
     CAN_A.MCR.B.LPRIO_EN = 0;     // Enable the local priority feature by setting 
+#endif
     CAN_A.MCR.B.MAXMB = 0x3f;     // Enable all buffers
 
     CAN_A.CR.R = 0x04DB0006;    // Configure for 8MHz OSC, 100kHz bit time 
