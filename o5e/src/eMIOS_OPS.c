@@ -40,7 +40,9 @@ EMIOS.MCR.B.GPREN = 1;     // Enable eMIOS clock
 EMIOS.MCR.B.GTBE = 1;      // Enable global timebase                                 
 EMIOS.MCR.B.FRZ = 0;       // Disable stopping channels in debug                     
 EMIOS.OUDR.R = 0;          // 0 = enable outputs
+#ifdef MPC5634
 EMIOS.UCDIS.R = 0;         // 0 = enable
+#endif
 
 //  Second, configure Ch(10) to FAST trigger eQADC CFIFO Ch(0) with OPWFM                  
 //  set for xx triggers/second, 10% duty cycle                                            

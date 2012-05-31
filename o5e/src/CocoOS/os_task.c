@@ -1,32 +1,40 @@
 /*
-***************************************************************************************
-***************************************************************************************
-***
-***     File: os_task.c
-***
-***     Project: cocoOS
-***
-***     Copyright 2009, 2010 Peter Eckstrand
-***
-***************************************************************************************
-	This file is part of cocoOS.
+ * Copyright (c) 2012 Peter Eckstrand
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted (subject to the limitations in the
+ * disclaimer below) provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
+ * GRANTED BY THIS LICENSE.  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+ * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+ * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This file is part of the cocoOS operating system.
+ * Author: Peter Eckstrand <info@cocoos.net>
+ */
+ 
+/***************************************************************************************
 
-    cocoOS is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    cocoOS is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with cocoOS.  If not, see <http://www.gnu.org/licenses/>.
-***************************************************************************************
-
-
-    Version: 1.1.0
 
     Change log:
     2009-07-06: 1.0.0: First release
@@ -87,6 +95,17 @@
 				task wait time. os_task_tick takes an id parameter.
 				
 	2011-12-14: os_task_tick takes a tick size parameter
+	
+	2011-12-17: Support for timeout during wait for event
+	2011-12-19: Added condition state == WAITING_EVENT_TIMEOUT when signaling event
+	2011-12-22: Changed name os_task_highest() to os_task_run. Added os_task_next_ready_task()
+                Changed name on os_task_release_highest_prio_task() to os_task_release_waiting_task()
+                which in the case of round robin releases first found waiting task.
+	2011-12-23: In case of round robin, the task with longest waiting time is released 
+	            when signaling a semaphore. os_task_tick increments the task time if the
+				task is waiting for a semaphore. This measures the wait time.
+                
+    2012-01-04: Released under BSD license.
 
 ***************************************************************************************
 */
@@ -117,6 +136,7 @@ static void task_wait_sem_set( uint8_t tid, Sem_t sem );
 static void task_suspended_set( uint8_t tid );
 static void task_waiting_time_set( uint8_t tid );
 static void task_waiting_event_set( tcb *task );
+static void task_waiting_event_timeout_set( tcb *task );
 static void task_ready_set( uint8_t tid );
 static void task_killed_set( uint8_t tid );
 
@@ -391,10 +411,54 @@ uint8_t os_task_highest_prio_ready_task( void ) {
 }
 
 
+/* Finds the next ready task */
+uint8_t os_task_next_ready_task( void ) {
+    uint16_t index;
+    uint8_t found;
+    uint8_t nChecked;
+    
+    if ( NO_TID == last_running_task ) {
+        index = 0;
+    }
+    else {
+        index = last_running_task + 1;
+		if ( index >= nTasks ) {
+		    index = 0;
+		}			
+    }
+    
+    found = 0;
+    nChecked = 0;
+    
+    os_disable_interrupts();
+    
+    do {
+        if ( READY == task_list[ index ].state ) {
+            last_running_task = index;
+            found = 1;
+            break;
+        }
+        
+        ++index;
+        if ( index == nTasks ) {
+            index = 0;
+        }
+    } while ( ++nChecked != nTasks );
+    
+    if ( !found ) {
+        last_running_task = NO_TID;
+    }
+    
+	os_enable_interrupts();
+    return last_running_task;
+}
+
 /* Finds the task with highest prio waiting for sem, and makes it ready to run */
-void os_task_release_highest_prio_task( Sem_t sem ) {
+void os_task_release_waiting_task( Sem_t sem ) {
     uint8_t highestPrio = 255;
+	uint16_t longestWaitTime = 0;
     uint8_t tid;
+	uint8_t lastCheckedTask = NO_TID;
     uint8_t foundTask = NO_TID;
     uint8_t taskIsWaitingForThisSemaphore;
     tcb *task;
@@ -404,14 +468,30 @@ void os_task_release_highest_prio_task( Sem_t sem ) {
         taskIsWaitingForThisSemaphore = (( task->state == WAITING_SEM ) && ( task->semaphore == sem ) );
 
         if ( taskIsWaitingForThisSemaphore == 1 ) {
-            if ( task->prio < highestPrio ) {
-                highestPrio = task->prio;
-                foundTask = tid;
-            }
-        }
+			#ifdef ROUND_ROBIN
+			    /* Release the task that has waited longest */
+				lastCheckedTask = tid;
+			    if ( task->time > longestWaitTime ) {
+					longestWaitTime = task->time;
+					foundTask = tid;
+				}
+			#else
+			    /* Release the highest prio task */
+                if ( task->prio < highestPrio ) {
+                    highestPrio = task->prio;
+                    foundTask = tid;
+                }
+			#endif
+        } 
     }
 
     /* We have found a waiting task. */
+	#ifdef ROUND_ROBIN
+	    if (( longestWaitTime == 0 ) && ( NO_TID != lastCheckedTask )) {
+			/* All waiting tasks had waiting time 0 -> release the last task */
+			foundTask = lastCheckedTask;
+		}
+	#endif			
     if ( NO_TID != foundTask ) {
         task_list[ foundTask ].state = READY;
     }
@@ -443,6 +523,9 @@ uint8_t os_task_waiting_this_semaphore( Sem_t sem ) {
 void os_task_wait_sem_set( uint8_t tid, Sem_t sem ) {
     os_assert( tid < nTasks );
     task_wait_sem_set( tid, sem );
+	
+	/* The time is ticked to measure waiting time */
+	task_list[ tid ].time = 0;
 }
 
 
@@ -550,7 +633,7 @@ void os_task_wait_time_set( uint8_t tid, uint8_t id, uint16_t time ) {
 }
 
 
-void os_task_wait_event( uint8_t tid, Evt_t eventId, uint8_t waitSingleEvent ) {
+void os_task_wait_event( uint8_t tid, Evt_t eventId, uint8_t waitSingleEvent, uint16_t timeout ) {
     uint8_t eventListIndex;
     uint8_t shift;
     tcb *task;
@@ -564,7 +647,15 @@ void os_task_wait_event( uint8_t tid, Evt_t eventId, uint8_t waitSingleEvent ) {
 
     task->eventQueue.eventList[ eventListIndex ] |= 1 << shift;
     task->waitSingleEvent = waitSingleEvent;
-    task_waiting_event_set( task );
+	if ( timeout != 0 ) {
+        /* Waiting for an event with timeout - clockId = 0, master clock */
+        task->clockId = 0;
+        task->time = timeout;
+		task_waiting_event_timeout_set( task );
+	}
+	else {	
+		task_waiting_event_set( task );
+	}	
 }
 
 
@@ -573,12 +664,17 @@ void os_task_tick( uint8_t id, uint16_t tickSize ) {
     
     /* Search all tasks and decrement time for waiting tasks */
     for ( index = 0; index != nTasks; ++index ) {
-        if ( task_list[ index ].state == WAITING_TIME ) {
+		TaskState_t state;
+		state = task_list[ index ].state;
+        if (( state == WAITING_TIME ) || ( state == WAITING_EVENT_TIMEOUT )){
             
             /* Found a waiting task, is it ready? */
             if ( task_list[ index ].clockId == id ) {
 				if ( task_list[ index ].time <= tickSize ) {
 					task_list[ index ].time = 0;
+					if ( state == WAITING_EVENT_TIMEOUT ) {
+						os_task_clear_wait_queue( index );
+					}
 					task_ready_set( index );
 				}
 				else {
@@ -586,6 +682,9 @@ void os_task_tick( uint8_t id, uint16_t tickSize ) {
 				}					
             }
         }
+		else if ( state ==  WAITING_SEM ) {
+			task_list[ index ].time++;
+		}
 
         /* If the task has a message queue, decrement the delayed message timers */
         if ( id == 0 ) {
@@ -593,14 +692,13 @@ void os_task_tick( uint8_t id, uint16_t tickSize ) {
                 os_msgQ_tick( task_list[ index ].msgQ );
             }
         }
-        
     }
 }
 
 
 void os_task_signal_event( Evt_t eventId ) {
     uint8_t index;
-    uint8_t taskWaitingForEvent;
+    
     uint8_t eventListIndex;
     uint8_t shift;
 
@@ -608,10 +706,20 @@ void os_task_signal_event( Evt_t eventId ) {
     shift = eventId & 0x07;
 
     for ( index = 0; index != nTasks; index++ ) {
-
+        uint8_t taskWaitingForEvent;
+		uint8_t taskWaitStateOK;
+		TaskState_t state;
+		
+		state = task_list[ index ].state;
+		taskWaitStateOK = 0;
+		
+		if (( state == WAITING_EVENT ) || ( state == WAITING_EVENT_TIMEOUT )) {
+		    taskWaitStateOK = 1;
+		}
+					
         taskWaitingForEvent = task_list[ index ].eventQueue.eventList[eventListIndex] & (1<<shift);
         
-        if (( taskWaitingForEvent ) && ( task_list[ index ].state == WAITING_EVENT )) {
+        if ( taskWaitingForEvent  &&  taskWaitStateOK ) {
             
             task_list[ index ].eventQueue.eventList[eventListIndex] &= ~(1<<shift);
             
@@ -624,9 +732,8 @@ void os_task_signal_event( Evt_t eventId ) {
 }
 
 
-/* Run the highest priority task ready for execution. Assumes running_tid has been assigned */
-/* the task id of the highest priority ready task */
-void os_task_run_highest( void ) {
+/* Runs the next task ready for execution. Assumes running_tid has been assigned */
+void os_task_run( void ) {
     os_assert( running_tid < nTasks );
     task_list[ running_tid ].taskproc();
 }
@@ -670,6 +777,11 @@ static void task_waiting_time_set( uint8_t tid ) {
 
 static void task_waiting_event_set( tcb *task ) {
     task->state = WAITING_EVENT;
+}
+
+
+static void task_waiting_event_timeout_set( tcb *task ) {
+    task->state = WAITING_EVENT_TIMEOUT;
 }
 
 

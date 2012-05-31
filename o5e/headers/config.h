@@ -7,10 +7,17 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// pick one 
-//#define MPC5554	/* open5xxxECU standard CPU */
-#define MPC5634 	/* low cost development board */
-//#define MPC5602	/* very low cost development board with no eTPU */
+// pick one cpu
+#define MPC5554	/* faster, dual eTPU cpu*/
+//#define MPC5566
+//#define MPC5674
+//#define MPC5634 	/* smaller cpu */
+
+// pick one board I/O setup
+//#define TRK_MPC5634
+//#define PHYCORE
+//#define FREESCALE
+#define NGC4
 
 // custom options
 // #define JZ

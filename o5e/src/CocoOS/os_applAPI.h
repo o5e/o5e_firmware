@@ -1,32 +1,40 @@
 /*
-***************************************************************************************
-***************************************************************************************
-***
-***     File: os_applAPI.h
-***
-***     Project: cocoOS
-***
-***     Copyright 2010 Peter Eckstrand
-***
-***************************************************************************************
-	This file is part of cocoOS.
+ * Copyright (c) 2012 Peter Eckstrand
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted (subject to the limitations in the
+ * disclaimer below) provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
+ * GRANTED BY THIS LICENSE.  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+ * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+ * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This file is part of the cocoOS operating system.
+ * Author: Peter Eckstrand <info@cocoos.net>
+ */
+ 
+/***************************************************************************************
 
-    cocoOS is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    cocoOS is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with cocoOS.  If not, see <http://www.gnu.org/licenses/>.
-***************************************************************************************
-
-
-    Version: 1.0.0
 
     Change log:
     2010-07-15: 1.0.0: First release
@@ -38,6 +46,8 @@
 	2011-12-08: Support for sub clocks. Added macro task_wait_id(id,n) that puts the task to
 				wait for n ticks of the id sub clock.
 	2011-12-14: Added os_sub_nTick, for incrementing sub clocks in steps > 1
+	2011-12-17: Implemented wait event with timeout
+    2012-01-04: Released under BSD license.
 	
 
 ***************************************************************************************
@@ -49,6 +59,105 @@
 
 
 /** @file os_applAPI.h cocoOS API header file*/
+/*********************************************************************************/
+/*  task_open()                                                 *//**
+*   
+*   Macro for definition of task beginning.
+*
+*		
+*
+*		@remarks \b Usage: Should be placed at the beginning of the task procedure @n 
+* @code 
+
+
+static void myTask(void) {
+ static uint8_t i;
+ task_open();	
+  ...
+  task_wait( 10 );
+  ...
+ task_close();
+}
+ @endcode 
+ *******************************************************************************/
+#define task_open()                 OS_BEGIN
+
+
+/*********************************************************************************/
+/*  task_close()                                                 *//**
+*   
+*   Macro for definition of task end.
+*
+*		
+*
+*		@remarks \b Usage: Should be placed at the end of the task procedure @n 
+* @code 
+
+
+static void myTask(void) {
+ static uint8_t i;
+ task_open();	
+  ...
+  task_wait( 10 );
+  ...
+ task_close();
+}
+ @endcode 
+ *******************************************************************************/
+#define task_close()                OS_END
+
+
+/*********************************************************************************/
+/*  task_wait(x)                                                 *//**
+*   
+*   Macro for suspending a task a specified amount of ticks of the master clock.
+*   When the wait time has expired, the task is ready to execute again and will continue
+*   at the next statement when the task is scheduled to run.
+*
+*		@param x Number of master clock ticks to wait.
+*
+*		@remarks \b Usage: @n 
+* @code 
+
+
+static void myTask(void) {
+ task_open();	
+  ...
+  task_wait( 10 );
+  ...
+ task_close();
+}
+ @endcode 
+ *******************************************************************************/
+#define task_wait(x)                OS_WAIT_TICKS(x,0)
+
+
+/*********************************************************************************/
+/*  task_wait_id(id,x)                                                 *//**
+*   
+*   Macro for suspending a task a specified amount of ticks of a sub clock.
+*   When the wait time has expired, the task is ready to execute again and will continue
+*   at the next statement when the task is scheduled to run.
+*
+*       @param id Sub clock id. Valid range 1-255.		
+*       
+*       @param x Number of sub clock ticks to wait, 16 bit value.
+*		
+*		@remarks \b Usage: @n 
+* @code 
+
+
+static void myTask(void) {
+ task_open();	
+  ...
+  task_wait_id( 2, 10 );
+  ...
+ task_close();
+}
+ @endcode 
+ *******************************************************************************/
+#define task_wait_id(id,x)                OS_WAIT_TICKS(x,id)
+
 /*********************************************************************************/
 /*  task_suspend( taskproc )                                                 *//**
 *   
@@ -172,7 +281,37 @@ static void myTask(void) {
 }
  @endcode 
  *******************************************************************************/
-#define event_wait(event)    OS_WAIT_SINGLE_EVENT(event)
+#define event_wait(event)    OS_WAIT_SINGLE_EVENT(event,0)
+
+
+/*********************************************************************************/
+/*  event_wait_timeout(event,timeout)                                                 *//**
+*   
+*   Macro for wait for a single event to be signaled or a timeout to occur.
+*
+*	@param event: the event to wait for
+*   @param timeout: maximum wait time in main clock ticks, 16bit value. If timeout = 0,
+*   no timeout will be used, and the task will wait forever until the event is signaled.
+*
+*	@remarks \b Usage: @n 
+* @code 
+Evt_t myEvent;
+main() {
+ ...
+ myEvent = event_create();
+ ...
+}
+
+static void myTask(void) {
+ task_open();	
+  ...
+  event_wait_timeout( myEvent, 100 );
+  ...
+ task_close();
+}
+ @endcode 
+ *******************************************************************************/
+#define event_wait_timeout(event,timeout)    OS_WAIT_SINGLE_EVENT(event,timeout)
 
 
 /*********************************************************************************/
@@ -626,104 +765,6 @@ static void task2(void) {
 
 
 
-/*********************************************************************************/
-/*  task_open()                                                 *//**
-*   
-*   Macro for definition of task beginning.
-*
-*		
-*
-*		@remarks \b Usage: Should be placed at the beginning of the task procedure @n 
-* @code 
-
-
-static void myTask(void) {
- static uint8_t i;
- task_open();	
-  ...
-  task_wait( 10 );
-  ...
- task_close();
-}
- @endcode 
- *******************************************************************************/
-#define task_open()                 OS_BEGIN
-
-
-/*********************************************************************************/
-/*  task_close()                                                 *//**
-*   
-*   Macro for definition of task end.
-*
-*		
-*
-*		@remarks \b Usage: Should be placed at the end of the task procedure @n 
-* @code 
-
-
-static void myTask(void) {
- static uint8_t i;
- task_open();	
-  ...
-  task_wait( 10 );
-  ...
- task_close();
-}
- @endcode 
- *******************************************************************************/
-#define task_close()                OS_END
-
-
-/*********************************************************************************/
-/*  task_wait(x)                                                 *//**
-*   
-*   Macro for suspending a task a specified amount of ticks of the master clock.
-*   When the wait time has expired, the task is ready to execute again and will continue
-*   at the next statement when the task is scheduled to run.
-*
-*		@param x Number of master clock ticks to wait.
-*
-*		@remarks \b Usage: @n 
-* @code 
-
-
-static void myTask(void) {
- task_open();	
-  ...
-  task_wait( 10 );
-  ...
- task_close();
-}
- @endcode 
- *******************************************************************************/
-#define task_wait(x)                OS_WAIT_TICKS(x,0)
-
-
-/*********************************************************************************/
-/*  task_wait_id(id,x)                                                 *//**
-*   
-*   Macro for suspending a task a specified amount of ticks of a sub clock.
-*   When the wait time has expired, the task is ready to execute again and will continue
-*   at the next statement when the task is scheduled to run.
-*
-*       @param id Sub clock id. Valid range 1-255.		
-*       
-*       @param x Number of sub clock ticks to wait, 16 bit value.
-*		
-*		@remarks \b Usage: @n 
-* @code 
-
-
-static void myTask(void) {
- task_open();	
-  ...
-  task_wait_id( 2, 10 );
-  ...
- task_close();
-}
- @endcode 
- *******************************************************************************/
-#define task_wait_id(id,x)                OS_WAIT_TICKS(x,id)
 
 
 void os_init( void );

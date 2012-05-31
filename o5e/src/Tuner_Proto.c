@@ -32,6 +32,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "Table_Lookup_JZ.h"
 #include "etpu_toothgen.h"
 #include "eQADC_OPS.h"
+#define EXTERN
+#include "Tuner_Proto.h"
 
 // define this if the tuner .ini specifies crc packets
 #define CRC
@@ -103,15 +105,11 @@ x04 x70 x06 x89 x06 x89 x09 xCB x01 x43 x00 x01 x93 x93 x01 x01       .p.......C
 */
 
 /**
- * @name    tuner_task
- * @brief   processes serial commands from tuner
+ * @name   tuner_task
+ * @brief  processes serial commands from tuner
+ * @note   We would like this to be more modular in that a tuner task should know nothing about flash organization. 
+ * @note   Unfortunately, use of the OS requires that flash programming be done in this routine.
  *
- * This API provides certain actions as an example.
- *
- * @param [in] repeat  Number of times to do nothing.
- *
- * @retval TRUE   Successfully did nothing.
- * @retval FALSE  Oops, did something.
  */
 
 // this buffer is used to receive and send packets
@@ -162,13 +160,14 @@ void tuner_task(void)
             write_serial((const void *)signature, sizeof(signature));
             continue;
         }
+
         // for debugging flash burns
         if (tmp_buf[0] == 'B') {        // test flash burn - assume already erased
-            Flash_Program(0, (long long *)"BCDE", 0);   // page 0
+            Flash_Program(0, (uint64_t *)"BCDE", 0);   // page 0
             while (!Flash_Ready()) ;
             Flash_Finish(0);
 
-            Flash_Program(1, (long long *)"CDEF", 0);   // page 1
+            Flash_Program(1, (uint64_t *)"CDEF", 0);   // page 1
             while (!Flash_Ready()) ;
             Flash_Finish(1);
 
@@ -250,20 +249,29 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
             if (page >= nPages)
                 break;
 
-            // note: find an unused page within the current block and burn the new page to that - much faster
-            //if (Burn_Single_Page(page)) {
-            //   make_packet(burn_ok, "", 0);
-            //   continue;
-            //}
+            // optimization: find an unused page within the current block and burn the new page to that - much faster, less wear
+            // a burn to page 0 causes a complete block burn so things look cleaner
+            uint32_t empty_page;
+            if (page > 0 && (empty_page = Find_Empty_Page(Flash_Block))) {
 
-            // currently we ignore the page # and burn everything
+               uint8_t *location = Flash_Addr[Flash_Block] + BLOCK_HEADER_SIZE + (empty_page * Max_Page_Size);   // convert from page # to address 
+
+               if (Burn_Page(Flash_Block,page,(uint_fast16_t)empty_page)) {
+                    Page_Ptr[page] = location;          // variables are now moved
+                    Ram_Page_Buffer_Page = -1;          // mark as unused
+                    make_packet(burn_ok, "", 0);
+                    continue;           // done
+               } // if
+
+            } // if
+
+            // ignore the page # and burn everything
 
             // select unused flash block (ping pongs 0 or 1)
             static uint8_t new_flash_block;
             new_flash_block = (Flash_Block == 0) ? 1 : 0;       // select one not in use
 
-            // erase new flash block if needed
-            //if (*Flash_Addr[new_flash_block] != 0xff) {
+            // erase new flash block 
             Flash_Erase(new_flash_block);
             while (!Flash_Ready()) ;
             Erase_Finish(new_flash_block);
@@ -271,29 +279,28 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
                 make_packet(sequence_failure_1, "", 0);
                 continue;
             }
-            //}
 
-            static uint32_t flash_index;        // index into block, not a pointer
+            static uint32_t flash_index;                // index into block, not a pointer
             static uint8_t *ptr;
 
             // write & burn each page to new flash, 8 bytes at a time. 
             for (i = 0; i < nPages; ++i) {
 
-                flash_index = 1024 + (uint32_t) (i * Max_Page_Size);    // skip over header
-                ptr = (uint8_t *)(Page_Ptr[i]);      // current values, usually in old flash, could be ram
+                flash_index = BLOCK_HEADER_SIZE + (uint32_t) (i * Max_Page_Size);    // skip over header
+                ptr = (uint8_t *)(Page_Ptr[i]);         // current values, usually in old flash, could be ram
 
                 // write and program 8 bytes at a time 
                 for (count = 0; count < pageSize[i]; count += 8) {
-                    static long long tmp;       // 8 bytes, properly aligned in ram
-                    tmp = *(long long *)ptr;
+                    static uint64_t tmp;               // 8 bytes, properly aligned in ram
+                    tmp = *(uint64_t *)ptr;
 
                     Flash_Program(new_flash_block, &tmp, flash_index);  // setup + copy
-                    while (!Flash_Ready())      // wait till ready
+                    while (!Flash_Ready())              // wait till ready
                         ;
                     Flash_Finish(new_flash_block);      // terminate 
 
                     // check it by reading it back
-                    if (tmp != *(long long *)(Flash_Addr[new_flash_block] + flash_index)) {
+                    if (tmp != *(uint64_t *)(Flash_Addr[new_flash_block] + flash_index)) {
                         uint8_t string[100];
                         sprintf(string, "BAD BURN @%d:%x\n", new_flash_block, flash_index);
                         write_serial((const void *)string, (uint_fast16_t) strlen(string));
@@ -305,23 +312,28 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
                     flash_index += 8;
                 }               // for
 
-                //task_wait(1);   // let other tasks run
+                task_wait(1);   // let other tasks run
 
             }                   // for
 
             // done burning pages
 
-            // write a signature at the beginning of this flash block
+            // write a 8 byte signature at the beginning of this flash block
             {
                 static struct Flash_Header header;
+
+                // fill in first 8 bytes of header
                 memcpy(header.Cookie, "ABCD", 4);
                 header.Burn_Count = ++Burn_Count;
                 header.n_Pages = nPages;
                 header.Last_Page_Burned = (uint8_t) page;
-                Flash_Program(new_flash_block, (long long *)&header, 0);
-                while (!Flash_Ready()) ;        // wait till burn is done
+                // burn first portion of header
+                Flash_Program(new_flash_block, (uint64_t *)&header, 0);
+                while (!Flash_Ready()) ;                        // wait till burn is done
                 Flash_Finish(new_flash_block);
-                if (*Flash_Addr[new_flash_block] != 'A') {      // check for success
+                // let first nPages directory entries be defaults (all 0xff)
+                // check for success 
+                if (*Flash_Addr[new_flash_block] != 'A') {     
                     make_packet(sequence_failure_2, "", 0);
                     continue;
                 }
@@ -329,8 +341,8 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
 
             // update all Page_Ptrs to point to new, freshly written flash
             Set_Page_Locations(new_flash_block);        // update pointers to new flash
-            // we are now running with all variables in the new flash
 
+            // we are now running with all variables in the new flash
             make_packet(burn_ok, "", 0);
 
             continue;
@@ -345,7 +357,7 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
             continue;
         }
 
-        // transfer packet to CAN bus
+        // transfer (pass through) packet to CAN bus
         if (tmp_buf[2] == 'C') {
             if ((count = check_crc(tmp_buf)) == -1)      // check crc on packet
                 continue;
@@ -421,7 +433,7 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
             continue;
         }
 
-        // crc32 of flash page
+        // send crc32 of flash page
         if (tmp_buf[2] == 'k') {        
             if ((count = check_crc(tmp_buf)) == -1)      // check crc on packet
                 continue;
@@ -453,6 +465,7 @@ case 'R':                      // debug - read arbitrary memory location - R 0xf
             make_packet(OK, (const void *)&crc, sizeof(crc));
             continue;
         }
+
         // no match to command
         make_packet(unrecognized_command, "", 0);
 
@@ -487,6 +500,8 @@ int32_t make_packet(const uint8_t code, const void *buf, const uint16_t size)
 #ifdef CRC
 // return size or -1 if packet is corrupt
 
+// check the crc value in a packet
+
 int16_t check_crc(uint8_t * packet)
 {
     static uint32_t crc;
@@ -508,3 +523,86 @@ int16_t check_crc(uint8_t * packet)
     return size;                // size of payload
 }
 #endif
+
+
+// search through a flash block for a page that is empty
+uint8_t  
+Find_Empty_Page(uint8_t block) 
+{
+uint8_t *location = Flash_Addr[block];                  // base address
+uint8_t *end = location + ((128-1) * Max_Page_Size) ;   // blocks are 128K long
+uint8_t page = nPages;                                  // skip always used pages
+
+// skip over the block header and the pages that are always used
+location +=  BLOCK_HEADER_SIZE +  Max_Page_Size * nPages;
+
+while (location < end) {
+      if (Page_Is_Blank(location))
+         return page;   // found a usable page
+
+      // try the next page in this block
+      location += Max_Page_Size;
+      ++page;
+
+}     // while
+
+return 0;   // no pages are usable
+
+} // Find_Empty_Page()
+
+// check if page is completely blank
+
+uint8_t
+Page_Is_Blank(uint8_t *ptr)
+{
+      uint32_t * ptr32 = (uint32_t *) ptr;  // faster to do 4 bytes at a time
+      int i;
+
+      for (i = 0; i < Max_Page_Size; i += sizeof(uint32_t)) {
+          if (*ptr32  != 0xffffffff)  // 0xff is value of erased flash
+             return 0;
+          ++ptr32;                  // move to next word
+      } // for
+
+      return 1;
+}
+
+// Burn a page of flash
+// Note, task_wait() cannot be called from task subroutines
+
+uint8_t 
+Burn_Page(uint8_t block,  uint_fast16_t page, uint_fast16_t destination_page)
+{
+int count;
+uint8_t *from = (uint8_t *)(Page_Ptr[page]);                                  // from address
+uint32_t flash_index = BLOCK_HEADER_SIZE + destination_page * Max_Page_Size;  // to index
+
+                // write and program 8 bytes at a time 
+                for (count = 0; count < pageSize[page]; count += 8) {
+                    uint64_t tmp;               // 8 bytes, properly aligned in ram
+                    tmp = *(uint64_t *)from;
+
+                    Flash_Program(block, &tmp, flash_index);    // setup + copy
+                    while (!Flash_Ready())                      // wait till ready
+                        ;
+                    Flash_Finish(block);        // terminate 
+
+                    // check it by reading it back
+                    if (tmp != *(uint64_t *)(Flash_Addr[block] + flash_index)) {
+                        return 0;               // failure
+                    }
+
+                    from += 8;                  // inc byte pointer to next 8 byte word
+                    flash_index += 8;           // inc destination
+                }               // for
+
+                // record location of this page in the directory
+                uint64_t i = page;              // 8 byte version
+                Flash_Program(block, &i, BLOCK_HEADER_DIRECTORY  + (destination_page * sizeof(uint64_t)));  // find offset to correct entry
+                while (!Flash_Ready()) ;        // wait till burn is done
+                Flash_Finish(block);
+
+                return 1; // success
+
+} // Burn_Page()
+

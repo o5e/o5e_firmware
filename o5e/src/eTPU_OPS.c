@@ -116,6 +116,7 @@ struct etpu_config_t my_etpu_config = {
 int32_t init_eTPU()
 {
     uint32_t i;
+    uint24_t Cam_Window_Width = 5000;        // this mght want to move to the tuner - sets the cam window ± 15 degrees from expected location
     // TODO - add cam window stuff to tuner variables, issue #6
     uint24_t Cam_Window_Width;        // this mght want to move to the tuner - sets the cam window ± 15 degrees from expected location
     uint24_t Engine_Position_eTPU;

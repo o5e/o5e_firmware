@@ -74,6 +74,44 @@ void Slow_Vars_Task(void)
     task_close();
 }                               /* end of slow_vars_task() */
 
+
+// Generate a cam pulse for engines that don't have one.  
+// Note: this implies semi-sequential fuel and wasted spark.
+// Doesn't have to be very accurate - cam is not used for timing
+
+#ifdef FAKE_CAM_PIN
+
+void Cam_Pulse_Task(void)
+{
+    task_open();                // standard OS entry
+    task_wait(1);
+
+    register uint_fast8_t tooth;        // not saved across an OS call
+    static uint_fast8_t prev_tooth;
+    static uint_fast8_t position;
+
+    position =  N_Teeth / 2;    // doesn't matter where, but this is a good spot
+
+    for (;;) {
+        // output pulse once per two crank revs
+
+        tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to 2x total number of teeth
+
+        if (prev_tooth < position && tooth >= position) // detect passing tooth N/2
+           Set_Pin(FAKE_CAM_PIN,1);
+        else
+           Set_Pin(FAKE_CAM_PIN,0);
+
+        prev_tooth = tooth;
+
+        task_wait(2); 
+    } // for
+
+    task_close();
+}      
+
+#endif
+
 // Debug
 // Blink based on engine position status - for testing
 // A sec blink means all is well, Fast blink or no blink means something's wrong
@@ -177,9 +215,10 @@ void Engine10_Task(void)
         uint32_t i;
         MAP_Angle = Table_Lookup_JZ(RPM, Load, MAP_Angle_Table);
         for (i = 0; i < N_MAP_windows; ++i) {
+            // TODO - why is this disabled?
             //MAP_Angles[i * 2] = MAP_Angle + Cyl_Angle_eTPU[i];     // Adjust open point (leave width alone)
             // update eTPU 
-            //fs_etpu_knock_window_update(WINDOW0_CHANNEL, 1, i, MAP_Angles[i * 2], MAP_Angles[i * 2 + 1]);
+            //fs_etpu_knock_window_update(MAP_WINDOW_CHANNEL, 1, i, MAP_Angles[i * 2], MAP_Angles[i * 2 + 1]);
         }                       // for
 
         task_wait(9);           // allow others tasks to run
@@ -204,14 +243,12 @@ void Set_Spark()
         Dwell = 0;
         Spark_Advance = 0;
 
-
-
     } else {
         // Looks up the desired spark advance in degrees before Top Dead Center (TDC)
         Spark_Advance = Table_Lookup_JZ(RPM, Load, Spark_Advance_Table) ;  // Bin shift tuner angles from -2 to 0 for eTPU use 
         Spark_Advance_eTPU = Spark_Advance <<2;
 
-        // TODO Knock_Retard();
+        // TODO Knock_Retard(); Issue #7
 
         // Update min/max dwell time
         Min_Dwell = (Dwell * 102) / 128;        // compiler will use a shift, >> 7
@@ -251,12 +288,12 @@ void Set_Spark()
     }                           // for
 
 }
-
+//TODO - add to ini for setting in TS.  Issue #11
 #define CRANK_VOLTAGE 11
 #define Run_Threshold 250       // RPM below this then not running
 #define Enrich_Threshold 6000
 #define Prime_Cycles_Threshold 100
-#define TPS_Dot_Dead 2000 //ToDo - add to ini for setting in TS
+#define TPS_Dot_Dead 2000 
 
 // Primary purpose is to set the fuel pulse width/injection time
 
@@ -339,6 +376,9 @@ void Set_Fuel(void)
         Corr = Table_Lookup_JZ(CLT, 0, Fuel_Temp_Corr_Table);
         Pulse_Width = (Pulse_Width * Corr) >> 13;
 
+        // check if enrichment cals shold be done - this might want to be a % of redline
+        // maintain some timers for use by enrichment
+        // did we just start?
         if ((RPM < Enrich_Threshold) && (Enable_Accel_Decel == 1)) {
             // Prime pulse - extra fuel to wet the manifold on start-up   
             // check if in prime needed conditions   
@@ -368,8 +408,9 @@ void Set_Fuel(void)
             /*                           accel/decel enrichment                               */
             /* This working by looking at the rate the throttle is moving  and  calculating   */
             /* an enrichment or a derichment to compensate for fuel that  condenses on the    */
-            /* manifold wall due to the pressure increase.  This is done by watching the      */
-            /* throttle change rate since throttle is the first variable to change.           */
+            /* manifold wall due to the pressure increase when the throttle opens. This is    */
+            /* done by watching the throttle change rate since throttle is the first variable */
+            /* to change.                                                                     */
             /*                                                                                */
             /* The accel/decel variables are set to base values above at the start of the     */
             /* fuel routine so they get current sensor values to work with.                   */
@@ -379,10 +420,25 @@ void Set_Fuel(void)
             /* crank position but that added too much noise to the  calculation when I tried  */
             /*                                                                                */
             /* The throttle change rate is compared to a dead band.  The deadband helps       */
-            /* clean up noise but more importantly throttle enrichment is not required for    */
+            /* clean up noise but more importantly no throttle enrichment is required for     */
             /* slow throttle change rates.                                                    */
             /*                                                                                */
-            /* more to come                                                                   */
+            /* When TPS_Dot is above the deadband, the sensativity value is used to calculate */
+            /* howw much enrichment is required.  The faster the throttle is moving the more  */
+            /* enrifchment should be added.                                                   */
+            /*                                                                                */
+            /* When the TPS_Dot stops increasing a decay is applied which deceases the        */
+            /* enrichment by the specified % each engine cycle.  It's done by cycle because   */
+            /* each cylinder has it's own manifold runner and port so each cylinder require   */
+            /* the enrichment.                                                                */ 
+            /*                                                                                */
+            /* If TPS_Dot goes negative, ie the throttle is closing, accel enrichment ends    */
+            /* imediately and a calculation is done to determine if decel derichment is       */
+            /* required.  Decel derichment works exactly the same a acel enrichment, only     */
+            /* using negative TPS_Dot rates an dpusle width reductions to compensate for fuel */
+            /* being remover from the port and manifold walls due to pressure drop            */
+            /*                                                                                */
+            /**********************************************************************************/
              
               //get a TPS change         
             TPS_Dot_Temp = (TPS_Last - TPS);
@@ -433,7 +489,7 @@ void Set_Fuel(void)
             }
             
         }
-        // TODO adjust based on O2 sensor data
+        // TODO adjust based on O2 sensor data Issue #8
         // Corr = O2_Fuel();
         // Pulse_Width = (Pulse_Width * Corr) >> 14;
 
@@ -464,8 +520,8 @@ void Set_Fuel(void)
         if (Fuel_Recalc_Angle_eTPU > 72000)
             Fuel_Recalc_Angle_eTPU -= 72000;
 
-        // TODO - Cylinder Trim math and updates
-        // TODO - Staged injection math and updates
+        // TODO - Cylinder Trim math and updates.  Issue #9
+        // TODO - Staged injection math and updates Issue #10
 
         // tell eTPU to use new fuel injection pulse values (same for all cylinders)
         uint32_t j;

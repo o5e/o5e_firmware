@@ -43,21 +43,32 @@ init_variables(void)
 
 } // init_variables()
 
+
 // set pointers to where every page is in flash
 
 void
 Set_Page_Locations(uint8_t block)
 {
-  uint_fast16_t i;
-  uint8_t *ptr = Flash_Addr[block] + 1024;	// start at base + room for header data
+  uint_fast8_t i;
+  uint8_t *ptr = Flash_Addr[block] + BLOCK_HEADER_SIZE;	        // start at base + room for header data
 
-  // page positions in flash
-  for (i = 0; i < nPages; ++i)
-    {
+  // page positions in flash - set defaults of page 0 at first page, etc.
+  for (i = 0; i < nPages; ++i) {        // 
       Page_Ptr[i] = ptr;
-      ptr += Max_Page_Size;	// used fixed page spacing
-    }				// for
+      ptr += Max_Page_Size;	        // we always use fixed page spacing
+  }
+ 
+  // scan directory looking for non-default values caused by additional flash burns
+  uint64_t *directory = (uint64_t *)(Flash_Addr[block] + BLOCK_HEADER_DIRECTORY);    // start with first directory entry in the header
 
-  Flash_Block = block;		// save which block we are using
-  Ram_Page_Buffer_Page = -1;    // mark as unused
+  for (i = nPages; i < 64; ++i) {       // 64 pages are tracked for a 128K block
+
+      if (directory[i] < nPages)        // unused directory entries are all 0xff and fail this test
+         Page_Ptr[(int)directory[i]] = ptr;     // this page is located at this greater address 
+
+      ptr += Max_Page_Size;	        // we always use fixed page spacing
+  }				        // for
+
+  Flash_Block = block;		        // save which block we are using
+  Ram_Page_Buffer_Page = -1;            // mark as unused
 }

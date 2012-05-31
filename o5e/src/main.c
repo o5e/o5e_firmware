@@ -74,8 +74,12 @@ int main(void)
         ++num_tasks;
         //task_id[num_tasks] = task_create(O2_Task,num_tasks + 128,0,0,0);         	// create the task
         //++num_tasks;
-        task_id[num_tasks] = task_create(Eng_Pos_Status_BLINK_Task, num_tasks + 128, 0, 0, 0);      //create the task - very low priority
+        task_id[num_tasks] = task_create(Eng_Pos_Status_BLINK_Task, num_tasks + 128, 0, 0, 0);      //create the task 
         ++num_tasks;
+        #ifdef FAKE_CAM_PIN
+           task_id[num_tasks] = task_create(Cam_Pulse_Task, num_tasks + 128, 0, 0, 0);      // create the task
+           ++num_tasks;
+        #endif
     }
     task_id[num_tasks] = task_create(tuner_task, num_tasks + 128, 0, 0, 0);     // create the task
     ++num_tasks;
@@ -115,41 +119,41 @@ static void scheduler(void)
     for (;;) {
 
         // update msec clock
+
         i = (hclock() - prev_clock) & 0xffffff; // 24 bit hw counter
         j = i * (((uint64_t)1 << 32) / TICKS_PER_MSEC);        // avoid a run time divide
-        i = (uint32_t) (j >> 32);       // convert back to bin 0
-        if (i > 0) {            // delta full msec
-            msec_clock += i;    // firmware maintained clock
+        i = (uint32_t) (j >> 32);               // convert back to bin 0
+        if (i > 0) {                            // delta full msec
+            msec_clock += i;                    // firmware maintained clock
             prev_clock = (prev_clock + i * TICKS_PER_MSEC) & 0xffffff;  // increment previous
             os_task_tick(0, (uint16_t) i);      // increment os msec clock value
-
-            // other slow events can be checked and set here
         }
-        // update crank shaft degree/angle clock (not synced to TDC cyl #1)
-        // 
-#define ANGLE_TICKS_PER_DEGREE 10
+
+        // update crank shaft degree/angle clock (free running, not synced to an absolute engine position)
+
+#       define ANGLE_TICKS_PER_DEGREE 10
         i = (angle_clock() - prev_angle) & 0xffffff;    // 24 bit hw counter 
         j = i * (((uint64_t)1 << 32) / ANGLE_TICKS_PER_DEGREE);        // avoid a run time divide
-        i = (uint32_t) (j >> 32);       // convert back to bin 0
-        if (i > 0) {            // delta full degrees
+        i = (uint32_t) (j >> 32);                       // convert back to bin 0
+        if (i > 0) {                                    // delta full degrees
             Degree_Clock += i;
             prev_angle = (prev_angle + i * ANGLE_TICKS_PER_DEGREE) & 0xffffff;
-            os_task_tick(1, (uint16_t) i);      // increment os angle clock value
+            os_task_tick(1, (uint16_t) i);              // increment os angle clock value
         }
         // TODO test and set other fast events here
 
         // TODO - track %CPU for each task, max delay and a "load average".  Use STM clock.
 
         // do diagnostics and cause task switch
-        static uint32_t save_clock;
+        static uint32_t save_clock;                             // this should be available to the tuner
         save_clock = hclock();  // current time
 
         event_signal(event);    // dummy to cause task change - all higher priority tasks will be run
 
         save_clock = (hclock() - save_clock) & 0xffffff;        // how long all other tasks took
-        if (save_clock > max_delay) {   // track max OS delay ever seen
+        if (save_clock > max_delay) {                           // track max OS delay ever seen
             max_delay = save_clock;
-            //if (max_delay > TICKS_PER_MSEC * 10)      // 10 msec is too long
+            //if (max_delay > TICKS_PER_MSEC * 10)              // 10 msec is too long
             //   Last_Error = 3894;
         }
 
