@@ -14,6 +14,7 @@
    ORIGINAL AUTHOR:  Paul Schlein                                                 
    REV      AUTHOR          DATE          DESCRIPTION OF CHANGE                   
    ---     -----------     ----------    --------------------- 
+   2.5me   M. Eberhardt    31/Mat/12     added load model
    2.4me   M. Eberhardt    18/May/12     fixes, added pulse_Per_rev for tach                   
    2.3     M. Eberhardt    04/May/12     Simplified enrichment scheme
    2.2     J. Zeeff        01/May/12     Reorganized
@@ -79,38 +80,38 @@ void Slow_Vars_Task(void)
 // Note: this implies semi-sequential fuel and wasted spark.
 // Doesn't have to be very accurate - cam is not used for timing
 
-#ifdef FAKE_CAM_PIN
+if Sync_Mode_Select {
 
-void Cam_Pulse_Task(void)
-{
-    task_open();                // standard OS entry
-    task_wait(1);
+    void Cam_Pulse_Task(void)
+    {
+        task_open();                // standard OS entry
+        task_wait(1);
 
-    register uint_fast8_t tooth;        // not saved across an OS call
-    static uint_fast8_t prev_tooth;
-    static uint_fast8_t position;
+        register uint_fast8_t tooth;        // not saved across an OS call
+        static uint_fast8_t prev_tooth;
+        static uint_fast8_t position;
 
-    position =  N_Teeth / 2;    // doesn't matter where, but this is a good spot
+        position =  N_Teeth / 2;    // doesn't matter where, but this is a good spot
 
-    for (;;) {
-        // output pulse once per two crank revs
+        for (;;) {
+            // output pulse once per two crank revs
 
-        tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to 2x total number of teeth
+            tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to 2x total number of teeth
 
-        if (prev_tooth < position && tooth >= position) // detect passing tooth N/2
-           Set_Pin(FAKE_CAM_PIN,1);
-        else
-           Set_Pin(FAKE_CAM_PIN,0);
+            if (prev_tooth < position && tooth >= position) // detect passing tooth N/2
+               Set_Pin(FAKE_CAM_PIN,1);
+            else
+               Set_Pin(FAKE_CAM_PIN,0);
 
-        prev_tooth = tooth;
+            prev_tooth = tooth;
 
-        task_wait(2); 
-    } // for
+            task_wait(2); 
+        } // for
 
     task_close();
-}      
+    }      
 
-#endif
+} //if
 
 // Debug
 // Blink based on engine position status - for testing

@@ -76,10 +76,10 @@ int main(void)
         //++num_tasks;
         task_id[num_tasks] = task_create(Eng_Pos_Status_BLINK_Task, num_tasks + 128, 0, 0, 0);      //create the task 
         ++num_tasks;
-        #ifdef FAKE_CAM_PIN
+        if Sync_Mode_Select {
            task_id[num_tasks] = task_create(Cam_Pulse_Task, num_tasks + 128, 0, 0, 0);      // create the task
            ++num_tasks;
-        #endif
+        }
     }
     task_id[num_tasks] = task_create(tuner_task, num_tasks + 128, 0, 0, 0);     // create the task
     ++num_tasks;
