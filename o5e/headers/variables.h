@@ -119,51 +119,6 @@ int16_t TPS_Dot;
 #define Output_Channels_Size  120        // don't use sizeof() here
 
 // these are for convenience and more readable code - must match above
-#define RPM Output_Channels.RPM
-#define RPM_Dot Output_Channels.RPM_Dot
-#define Load Output_Channels.Load
-#define Load_Dot Output_Channels.Load_Dot
-#define V_MAP Output_Channels.V_MAP
-#define V_Batt Output_Channels.V_Batt
-#define V_CLT Output_Channels.V_CLT
-#define V_IAT Output_Channels.V_IAT
-#define V_TPS Output_Channels.V_TPS
-#define V_MAF Output_Channels.V_MAF
-#define V_O2_UA Output_Channels.V_O2_UA
-#define V_O2_UR Output_Channels.V_O2_UR
-#define V_P Output_Channels.V_P
-#define TPS Output_Channels.TPS
-#define AFR Output_Channels.AFR
-#define MAP Output_Channels.MAP
-#define MAP_Dot Output_Channels.MAP_Dot
-#define MAF Output_Channels.MAF
-#define MAF_Dot Output_Channels.MAF_Dot
-#define CLT Output_Channels.CLT
-#define IAT Output_Channels.IAT
-#define Injection_Time Output_Channels.Injection_Time
-#define Spark_Advance Output_Channels.Spark_Advance
-#define Inj_End_Angle Output_Channels.Inj_End_Angle
-#define Eng_Model_Corr Output_Channels.End_Model_Corr
-#define Post_Start_Time Output_Channels.Post_Start_Time
-#define Post_Start_Cycles Output_Channels.Post_Start_Cycles
-#define Post_Start_Cylinders Output_Channels.Post_Start_Cylinders
-#define Last_Error Output_Channels.Last_Error
-#define Dwell Output_Channels.Dwell
-#define TPS_Dot Output_Channels.TPS_Dot
-
-//*******************************************************
-// initialized to all zeros
-EXTERN struct Outputs Output_Channels;
-
-// allow writing to config variables for testing - see variables.c
-//#define CONST
-#define CONST const
-
-// Flash Variables from .ini - auto generated, do not edit
-// Cast the flash memory pages into variable names
-// Note: some of these could have ram copies for speed reasons
-//--------------------------------------------------------
-
 #define Version_Array ((CONST U08 *)(&Page_Ptr[0][0]))
 #define N_Cyl (*(CONST U08 *)(&Page_Ptr[0][20]) & ((2<<3)-1))
 #define N_Teeth (*(CONST U08 *)(&Page_Ptr[0][21]))
@@ -269,6 +224,12 @@ EXTERN struct Outputs Output_Channels;
 #define Test_V_O2_UR_Array ((CONST S16 *)(&Page_Ptr[0][148]))
 #define Test_V_O2_UR_2 (*(CONST S16 *)(&Page_Ptr[0][150]))
 #define Pulses_Per_Rev (*(CONST U08 *)(&Page_Ptr[0][152]) & ((2<<3)-1))
+#define Crank_Edge_Select (*(CONST U08 *)(&Page_Ptr[0][154]) & ((2<<0)-1))
+#define Cam_Edge_Select (*(CONST U08 *)(&Page_Ptr[0][155]) & ((2<<0)-1))
+#define Sync_Mode_Select (*(CONST U08 *)(&Page_Ptr[0][156]) & ((2<<0)-1))
+#define Engine_Type_Select (*(CONST U08 *)(&Page_Ptr[0][157]) & ((2<<0)-1))
+#define Cam_Window_Open_Set (*(CONST S16 *)(&Page_Ptr[0][158]))
+#define Cam_Window_Width_Set (*(CONST S16 *)(&Page_Ptr[0][160]))
 // Page 2
 #define Fuel_Temp_Corr_Table ((CONST struct table_jz *)(&Page_Ptr[1][0]))
 #define IAT_Fuel_Corr_Table ((CONST struct table_jz *)(&Page_Ptr[1][648]))
@@ -327,6 +288,8 @@ EXTERN struct Outputs Output_Channels;
 #define MAP_Angle_Table ((CONST struct table_jz *)(&Page_Ptr[1][1406]))
 #define Dwell_Min (*(CONST U08 *)(&Page_Ptr[1][1606]))
 #define Dwell_Max (*(CONST U08 *)(&Page_Ptr[1][1607]))
+#define Load_Model_Table ((CONST struct table_jz *)(&Page_Ptr[1][1608]))
+#define Model_Tuning_Enable (*(CONST U08 *)(&Page_Ptr[1][1808]) & ((2<<0)-1))
 // Page 3
 #define Dummy_Corr_Table ((CONST struct table_jz *)(&Page_Ptr[2][0]))
 #define Accel_Limit_Table ((CONST struct table_jz *)(&Page_Ptr[2][168]))
@@ -398,7 +361,6 @@ EXTERN struct Outputs Output_Channels;
 #define Coil_Trim_10_Table ((CONST struct table_jz *)(&Page_Ptr[13][488]))
 #define Coil_Trim_11_Table ((CONST struct table_jz *)(&Page_Ptr[13][976]))
 #define Coil_Trim_12_Table ((CONST struct table_jz *)(&Page_Ptr[13][1464]))
-
 
 // ---------------------------------------------------
 
