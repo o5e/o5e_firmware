@@ -18,4 +18,5 @@ extern void Eng_Pos_Status_BLINK_Task(void);  // for testing on 5634
 extern void Fuel_Pump_Task(void);
 extern void Engine10_Task(void);
 extern void Enrichment_Task(void);
+extern void Cam_Pulse_Task(void);
 

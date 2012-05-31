@@ -80,7 +80,7 @@ void Slow_Vars_Task(void)
 // Note: this implies semi-sequential fuel and wasted spark.
 // Doesn't have to be very accurate - cam is not used for timing
 
-if Sync_Mode_Select {
+
 
     void Cam_Pulse_Task(void)
     {
@@ -94,22 +94,28 @@ if Sync_Mode_Select {
         position =  N_Teeth / 2;    // doesn't matter where, but this is a good spot
 
         for (;;) {
-            // output pulse once per two crank revs
+        
+        	if Sync_Mode_Select {
+            	// output pulse once per two crank revs
 
-            tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to 2x total number of teeth
+            	tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to 2x total number of teeth
 
-            if (prev_tooth < position && tooth >= position) // detect passing tooth N/2
-               Set_Pin(FAKE_CAM_PIN,1);
-            else
-               Set_Pin(FAKE_CAM_PIN,0);
+            	if (prev_tooth < position && tooth >= position) // detect passing tooth N/2
+            	   Set_Pin(FAKE_CAM_PIN,1);
+            	else
+              	 Set_Pin(FAKE_CAM_PIN,0);
 
-            prev_tooth = tooth;
+               prev_tooth = tooth;
 
-            task_wait(2); 
+                 task_wait(2);
+                  
+        	}else{
+        	
+        	     task_wait(963);	
+            } //if
         } // for
 
-    task_close();
-    }      
+    task_close();     
 
 } //if
 
@@ -361,7 +367,7 @@ void Set_Fuel(void)
            // this corrention is set up so it does NOT alter full power mixture, that point is the reference condition 
            Load_Ref_AFR = Table_Lookup_JZ((1<<14), 0, Load_Model_Table); //get the 100% load AFR
            Corr = Table_Lookup_JZ(Load, 0, Load_Model_Table);
-           Corr = Load_Ref_AFR/Corr
+           Corr = Load_Ref_AFR/Corr;
            Pulse_Width = (Pulse_Width * Corr) >> 10;
         //Load correction - assumes fuel required is proportional to load
         Pulse_Width = (Pulse_Width * Load) >> 14;

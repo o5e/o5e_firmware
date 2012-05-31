@@ -116,8 +116,6 @@ struct etpu_config_t my_etpu_config = {
 int32_t init_eTPU()
 {
     uint32_t i;
-    uint24_t Cam_Window_Width = 5000;        // this mght want to move to the tuner - sets the cam window ± 15 degrees from expected location
-    // TODO - add cam window stuff to tuner variables, issue #6
     uint24_t Cam_Window_Width;        // this mght want to move to the tuner - sets the cam window ± 15 degrees from expected location
     uint24_t Engine_Position_eTPU;
     uint24_t Cam_Window_Open;
@@ -141,7 +139,7 @@ int32_t init_eTPU()
     // The goal here is to open a cam window that that will work with the cam position
     Engine_Position_eTPU = (72000 - ((uint32_t)Engine_Position << 2));   // adjust bin -2 to bin 0
     Cam_Lobe_Pos_eTPU = (72000 -  ((uint32_t)Cam_Lobe_Pos << 2)) ;      // adjust bin -2 to bin 0
-    Cam_Window_Open = (72000 + Cam_Lobe_Pos_eTPU - (Cam_Window_Open_Set << 2) ) % 72000; adjust bin -2 to bin 0
+    Cam_Window_Open = (72000 + Cam_Lobe_Pos_eTPU - (Cam_Window_Open_Set << 2) ) % 72000; //adjust bin -2 to bin 0
     // set the cam window correctly for semi-sequentail mode
     if Sync_Mode_Select {
        Cam_Window_Open = 36000;

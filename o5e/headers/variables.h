@@ -61,10 +61,11 @@ void Set_Page_Locations(uint8_t block);
 //                       "123456789.123456789"
 
 #define  nPages  	14
+#define Max_Page_Size 2048
 
 EXTERN const uint16_t pageSize[nPages]
 #ifndef NOINIT
-= { 162, 1810, 1544, 1990, 1672, 1672, 1672, 1672, 1952, 1952, 1952, 1952, 1952, 1952 }
+= { 154, 1608, 1544, 1990, 1672, 1672, 1672, 1672, 1952, 1952, 1952, 1952, 1952, 1952 }
 #endif
 ;
 
@@ -119,6 +120,51 @@ int16_t TPS_Dot;
 #define Output_Channels_Size  120        // don't use sizeof() here
 
 // these are for convenience and more readable code - must match above
+#define RPM Output_Channels.RPM
+#define RPM_Dot Output_Channels.RPM_Dot
+#define Load Output_Channels.Load
+#define Load_Dot Output_Channels.Load_Dot
+#define V_MAP Output_Channels.V_MAP
+#define V_Batt Output_Channels.V_Batt
+#define V_CLT Output_Channels.V_CLT
+#define V_IAT Output_Channels.V_IAT
+#define V_TPS Output_Channels.V_TPS
+#define V_MAF Output_Channels.V_MAF
+#define V_O2_UA Output_Channels.V_O2_UA
+#define V_O2_UR Output_Channels.V_O2_UR
+#define V_P Output_Channels.V_P
+#define TPS Output_Channels.TPS
+#define AFR Output_Channels.AFR
+#define MAP Output_Channels.MAP
+#define MAP_Dot Output_Channels.MAP_Dot
+#define MAF Output_Channels.MAF
+#define MAF_Dot Output_Channels.MAF_Dot
+#define CLT Output_Channels.CLT
+#define IAT Output_Channels.IAT
+#define Injection_Time Output_Channels.Injection_Time
+#define Spark_Advance Output_Channels.Spark_Advance
+#define Inj_End_Angle Output_Channels.Inj_End_Angle
+#define Eng_Model_Corr Output_Channels.End_Model_Corr
+#define Post_Start_Time Output_Channels.Post_Start_Time
+#define Post_Start_Cycles Output_Channels.Post_Start_Cycles
+#define Post_Start_Cylinders Output_Channels.Post_Start_Cylinders
+#define Last_Error Output_Channels.Last_Error
+#define Dwell Output_Channels.Dwell
+#define TPS_Dot Output_Channels.TPS_Dot
+
+//*******************************************************
+// initialized to all zeros
+EXTERN struct Outputs Output_Channels;
+
+// allow writing to config variables for testing - see variables.c
+//#define CONST
+#define CONST const
+
+// Flash Variables from .ini - auto generated, do not edit
+// Cast the flash memory pages into variable names
+// Note: some of these could have ram copies for speed reasons
+//--------------------------------------------------------
+
 #define Version_Array ((CONST U08 *)(&Page_Ptr[0][0]))
 #define N_Cyl (*(CONST U08 *)(&Page_Ptr[0][20]) & ((2<<3)-1))
 #define N_Teeth (*(CONST U08 *)(&Page_Ptr[0][21]))
@@ -366,11 +412,6 @@ int16_t TPS_Dot;
 
 // Below here does not come from the .ini file
 
-// A page is 2048 bytes, a block is 128K.  
-// Only one block is in use at a time. This allows a flip/flop use/erase & burn strategy
-
-#define Max_Page_Size 2048
-
 // Variables not in .ini
 EXTERN uint8_t Error_String[100];	// message about latest error - watch this in the debugger
 
@@ -382,9 +423,7 @@ EXTERN int8_t Ram_Page_Buffer_Page;	// which page # is in the buffer (-1 means n
 EXTERN _Bool Flash_OK;		// is flash empty or has values
 EXTERN uint8_t Burn_Count;		// how many flash burns 
 
-#define BLOCK_HEADER_SIZE       1024    // bigger than needed
-#define BLOCK_HEADER_DIRECTORY  8       // offset to directory in below structure
-// This 8 byte (not counting directory) structure is written as a header to the beginning of a used flash block
+// This 8 byte structure is written as a header to the beginning of a used flash block
 struct Flash_Header {
     uint8_t Cookie[4];          // set to ABCD to indicate block is not blank
     uint8_t Burn_Count;        	// how many flash burns 
@@ -392,10 +431,8 @@ struct Flash_Header {
     uint8_t Last_Page_Burned;   // page burned in this block
     uint8_t x;
     // directory of which flash pages are used for which ecu pages - 0xff... means unused
-    uint64_t Flash_Directory[64];   // 8 bytes each since that's the min flash burn size
+    //long long Flash_Directory[64];   // 8 bytes each since that's the min flash burn size
 } ;
-
-// Note: first nPages entries in the directory are assumed to be 0,1,2,... and aren't actually used
 
 
 EXTERN uint8_t Flash_Block;		// flash block currently being used - 0=M0 or 1=H0 block

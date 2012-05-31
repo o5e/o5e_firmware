@@ -8,16 +8,16 @@
 #define CONFIG_H
 
 // pick one cpu
-#define MPC5554	/* faster, dual eTPU cpu*/
+//#define MPC5554	/* faster, dual eTPU cpu*/
 //#define MPC5566
 //#define MPC5674
-//#define MPC5634 	/* smaller cpu */
+#define MPC5634 	/* smaller cpu */
 
 // pick one board I/O setup
-//#define TRK_MPC5634
+#define TRK_MPC5634
 //#define PHYCORE
 //#define FREESCALE
-#define NGC4
+//#define NGC4
 
 // custom options
 // #define JZ
