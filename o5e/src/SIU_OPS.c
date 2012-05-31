@@ -233,23 +233,24 @@ void init_SIU(void)
         //AN channel functions (do not require PCR settings)
         //AN1 - Knock +
         //AN2 - Knock -
-        //AN9 - MAP_1
+        //AN9 - MAP_1 
         //AN11 - V_Batt
         //AN16 - V_TPS
         //AN17 - POT on dev board
-        //AN18 - V_IAT
+        //AN18 - not working
         //AN21 - V_CLT
-        //AN22 - V_MAP_2
-        //AN23 - V_MAP_3
+        //AN22 - not working V_MAP_2 
+        //AN23 - V_IAT
         //AN24 - V_O2_1_UA
-        //AN25 - V_O2_1_UR
         //AN27 - V_O2_2_UA
-        //AN28 - V_O2_2_UR
-        //AN30 - V_P1
-        //AN31 - V_P2
-        //AN32 - V_P3
-        //AN33 - V_P4
-        //AN34 - V_P5
+        //AN35 - V_MAP_3
+        //AN35 - V_O2_1_UR
+        //AN35 - V_O2_2_UR
+        //AN35 - V_P1
+        //AN35 - V_P2
+        //AN35 - V_P3
+        //AN35 - V_P4
+        //AN35 - V_P5
         //AN35 - V_P6
 
 /*
