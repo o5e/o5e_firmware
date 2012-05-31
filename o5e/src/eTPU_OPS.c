@@ -11,6 +11,7 @@
 /*=============================================================================*/
 /* REV      AUTHOR         DATE          DESCRIPTION OF                        */
 /* ---      -----------    ----------    ---------------------                 */
+/* 4.8me    M.Eberhardt    31/May/12     added more used variables for eng pos */ 
 /* 4.7jz    J. Zeeff       22/May/12     add mke comment changes               */
 /* 4.6jz    J. Zeeff       18/May/12     open window to get sync               */
 /* 4.5jz    J. Zeeff       18/May/12     cleanup                               */
@@ -116,7 +117,7 @@ int32_t init_eTPU()
 {
     uint32_t i;
     // TODO - add cam window stuff to tuner variables, issue #6
-    uint24_t Cam_Window_Width = 5000;        // this mght want to move to the tuner - sets the cam window ± 15 degrees from expected location
+    uint24_t Cam_Window_Width;        // this mght want to move to the tuner - sets the cam window ± 15 degrees from expected location
     uint24_t Engine_Position_eTPU;
     uint24_t Cam_Window_Open;
     uint24_t Cam_Lobe_Pos_eTPU;
@@ -135,12 +136,13 @@ int32_t init_eTPU()
     if (N_Cyl > 12)
         return -1;              // check for flash misconfig
 
-    // TODO - Cam window stuff should be in the user setup I think. Issue #6
+    
+    Cam_Window_Width = Cam_Window_Width_Set
     // The goal here is to open a cam window that is 50 degrees and centeredaround the expected cam signal
     Engine_Position_eTPU = (72000 - ((uint32_t)Engine_Position << 2));   // adjust bin -2 to bin 0
     Cam_Lobe_Pos_eTPU = (72000 -  ((uint32_t)Cam_Lobe_Pos << 2)) ;      // adjust bin -2 to bin 0
     // Open cam window 25 degrees before cam signal expected, add 72000 to prevent possible negative numbers
-    Cam_Window_Open = (72000 + Cam_Lobe_Pos_eTPU - Cam_Window_Width / 2 ) % 72000;
+    Cam_Window_Open = (72000 + Cam_Lobe_Pos_eTPU - (Cam_Window_Open_Set << 2) ) % 72000; adjust bin -2 to bin 0
 
 // Links cause a stall to notify some other channels and turn them off - 4 packed into each 32 bit word
 // TODO change to variables and some logic to handle different configs (fuel has priority over spark)

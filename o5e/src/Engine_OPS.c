@@ -156,7 +156,7 @@ void Engine10_Task(void)
         if (Post_Start_Cycles < 10000)
             Post_Start_Cycles = (Degree_Clock - Start_Degrees) / 720;
 
-        // TODO  - add load sense method selection and calcs. This only works right with 1 bar MAP, should be compile time
+        // TODO  - add load sense method selection and calcs. This only works right with 1 bar MAP
         // Load = Get_Load();
         Load = (MAP[0] << 2);   // convert bin 12 to 14 and account for /100Kpa
 
@@ -275,12 +275,14 @@ void Set_Fuel(void)
     static uint32_t TPS_Dot_Decay_Last = (1 <<14);  // bin 14
     static uint32_t TPS_Dot_Degree = 0;
     static uint32_t TPS_Dot_Decay_Rate = (1 << 14);
+    static uint32_t Load_Ref_AFR;
     static int32_t TPS_Dot_Last = 0;    // bin 14
     static int32_t TPS_Dot_Limit;      // bin 14
     static int32_t TPS_Dot_Decay;       // bin 14
     static int32_t TPS_Dot_Corr;
     static int32_t TPS_Dot_Sign = 0;
     static int32_t TPS_Dot_Temp;
+
                 
     // if the engine is not turning or the engine position is not known, shut off the fuel channels
     if (RPM == 0 || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC || Enable_Inj == 0
@@ -312,15 +314,18 @@ void Set_Fuel(void)
         // apply various multiplier adjustments
 
         // RPM correction based on engine model - this is the primary tuning
-        if Engine_Model_Enable{
+        if Model_Tuning_Enable{
            Corr = Table_Lookup_JZ(RPM, 0, Eng_Model_Table);
            Pulse_Width = (Pulse_Width * Corr) >> 14;
-        }
-//look at bin points
         // Adjust according to load
-        if Load_Model_Enable {
-           Corr = Table_Lookup_JZ(RPM, 0, Load_Model_Table);
-           Pulse_Width = (Pulse_Width * Corr) >> 14;
+           //This is where the user tells the ecu what to do mixture wise at different loads
+           // Normally low power is run leaner than high power.
+           // this corrention is set up so it does NOT alter full power mixture, that point is the reference condition 
+           Load_Ref_AFR = Table_Lookup_JZ((1<<14), 0, Load_Model_Table); //get the 100% load AFR
+           Corr = Table_Lookup_JZ(Load, 0, Load_Model_Table);
+           Corr = Load_Ref_AFR/Corr
+           Pulse_Width = (Pulse_Width * Corr) >> 10;
+        //Load correction - assumes fuel required is proportional to load
         Pulse_Width = (Pulse_Width * Load) >> 14;
 
         // Main fuel table corection - this is used to fine tuning
@@ -333,13 +338,6 @@ void Set_Fuel(void)
         // Coolant temp coorection from enrichment_ops
         Corr = Table_Lookup_JZ(CLT, 0, Fuel_Temp_Corr_Table);
         Pulse_Width = (Pulse_Width * Corr) >> 13;
-
-        // check if enrichment cals shold be done - this might want to be a % of redline
-        // maintain some timers for use by enrichment
-        // did we just start?
-        // ToDo...I shouldn't need to do this if a second time?????
-        //          if (RPM > 0 && Previous_RPM == 0)
-        //              Degree_Clock_Last = Degree_Clock;
 
         if ((RPM < Enrich_Threshold) && (Enable_Accel_Decel == 1)) {
             // Prime pulse - extra fuel to wet the manifold on start-up   
