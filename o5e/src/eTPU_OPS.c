@@ -124,7 +124,7 @@ int32_t init_eTPU()
     uint8_t Gen_Tooth_close;
     uint24_t Gen_Tooth_Pos;
     uint24_t Drop_Dead_Angle_eTPU;
-    uint8_t Cam_Edge_Select_eTPU
+    uint8_t Cam_Edge_Select_eTPU;
 
     // Load firmware into eTPU
     error_code = (int32_t)
