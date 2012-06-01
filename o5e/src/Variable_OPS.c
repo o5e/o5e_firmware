@@ -42,51 +42,51 @@
 #   define CLT_VOLTAGE_DIVIDER 1.0
 #   define V_CLT_AD    ADC_RsltQ0[21]
 #   define IAT_VOLTAGE_DIVIDER 1.0
-#   define V_IAT_AD    ADC_RsltQ0[17]
+#   define V_IAT_AD    ADC_RsltQ0[23]
 #   define TPS_VOLTAGE_DIVIDER 1.0
 #   define V_TPS_AD    ADC_RsltQ0[16]
 #   define MAP_1_VOLTAGE_DIVIDER 1.0
-#   define V_MAP_1_AD    ADC_RsltQ5 [0]         // special case - from window sampled Q
+#   define V_MAP_1_AD    ADC_RsltQ0[9] // Q5 [0]         // special case - from window sampled Q
 #   define MAP_2_VOLTAGE_DIVIDER 1.0
-#   define V_MAP_2_AD    ADC_RsltQ0 [18]	/* TODO */
+#   define V_MAP_2_AD    ADC_RsltQ0 [35]	/* TODO */
 #   define MAP_3_VOLTAGE_DIVIDER 1.0
-#   define V_MAP_3_AD    ADC_RsltQ0 [23]
+#   define V_MAP_3_AD    ADC_RsltQ0 [35] //put unused stuff on 35 for now
 #   define P1_VOLTAGE_DIVIDER 1.0
-#   define V_P1_AD    ADC_RsltQ0 [4]
+#   define V_P1_AD    ADC_RsltQ0 [35]
 #   define P2_VOLTAGE_DIVIDER 1.0
-#   define V_P2_AD    ADC_RsltQ0 [5]
+#   define V_P2_AD    ADC_RsltQ0 [35]
 #   define P3_VOLTAGE_DIVIDER 1.0
-#   define V_P3_AD    ADC_RsltQ0 [6]
+#   define V_P3_AD    ADC_RsltQ0 [35]
 #   define P4_VOLTAGE_DIVIDER 1.0
-#   define V_P4_AD    ADC_RsltQ0 [7]
+#   define V_P4_AD    ADC_RsltQ0 [35]
 #   define P5_VOLTAGE_DIVIDER 1.0
-#   define V_P5_AD    ADC_RsltQ0 [8]
+#   define V_P5_AD    ADC_RsltQ0 [35]
 #   define P6_VOLTAGE_DIVIDER 1.0
-#   define V_P6_AD    ADC_RsltQ0 [9]
+#   define V_P6_AD    ADC_RsltQ0 [35]
 #   define P7_VOLTAGE_DIVIDER 1.0
-#   define V_P7_AD    ADC_RsltQ0 [10]
+#   define V_P7_AD    ADC_RsltQ0 [35]
 #   define P8_VOLTAGE_DIVIDER 1.0
-#   define V_P8_AD    ADC_RsltQ0 [11]
+#   define V_P8_AD    ADC_RsltQ0 [35]
 #   define P9_VOLTAGE_DIVIDER 1.0
-#   define V_P9_AD    ADC_RsltQ0 [12]
+#   define V_P9_AD    ADC_RsltQ0 [35]
 #   define P10_VOLTAGE_DIVIDER 1.0
-#   define V_P10_AD    ADC_RsltQ0 [13]
+#   define V_P10_AD    ADC_RsltQ0 [35]
 #   define P11_VOLTAGE_DIVIDER 1.0
-#   define V_P11_AD    ADC_RsltQ0 [14]
+#   define V_P11_AD    ADC_RsltQ0 [35]
 #   define P12_VOLTAGE_DIVIDER 1.0
-#   define V_P12_AD    ADC_RsltQ0 [15]
+#   define V_P12_AD    ADC_RsltQ0 [35]
 #   define P13_VOLTAGE_DIVIDER 1.0
-#   define V_P13_AD    ADC_RsltQ0 [16]
+#   define V_P13_AD    ADC_RsltQ0 [35]
 #   define P14_VOLTAGE_DIVIDER 1.0
-#   define V_P14_AD    ADC_RsltQ0 [17]
+#   define V_P14_AD    ADC_RsltQ0 [35]
 #   define O2_1_UA_VOLTAGE_DIVIDER 1.0
-#   define V_O2_1_UA_AD    ADC_RsltQ0 [18]
+#   define V_O2_1_UA_AD    ADC_RsltQ0 [24]
 #   define O2_1_UR_VOLTAGE_DIVIDER 1.0
-#   define V_O2_1_UR_AD    ADC_RsltQ0 [19]
+#   define V_O2_1_UR_AD    ADC_RsltQ0 [27]
 #   define O2_2_UA_VOLTAGE_DIVIDER 1.0
-#   define V_O2_2_UA_AD    ADC_RsltQ0 [20]
+#   define V_O2_2_UA_AD    ADC_RsltQ0 [35]
 #   define O2_2_UR_VOLTAGE_DIVIDER 1.0
-#   define V_O2_2_UR_AD    ADC_RsltQ0 [21]
+#   define V_O2_2_UR_AD    ADC_RsltQ0 [35]
 #   define Knock_1_VOLTAGE_DIVIDER 1.0
 #   define V_Knock_1_AD    ADC_RsltQ0 [0]   // TODO
 #   define Knock_2_VOLTAGE_DIVIDER 1.0

@@ -140,6 +140,7 @@ int32_t init_eTPU()
     Engine_Position_eTPU = (72000 - ((uint32_t)Engine_Position << 2));   // adjust bin -2 to bin 0
     Cam_Lobe_Pos_eTPU = (72000 -  ((uint32_t)Cam_Lobe_Pos << 2)) ;      // adjust bin -2 to bin 0
     Cam_Window_Open = (72000 + Cam_Lobe_Pos_eTPU - (Cam_Window_Open_Set << 2) ) % 72000; //adjust bin -2 to bin 0
+    Cam_Window_Width = Cam_Window_Width_Set;
     // set the cam window correctly for semi-sequentail mode
     if Sync_Mode_Select {
        Cam_Window_Open = 36000;

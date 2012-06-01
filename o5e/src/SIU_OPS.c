@@ -237,10 +237,10 @@ void init_SIU(void)
         //AN11 - V_Batt
         //AN16 - V_TPS
         //AN17 - POT on dev board
-        //AN18 - V_IAT
+        //AN18 - not working
         //AN21 - V_CLT
-        //AN22 - V_MAP_2
-        //AN23 - V_MAP_3
+        //AN22 - not workingV_MAP_2
+        //AN23 - V_IAT
         //AN24 - V_O2_1_UA
         //AN25 - V_O2_1_UR
         //AN27 - V_O2_2_UA

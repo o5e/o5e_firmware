@@ -64,7 +64,7 @@ void Set_Page_Locations(uint8_t block);
 
 EXTERN const uint16_t pageSize[nPages]
 #ifndef NOINIT
-= { 154, 1608, 1544, 1990, 1672, 1672, 1672, 1672, 1952, 1952, 1952, 1952, 1952, 1952 }
+= { 162, 1810, 1544, 1990, 1672, 1672, 1672, 1672, 1952, 1952, 1952, 1952, 1952, 1952 }
 #endif
 ;
 
