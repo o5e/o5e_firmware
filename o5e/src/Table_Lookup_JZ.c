@@ -5,7 +5,7 @@
 	@date   	September, 2011
 	@brief  	table lookup - fast, generic, 1D, 3D, variable axis, fixed axis, int16_t or uint8_t, binary search 
 	@copyright 	MIT license
-	@version 	1.4
+	@version 	1.5
 	
 	@note Generic, portable 1D or 2D table lookup
 	Can use a fixed interval on the axis (tends to need more points to get accuracy but is faster)
@@ -44,9 +44,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 /* Use this if you don't have error logging */
 /* #define system_error(a,b,c,d) */   /* a routine to log a string */
 /*  #define MAIN if you want to test this as a standalone program on a PC */
-/* #define MAIN  */
+/* #define MAIN   */
 /* #define TEST if you want some printout */
-/* #define TEST  */
+/* #define TEST   */
 
 #ifndef FALSE
 #   define FALSE 0
@@ -84,33 +84,36 @@ int main()
 /* This is the CLT table in binary form as it comes from the ecu.  Useful for testing table lookups. */
 
     uint8_t table[] = { 0x0, 0x1, 0x0, 0x10,
-        0x0, 0x0, 0x5, 0x54, 0xa, 0xac, 0x10, 0x0, 0x15, 0x54, 0x1a, 0xac, 0x20, 0x0, 0x25, 0x54, 0x2a, 0xac, 0x30, 0x0,
-        0x35, 0x54, 0x3a, 0xac, 0x40, 0x0, 0x45, 0x54, 0x4a, 0xac, 0x50, 0x0,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xfe,
-        0xff, 0xff, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0,
-        0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0
+        0x0, 0x0, 0x5, 0x54, 0xa, 0xac, 0x10, 0x0, 0x15, 0x54, 0x1a, 0xac, 0x20, 0x0, 0x25, 0x54,
+        0x2a, 0xac, 0x30, 0x0, 0x35, 0x54, 0x3a, 0xac, 0x40, 0x0, 0x45, 0x54, 0x4a, 0xac, 0x50, 0x0,
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
+
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+
+        0xff, 0xfe,   //  variable axis = yes, byte table = no
+        0xff, 0xff,   //  filler 
+        0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, // data
+        0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0, 0x40, 0x0
     };
 
     /* swap from big endian */
     for (i = 0; i < 168; i += 2) {
         uint8_t j;
         if (i == 4 + 64 + 64)
-            continue;           /* no need to swap these byte elements */
+            continue;           /* no need to swap these two byte elements */
         j = table[i];
         table[i] = table[i + 1];
         table[i + 1] = j;
     }
 
-    for (i = 0; i < 1000000; ++i)
-        j += table_lookup_jz(11000, 0, (const struct table_jz *)table);
+    //for (i = 0; i < 1000000; ++i)
+    //    j += table_lookup_jz(11000, 0, (const struct table_jz *)table);
 
-    printf("f(460) = %d\n", table_lookup_jz(460, 0, (const struct table_jz *)table));
+    printf("f(11000) = %d\n", table_lookup_jz(11000, 0, (const struct table_jz *)table));
     printf("j = %d\n", j);
 
     return 1;
@@ -129,14 +132,6 @@ inline unsigned lsearch_jz(register const int value, const int16_t * array, uint
     printf("lsearch %d %d %d for %d\n", array[0], array[1], array[2], value);
 #   endif
 
-    /* out of bounds checks */
-    if (value <= *array)
-        return 0;
-
-    /* check for too big */
-    if (value >= *ptr)
-        return n;
-
     while (*ptr > value)
         --ptr;                  /* loop from large to small */
 
@@ -145,6 +140,7 @@ inline unsigned lsearch_jz(register const int value, const int16_t * array, uint
 #endif
 
 /* generic binary search for a int16_t array */
+/* does not do bounds checking */
 
 inline uint_fast16_t bsearch_jz(register const int16_t value, const int16_t * array, uint_fast16_t n)
 {
@@ -156,15 +152,8 @@ inline uint_fast16_t bsearch_jz(register const int16_t value, const int16_t * ar
     printf("bsearch %d %d %d ... for %d\n", array[0], array[1], array[2], value);
 #endif
 
-    /* out of bounds checks */
-    if (value <= *array)        /* too low */
-        return 0;
-
     lower = 0;
     upper = --n;                /* note, n is now max index */
-
-    if (value >= array[upper])  /* too high */
-        return n;
 
     for (;;) {
         middle = (upper + lower) / 2;   /* 1/2 way between them */
@@ -180,6 +169,7 @@ inline uint_fast16_t bsearch_jz(register const int16_t value, const int16_t * ar
             break;
     }
     return middle;     
+
 } // bsearch()
 
 #ifdef BSEARCH_TEST
@@ -256,8 +246,8 @@ int table_lookup_jz(const int x, const int y, const struct table_jz *table)
     printf("x-axis from %d to %d\n", table->x_axis[0], table->x_axis[cols - 1]);
     for (i = 0; i < cols; ++i)
         printf("col[%d] = %u\n", i, table->x_axis[i]);
-    for (i = 0; i < cols; i += 2)
-        printf("data[%d] = %u\n", i, *(int16_t *) & table->data[i]);
+    for (i = 0; i < cols; i += 1)
+        printf("data[%d] = %u\n", i, *(int16_t *) & table->data[i*2]);
 #endif
 
 #define PARANOIA
@@ -316,20 +306,30 @@ int table_lookup_jz(const int x, const int y, const struct table_jz *table)
         }
     } else {                    /* variable axis */
 
-        /* find fractional indexes using variable axis increments method */
-        x_index = bsearch_jz((int16_t) x, table->x_axis, (uint_fast16_t) cols);
-
-        xbin = (unsigned)((x - table->x_axis[x_index]) * 256) / (table->x_axis[x_index + 1] - table->x_axis[x_index]);  /* bin 8 result */
+        // check for within table
+        if (x < table->x_axis[0]) {              /* < first */
+           x_index = xbin = 0;
+        } else if (x > table->x_axis[cols-1]) {  /* > last */ 
+           x_index = cols - 1;
+           xbin = 0;
+        } else {
+           /* find x index and fractional index */
+           x_index = bsearch_jz((int16_t) x, table->x_axis, (uint_fast16_t) cols);
+           xbin = (unsigned)((x - table->x_axis[x_index]) * 256) / (table->x_axis[x_index + 1] - table->x_axis[x_index]);  /* bin 8 result */
+        }
 
         /* do y axis if this is a 2D lookup */
 
-        if (rows == 1 || y <= table->min_y) {   /* 1D or outside of table */
+        if (rows == 1 || y <= table->y_axis[0]) {   /* 1D or < first */
             y_index = ybin = 0;
             ptr = (uint8_t *) table->data + (x_index << entry_size);
-        } else {                /* find y position in table */
+        } else if (y > table->y_axis[rows-1]) {     /* > last */
+            y_index = rows - 1;
+            ybin = 0;
+            ptr = (uint8_t *) table->data + (x_index << entry_size);
+        } else {  /* find y index and fractional index */
             y_index = bsearch_jz((int16_t) y, table->y_axis, (uint_fast16_t) rows);
-            ybin =
-                (unsigned)((y - table->y_axis[y_index]) * 256) / (table->y_axis[y_index + 1] - table->y_axis[y_index]);
+            ybin = (unsigned)((y - table->y_axis[y_index]) * 256) / (table->y_axis[y_index + 1] - table->y_axis[y_index]);
             ptr = (uint8_t *) table->data + (((cols * y_index) + x_index) << entry_size);
         }
     }
@@ -346,8 +346,8 @@ int table_lookup_jz(const int x, const int y, const struct table_jz *table)
 #endif
 
     /* interpolate using the factional distance between points  */
-    if (x_index + 1 >= cols)    /* out of bounds on x-axis */
-        value1 = value(ptr);    /* use last point in table */
+    if (x_index + 1 >= cols || xbin == 0)       /* out of bounds on x-axis */
+        value1 = value(ptr);                    /* use last point in table */
     else
         value1 = interpolate(xbin, value(ptr), value(ptr + (1 << entry_size)));
 
