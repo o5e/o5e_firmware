@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 1.46 - EFI Analytics, Inc." tuneComment="" writeDate="Fri May 18 23:13:59 EDT 2012"/>
+<bibliography author="TunerStudio MS(Beta) 1.51 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Fri Jun 01 11:14:10 EDT 2012"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5E 1.0.7 20120405                                         " nPages="14" signature="MShift 2.111       "/>
-<page number="0" size="154">
+<page number="0" size="162">
+<constant name="Engine_Type_Select">"4 stroke"</constant>
 <constant name="Config_HS_2">"off"</constant>
 <constant name="Config_HS_1">"off"</constant>
 <constant name="Config_HS_4">"off"</constant>
@@ -24,12 +25,14 @@
 <constant name="Config_LS_2">"off"</constant>
 <constant name="Config_LS_1">"off"</constant>
 <constant name="Config_Ign_10">"off"</constant>
+<constant name="Crank_Edge_Select">"rising edge"</constant>
 <constant name="Config_Ign_12">"off"</constant>
 <constant digits="0" name="N_Teeth">35.0</constant>
 <constant name="Config_Ign_11">"off"</constant>
 <constant digits="0" name="Test_RPM" units="rpm">1000.0</constant>
 <constant digits="2" name="Test_V_MAP_1" units="V">2.4999936</constant>
 <constant digits="2" name="Test_V_MAP_2" units="V">2.4999936</constant>
+<constant name="Sync_Mode_Select">"half sync (360 degree)"</constant>
 <constant name="Config_Stepper">"off"</constant>
 <constant digits="2" name="Test_V_Batt" units="V">13.7001602</constant>
 <constant digits="1" name="Test_MAP_1" units="kPa">99.999744</constant>
@@ -50,6 +53,7 @@
 <constant name="Config_Inj_19">"off"</constant>
 <constant name="Config_Inj_16">"off"</constant>
 <constant name="Config_Inj_17">"off"</constant>
+<constant digits="1" name="Cam_Window_Width_Set">50.0</constant>
 <constant name="Config_Inj_20">"off"</constant>
 <constant name="Config_Inj_21">"off"</constant>
 <constant name="Config_Inj_22">"off"</constant>
@@ -93,6 +97,8 @@
          0.0 
          0.0 
       </constant>
+<constant name="Cam_Edge_Select">"rising edge"</constant>
+<constant digits="1" name="Cam_Window_Open_Set">20.0</constant>
 <constant digits="1" name="Cyl_Offset_9">0.0</constant>
 <constant digits="1" name="Cyl_Offset_7">270.0</constant>
 <constant digits="1" name="Cyl_Offset_8">450.0</constant>
@@ -116,7 +122,7 @@
 <constant name="Missing_Teeth">"1"</constant>
 <constant digits="1" name="Drop_Dead_Angle">450.0</constant>
 </page>
-<page number="1" size="1608">
+<page number="1" size="1810">
 <constant cols="1" digits="1" name="MAP_Angle_Cal" rows="24" units="deg">
          450.0 
          450.0 
@@ -156,6 +162,7 @@
 <constant digits="3" name="Inj_Dead_2" units="msec">0.0</constant>
 <constant digits="3" name="Inj_Dead_3" units="msec">0.0</constant>
 <constant digits="3" name="Inj_Dead_4" units="msec">0.0</constant>
+<constant name="Load_Model_Variable">"Variable axis"</constant>
 <constant name="Eng_Model_Variable">"Variable axis"</constant>
 <constant digits="0" name="Eng_Model_Rows">1.0</constant>
 <constant name="MAP_Angle_Variable">"Variable axis"</constant>
@@ -179,6 +186,7 @@
          0.0 
       </constant>
 <constant name="Enable_Ignition">"on"</constant>
+<constant name="Model_Tuning_Enable">"on"</constant>
 <constant name="Enable_Inj">"on"</constant>
 <constant digits="0" name="Warm_Idle_Temp" units="C">-273.167443</constant>
 <constant digits="1" name="Cold_IAC" units="%">50.0</constant>
@@ -186,6 +194,7 @@
 <constant digits="0" name="IAT_Fuel_Corr_Cols">16.0</constant>
 <constant digits="0" name="Warm_Start_Temp" units="C">-273.167443</constant>
 <constant digits="1" name="Dwell_Max" units="%">99.21875</constant>
+<constant digits="0" name="Load_Model_Cols">16.0</constant>
 <constant digits="0" name="Inj_Dead_Time_Cols">8.0</constant>
 <constant cols="1" digits="1" name="Fuel_Temp_Corr_x_Bins" rows="16" units="C">
          -39.9956482 
@@ -208,6 +217,7 @@
 <constant name="Dwell_Variable">"Fixed axis"</constant>
 <constant name="Eng_Model_Byte">"16 bit signed"</constant>
 <constant name="Dwell_Byte">"16 bit signed"</constant>
+<constant name="Load_Model_Byte">"16 bit signed"</constant>
 <constant digits="0" name="Dwell_Rows">1.0</constant>
 <constant cols="1" digits="1" name="Eng_Model_Cal" rows="24" units="%">
          59.997405 
@@ -354,6 +364,24 @@
          13.9999642 
          15.999959 
       </constant>
+<constant cols="1" digits="2" name="Load_Model_Cal" rows="16" units="AFR">
+         14.7002028 
+         14.7002028 
+         14.7002028 
+         14.7002028 
+         14.7002028 
+         14.7002028 
+         14.7002028 
+         14.7002028 
+         14.7002028 
+         14.5996169 
+         14.4502027 
+         14.2002026 
+         13.9003977 
+         13.5996163 
+         13.2998115 
+         13.0000067 
+      </constant>
 <constant cols="1" digits="1" name="Inj_Dead_Time_Cal" rows="8" units="%">
          147.997668 
          99.999744 
@@ -366,7 +394,26 @@
       </constant>
 <constant name="Fuel_Temp_Corr_Byte">"16 bit signed"</constant>
 <constant digits="1" name="Cold_start_IAC" units="%">100.0</constant>
+<constant cols="1" digits="0" name="Load_Model_Bins" rows="16" units="%">
+         0.0 
+         10.0 
+         20.0 
+         30.0 
+         40.0 
+         50.0 
+         60.0 
+         70.0 
+         75.0 
+         80.0 
+         85.0 
+         90.0 
+         95.0 
+         100.0 
+         105.0 
+         110.0 
+      </constant>
 <constant digits="0" name="staged_Load_Dead" units="%">4.6875</constant>
+<constant digits="0" name="Load_Model_Rows">1.0</constant>
 <constant digits="3" name="Dead_Time_Set" units="msec">0.85</constant>
 <constant name="Inj_Dead_Time_Byte">"16 bit signed"</constant>
 <constant digits="0" name="Cold_Idle_RPM" units="rpm">1200.0</constant>
