@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 1.51 - EFI Analytics, Inc." writeDate="Fri Jun 01 11:14:10 EDT 2012"/>
+<bibliography author="TunerStudio MS(Beta) 1.51 - EFI Analytics, Inc." writeDate="Fri Jun 01 11:46:44 EDT 2012"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5E 1.0.7 20120405                                         " signature="MShift 2.111       "/>
 <page number="-1">
 <constant name="tsCanId">"0"</constant>
