@@ -95,7 +95,7 @@ void init_SIU(void)
     SIU.PCR[134].R = GPIO | OUTPUT;     // P07
     SIU.PCR[135].R = GPIO | OUTPUT;     // P02
     SIU.PCR[136].R = GPIO | OUTPUT;     // P05
-    SIU.PCR[137].R = GPIO | UNUSED;     // unused
+    SIU.PCR[137].R = GPIO | UNUSED;     // 
     SIU.PCR[138].R = GPIO | OUTPUT;     // P03
     SIU.PCR[139].R = GPIO | OUTPUT;     // Power Enable
     SIU.PCR[140].R = GPIO | UNUSED;     // unused
@@ -202,7 +202,7 @@ void init_SIU(void)
         SIU.PCR[134].R = B0001 | INPUT;         // eTPU[20] wheelspeed RR
         SIU.PCR[135].R = B0001 | OUTPUT; 	// eTPU[21] injector 7
         SIU.PCR[136].R = B0001 | OUTPUT; 	// eTPU[22] injector 8
-        SIU.PCR[137].R = GPIO | UNUSED; 	// eTPU[23]
+        SIU.PCR[137].R = GPIO | OUTPUT; 	// fake cam pin for semisequentail or eTPU[23]
         SIU.PCR[138].R = GPIO | UNUSED; 	// eTPU[24]
         SIU.PCR[139].R = GPIO | UNUSED; 	// eTPU[25]  
         SIU.PCR[140].R = B0001 | OUTPUT; 	// eTPU[26] MAP window

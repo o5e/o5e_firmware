@@ -369,6 +369,7 @@ void Set_Fuel(void)
            Corr = Table_Lookup_JZ(Load, 0, Load_Model_Table);
            Corr = Load_Ref_AFR/Corr;
            Pulse_Width = (Pulse_Width * Corr) >> 10;
+        }
         //Load correction - assumes fuel required is proportional to load
         Pulse_Width = (Pulse_Width * Load) >> 14;
 

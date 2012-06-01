@@ -30,6 +30,7 @@
     #define SYNC_STATUS_PIN             190  // RPM Blink task
     #define MAP_WINDOW_CHANNEL          26    // eTPU channel to output MAP sample windows on - fixed, do not change
     #define KNOCK_WINDOW_CHANNEL        28    // eTPU channel to output MAP sample windows on - fixed
+    #define FAKE_CAM_PIN		137		//used for semi-sequentail operation
 #endif
 
 // faster, dual eTPU CPU 
