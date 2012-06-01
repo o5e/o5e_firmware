@@ -124,6 +124,7 @@ int32_t init_eTPU()
     uint8_t Gen_Tooth_close;
     uint24_t Gen_Tooth_Pos;
     uint24_t Drop_Dead_Angle_eTPU;
+    uint8_t Cam_Edge_Select_eTPU
 
     // Load firmware into eTPU
     error_code = (int32_t)
@@ -141,10 +142,12 @@ int32_t init_eTPU()
     Cam_Lobe_Pos_eTPU = (72000 -  ((uint32_t)Cam_Lobe_Pos << 2)) ;      // adjust bin -2 to bin 0
     Cam_Window_Open = (72000 + Cam_Lobe_Pos_eTPU - (Cam_Window_Open_Set << 2) ) % 72000; //adjust bin -2 to bin 0
     Cam_Window_Width = Cam_Window_Width_Set <<2; //adjust bin -2 to bin 0
+    Cam_Edge_Select_eTPU = Cam_Edge_Select; //for normal operation allow user setting
     // set the cam window correctly for semi-sequentail mode
     if Sync_Mode_Select {
        Cam_Window_Open = 36000;
        Cam_Window_Width = 35999;
+       Cam_Edge_Select_eTPU = 1; // use rising edge to match generated tooth
     }
 
 // Links cause a stall to notify some other channels and turn them off - 4 packed into each 32 bit word
@@ -162,7 +165,7 @@ int32_t init_eTPU()
 
     error_code = fs_etpu_app_eng_pos_init(1,                            /* CAM in engine: A; channel: 1 */
                                         FS_ETPU_CAM_PRIORITY_MIDDLE,    /* cam_priority: Middle */
-                                        Cam_Edge_Select,                /* cam_edge_polarity: falling edge = 0, rising = 1 */
+                                        Cam_Edge_Select_eTPU,           /* cam_edge_polarity: falling edge = 0, rising = 1 */
                                         Cam_Window_Open,                /* cam_angle_window_start: cam_window_open*100   */
                                         Cam_Window_Width,               /* cam_angle_window_width: cam_window_width*100   */
                                         0,                              /* CRANK in engine: A; channel: 0 */
