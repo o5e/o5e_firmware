@@ -14,7 +14,7 @@
    ORIGINAL AUTHOR:  Paul Schlein                                                 
    REV      AUTHOR          DATE          DESCRIPTION OF CHANGE                   
    ---     -----------     ----------    --------------------- 
-   2.5me   M. Eberhardt    31/Mat/12     added load model
+   2.5me   M. Eberhardt    31/May/12     added load model
    2.4me   M. Eberhardt    18/May/12     fixes, added pulse_Per_rev for tach                   
    2.3     M. Eberhardt    04/May/12     Simplified enrichment scheme
    2.2     J. Zeeff        01/May/12     Reorganized
@@ -367,7 +367,7 @@ void Set_Fuel(void)
            // this corrention is set up so it does NOT alter full power mixture, that point is the reference condition 
            Load_Ref_AFR = Table_Lookup_JZ((1<<14), 0, Load_Model_Table); //get the 100% load AFR
            Corr = Table_Lookup_JZ(Load, 0, Load_Model_Table);
-           Corr = Load_Ref_AFR/Corr;
+           Corr = (Load_Ref_AFR << 10)/Corr;
            Pulse_Width = (Pulse_Width * Corr) >> 10;
         }
         //Load correction - assumes fuel required is proportional to load
