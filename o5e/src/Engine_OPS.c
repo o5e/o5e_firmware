@@ -95,24 +95,19 @@ void Slow_Vars_Task(void)
 
         for (;;) {
         
-        	if Sync_Mode_Select {
-            	// output pulse once per two crank revs
+           	// output pulse once per two crank revs
 
-            	tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to 2x total number of teeth
+           	tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to 2x total number of teeth
 
-            	if (prev_tooth < position && tooth >= position) // detect passing tooth N/2
-            	   Set_Pin(FAKE_CAM_PIN,1);
-            	else
-              	 Set_Pin(FAKE_CAM_PIN,0);
+            if (prev_tooth < position && tooth >= position) // detect passing tooth N/2
+                Set_Pin(FAKE_CAM_PIN,1);
+           	else
+              	Set_Pin(FAKE_CAM_PIN,0);
 
-               prev_tooth = tooth;
+            prev_tooth = tooth;
 
-                 task_wait(2);
-                  
-        	}else{
-        	
-        	     task_wait(963);	
-            } //if
+               task_wait(2);
+
         } // for
 
     task_close();     
@@ -502,6 +497,7 @@ void Set_Fuel(void)
         // Pulse_Width = (Pulse_Width * Corr) >> 14;
 
         // Assume fuel pressure is constant
+        
 
         // fuel dead time - extra pulse needed to open the injector
         // take user value and adjust based on battery voltage
