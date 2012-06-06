@@ -139,7 +139,7 @@ int32_t init_eTPU()
     
     // The goal here is to open a cam window that that will work with the cam position
     Engine_Position_eTPU = (72000 - ((uint32_t)Engine_Position << 2));   // adjust bin -2 to bin 0
-    Cam_Lobe_Pos_eTPU = (72000 -  ((uint32_t)Cam_Lobe_Pos << 2)) ;      // adjust bin -2 to bin 0
+    Cam_Lobe_Pos_eTPU = (72000 - ((uint32_t)Cam_Lobe_Pos << 2)) ;      // adjust bin -2 to bin 0
     Cam_Window_Open = (72000 + Cam_Lobe_Pos_eTPU - (Cam_Window_Open_Set << 2) ) % 72000; //adjust bin -2 to bin 0
     Cam_Window_Width = Cam_Window_Width_Set <<2; //adjust bin -2 to bin 0
     Cam_Edge_Select_eTPU = Cam_Edge_Select; //for normal operation allow user setting
@@ -152,10 +152,11 @@ int32_t init_eTPU()
 
 // Links cause a stall to notify some other channels and turn them off - 4 packed into each 32 bit word
 // TODO change to variables and some logic to handle different configs (fuel has priority over spark)
-#   define Link1  (uint32_t)(Fuel_Channels[0] << 12) |  (Fuel_Channels[1] << 8) | (Fuel_Channels[2] << 4) | (Fuel_Channels[3] << 0)
-#   define Link2  (uint32_t)(Fuel_Channels[4] << 12) |  (Fuel_Channels[5] << 8) | (Fuel_Channels[6] << 4) | (Fuel_Channels[7] << 0)
-#   define Link3  (uint32_t)(Spark_Channels[0] << 12) |  (Spark_Channels[1] << 8) | (Spark_Channels[2] << 4) | (Spark_Channels[3] << 0)
-#   define Link4  (uint32_t)(Spark_Channels[4] << 12) |  (Spark_Channels[5] << 8) | (Spark_Channels[6] << 4) | (Spark_Channels[7] << 0)
+#   define Link1  0x01010101    /* cam - repeated as filler */
+#   define Link2  (Fuel_Channels[0] << 12) |  (Fuel_Channels[1] << 8) | (Fuel_Channels[2] << 4) | (Fuel_Channels[3] << 0)
+#   define Link3  (Fuel_Channels[4] << 12) |  (Fuel_Channels[5] << 8) | (Fuel_Channels[6] << 4) | (Fuel_Channels[7] << 0)
+#   define Link4  (Fuel_Channels[8] << 12) |  (Fuel_Channels[9] << 8) | (Fuel_Channels[10] << 4) | (Fuel_Channels[11] << 0)
+
 
     // Initialization of eTPU channel settings                        
     // eTPU API Function Init: 'Engine Position (CAM and CRANK channels)'
@@ -227,7 +228,7 @@ int32_t init_eTPU()
 
     // might be using wasted spark
     N_Coils = N_Cyl;
-    if (Ignition_Type == 1) 
+    if (Ignition_Type == 1)
        N_Coils /= 2;
 
     // Calculate the cylinder angles from user inputs
@@ -242,7 +243,8 @@ int32_t init_eTPU()
     // eTPU API Function initialization: 'fuel'-see AN3770, pg7-9
     error_code = fs_etpu_fuel_init_6cylinders(FUEL_CHANNELS_1_6,        // 
                                               1,                        // CAM in engine: A; channel: 1 
-                                              FS_ETPU_PRIORITY_LOW, FS_ETPU_FUEL_FM0_ACTIVE_HIGH,       // 
+                                              FS_ETPU_PRIORITY_LOW, 
+                                              FS_ETPU_FUEL_FM0_ACTIVE_HIGH,       // 
                                               Cyl_Angle_eTPU[0],        // 
                                               Cyl_Angle_eTPU[1],        // 
                                               Cyl_Angle_eTPU[2],        // 
@@ -263,13 +265,14 @@ int32_t init_eTPU()
     if (N_Injectors > 6) {
         error_code = fs_etpu_fuel_init_6cylinders(FUEL_CHANNELS_7_12,   // channels  
                                                   1,                    // CAM in engine: A; channel: 1 
-                                                  FS_ETPU_PRIORITY_LOW, FS_ETPU_FUEL_FM0_ACTIVE_HIGH,   // 
-                                                  Cyl_Angle_eTPU[6], 
+                                                  FS_ETPU_PRIORITY_LOW, 
+                                                  FS_ETPU_FUEL_FM0_ACTIVE_HIGH,   // 
+                                                  Cyl_Angle_eTPU[6],    // offset angles * 100
                                                   Cyl_Angle_eTPU[7], 
                                                   Cyl_Angle_eTPU[8], 
                                                   Cyl_Angle_eTPU[9], 
                                                   Cyl_Angle_eTPU[10], 
-                                                  Cyl_Angle_eTPU[11],   // offset angles * 100
+                                                  Cyl_Angle_eTPU[11],   
                                                   Drop_Dead_Angle_eTPU, // drop dead angle*100
                                                   0,                    // normal end angle*100
                                                   1500,                 // recalc offset ANGLE*100
@@ -286,13 +289,14 @@ int32_t init_eTPU()
     if (N_Injectors > 12) {
         error_code = fs_etpu_fuel_init_6cylinders(FUEL_CHANNELS_13_18,  // channels  
                                                   1,                    // CAM in engine: A; channel: 1 
-                                                  FS_ETPU_PRIORITY_LOW, FS_ETPU_FUEL_FM0_ACTIVE_HIGH, 
-                                                  Cyl_Angle_eTPU[12], 
+                                                  FS_ETPU_PRIORITY_LOW, 
+                                                  FS_ETPU_FUEL_FM0_ACTIVE_HIGH, 
+                                                  Cyl_Angle_eTPU[12],   // offset angles * 100
                                                   Cyl_Angle_eTPU[13], 
                                                   Cyl_Angle_eTPU[14], 
                                                   Cyl_Angle_eTPU[15], 
                                                   Cyl_Angle_eTPU[16], 
-                                                  Cyl_Angle_eTPU[17],   // offset angles * 100
+                                                  Cyl_Angle_eTPU[17],   
                                                   Drop_Dead_Angle_eTPU,         // drop dead angle*100
                                                   0,                    // normal end angle*100
                                                   1500,                 // recalc offset ANGLE*100
@@ -308,8 +312,9 @@ int32_t init_eTPU()
     if (N_Injectors > 18) {
         error_code = fs_etpu_fuel_init_6cylinders(FUEL_CHANNELS_19_24, 
                                                   1,                    // CAM in engine: A; channel: 1 
-                                                  FS_ETPU_PRIORITY_LOW, FS_ETPU_FUEL_FM0_ACTIVE_HIGH,   // offset angles*100
-                                                  Cyl_Angle_eTPU[18], 
+                                                  FS_ETPU_PRIORITY_LOW, 
+                                                  FS_ETPU_FUEL_FM0_ACTIVE_HIGH,   
+                                                  Cyl_Angle_eTPU[18],   // offset angles*100
                                                   Cyl_Angle_eTPU[19], 
                                                   Cyl_Angle_eTPU[20], 
                                                   Cyl_Angle_eTPU[21], 
@@ -340,7 +345,9 @@ int32_t init_eTPU()
                                                Cyl_Angle_eTPU[3],       // 
                                                Cyl_Angle_eTPU[4],       // 
                                                Cyl_Angle_eTPU[5],       // offset angles * 100
-                                               FS_ETPU_PRIORITY_MIDDLE, FS_ETPU_SPARK_FM0_ACTIVE_HIGH, 0,       // min_coil_dur, usec 
+                                               FS_ETPU_PRIORITY_MIDDLE,  
+                                               FS_ETPU_SPARK_FM0_ACTIVE_HIGH, 
+                                               0,                       // min_coil_dur, usec 
                                                4000,                    // max_coil_dur, usec 
                                                0,                       // multi spark on time 
                                                0,                       // multi spark on time
@@ -365,7 +372,9 @@ int32_t init_eTPU()
                                                    Cyl_Angle_eTPU[9], 
                                                    Cyl_Angle_eTPU[10], 
                                                    Cyl_Angle_eTPU[11],  // offset angles * 100
-                                                   FS_ETPU_PRIORITY_MIDDLE, FS_ETPU_SPARK_FM0_ACTIVE_HIGH, 0,   // min_coil_dur, usec 
+                                                   FS_ETPU_PRIORITY_MIDDLE, 
+                                                   FS_ETPU_SPARK_FM0_ACTIVE_HIGH, 
+                                                   0,                   // min_coil_dur, usec 
                                                    4000,                // max_coil_dur, usec
                                                    500,                 // multi spark on time 
                                                    0,                   // multi spark on time

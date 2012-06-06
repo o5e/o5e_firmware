@@ -272,7 +272,7 @@ EXTERN struct Outputs Output_Channels;
 #define Crank_Edge_Select (*(CONST U08 *)(&Page_Ptr[0][154]) & ((2<<0)-1))
 #define Cam_Edge_Select (*(CONST U08 *)(&Page_Ptr[0][155]) & ((2<<0)-1))
 #define Sync_Mode_Select (*(CONST U08 *)(&Page_Ptr[0][156]) & ((2<<0)-1))
-#define Engine_Type_Select (*(CONST U08 *)(&Page_Ptr[0][157]) & ((2<<0)-1))
+#define Engine_Type_Select (*(CONST U08 *)(&Page_Ptr[0][157]) & ((2<<1)-1))
 #define Cam_Window_Open_Set (*(CONST S16 *)(&Page_Ptr[0][158]))
 #define Cam_Window_Width_Set (*(CONST S16 *)(&Page_Ptr[0][160]))
 // Page 2
