@@ -17,12 +17,12 @@
     // TODO define eTPU channels to use here
     // Note: different hardware may have to change these
     // Note: what is here must match what is in SIU_OPS.c
-    #define FUEL_CHANNELS_1_6           5,9,10,11,12,13   //5 used instead of 10 to get LED on on deme board
-    #define FUEL_CHANNELS_7_12  	21,22,14,15,27,29
+    #define FUEL_CHANNELS_1_6           5,11,12,13,14,15   //5 used instead of 10 to get LED on on deme board
+    #define FUEL_CHANNELS_7_12  	21,22,8,9,24,25
     #define FUEL_CHANNELS_13_18  	24,24,24,24,24,24  /* not used */
     #define FUEL_CHANNELS_19_24  	25,25,25,25,25,25  /* not used */
     //changed the channel 18 for testing
-    #define SPARK_CHANNELS_1_6  	2,3,4,8,6,7 // 8 used instead of 5,to give LED to fuel 1
+    #define SPARK_CHANNELS_1_6  	2,3,4,10,6,7 // 10 used instead of 5,to give LED to fuel 1
     #define SPARK_CHANNELS_7_12  	25,25,25,25,25,25  /* not used */ 
     #define TACH_CHANNEL 		16 	// Tach Output (pwm) eTPU chan
     #define FUEL_PUMP_PIN 		179 // fuel pump

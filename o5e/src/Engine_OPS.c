@@ -95,7 +95,7 @@ void Slow_Vars_Task(void)
 
         for (;;) {
         
-           	// output pulse once per two crank revs
+           	// output pulse once per crank rev
 
            	tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to 2x total number of teeth
 
