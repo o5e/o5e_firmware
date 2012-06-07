@@ -90,6 +90,7 @@ void Slow_Vars_Task(void)
         register uint_fast8_t tooth;        // not saved across an OS call
         static uint_fast8_t prev_tooth;
         static uint_fast8_t position;
+        static uint_fast8_t alternate = 0;
 
         position =  N_Teeth / 2;    // doesn't matter where, but this is a good spot
 
@@ -99,7 +100,7 @@ void Slow_Vars_Task(void)
 
            	tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to 2x total number of teeth
 
-            if (prev_tooth < position && tooth >= position) // detect passing tooth N/2
+            if (prev_tooth < position && tooth >= position && (alternate ^= 1)) // detect passing tooth N/2
                 Set_Pin(FAKE_CAM_PIN,1);
            	else
               	Set_Pin(FAKE_CAM_PIN,0);
