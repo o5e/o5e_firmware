@@ -96,6 +96,7 @@ void Slow_Vars_Task(void)
         static uint_fast8_t TDC_Minus_Position;
         static uint_fast8_t TDC_Plus_Position;
         static uint32_t TDC_Minus_Position_RPM = 0;
+        static uint32_t Last_TDC_Minus_Position_RPM = 0;
         static uint32_t TDC_Plus_Position_RPM = 0;
         
 
@@ -119,10 +120,14 @@ void Slow_Vars_Task(void)
            	   Get_Fast_Op_Vars(); // Read current RPM from eTPU
            	   if (tooth == TDC_Minus_Position )
            	       TDC_Minus_Position_RPM = RPM;
-           	   if (tooth == TDC_Plus_Position )
-           	       TDC_Plus_Position_RPM = RPM;
-           	   if (TDC_Minus_Position_RPM > 0 && TDC_Plus_Position_RPM > (TDC_Minus_Position_RPM + Sync_Threshold))
+           	   //if (tooth == TDC_Plus_Position )
+           	   //    TDC_Plus_Position_RPM = RPM;
+           	   //if (TDC_Minus_Position_RPM > Sync_Threshold && TDC_Plus_Position_RPM > Sync_Threshold && TDC_Minus_Position_RPM < ( TDC_Plus_Position_RPM - Sync_Threshold))
+           	   if (TDC_Minus_Position_RPM > Sync_Threshold && Last_TDC_Minus_Position_RPM > Sync_Threshold && TDC_Minus_Position_RPM < (Last_TDC_Minus_Position_RPM - Sync_Threshold))
             	       sync_flag = 1;
+           	   if (tooth < prev_tooth) //detect missing tooth
+           	   Last_TDC_Minus_Position_RPM = TDC_Minus_Position_RPM;
+           	   
            }else{
                 sync_flag = 1;	
            }
