@@ -80,7 +80,7 @@ void Slow_Vars_Task(void)
 // Note: this implies semi-sequential fuel and wasted spark.
 // Doesn't have to be very accurate - cam is not used for timing
 
-    #define Sync_Threshold 30
+    #define Sync_Threshold 50
 
     void Cam_Pulse_Task(void)
     {
@@ -96,19 +96,15 @@ void Slow_Vars_Task(void)
         static uint_fast8_t TDC_Minus_Position;
         static uint_fast8_t TDC_Plus_Position;
         static uint32_t TDC_Minus_Position_RPM = 0;
-        static uint32_t TDC_Plus_Position_RPM;
-        static uint_fast8_t position_flag = 0;
-        static uint32_t Cam_Pulse_Wait_Angle;
+        static uint32_t TDC_Plus_Position_RPM = 0;
         
 
         position =  N_Teeth / 2;    // doesn't matter where, but this is a good spot
         //these are needed for syncing a crank only odd fire engine
         TDC_Tooth = ((Engine_Position << 2) / Degrees_Per_Tooth_x100) % Total_Teeth; //adjust from bin-2 to bin 0
         //find teeth to compare rpm to test if compression stroke
-        TDC_Minus_Position = (Total_Teeth  + TDC_Tooth - (3000 * Degrees_Per_Tooth_x100)) % Total_Teeth;
-        TDC_Plus_Position = (TDC_Tooth + (3000 * Degrees_Per_Tooth_x100)) % Total_Teeth;
-        Cam_Pulse_Wait_Angle = (((Total_Teeth - TDC_Minus_Position) + Total_Teeth / 2) * Degrees_Per_Tooth_x100 / 100);
-        
+        TDC_Minus_Position = (Total_Teeth  + TDC_Tooth - (3000 / Degrees_Per_Tooth_x100)) % Total_Teeth;
+        TDC_Plus_Position = (TDC_Tooth + (3000 / Degrees_Per_Tooth_x100)) % Total_Teeth;
         for (;;) {
         
            	// output pulse once per 2 crank revs
@@ -119,18 +115,14 @@ void Slow_Vars_Task(void)
            	// this works by comparing the rpm before #1TDC to rpm after #1TDC
            	// if the RPM after is great than the minus rpm plus a sync_theshold #1TDC position is known
 
-           if (Engine_Type_Select && Sync_Mode_Select == 0){
-               if (sync_flag == 0){
-           	       Get_Fast_Op_Vars();; // Read current RPM from eTPU
-           	       if (tooth == TDC_Minus_Position )
-           	           TDC_Minus_Position_RPM = RPM;
-           	       if (tooth == TDC_Plus_Position )
-           	           TDC_Plus_Position_RPM = RPM;
-           	       if (TDC_Minus_Position_RPM != 0 && TDC_Plus_Position_RPM > (TDC_Minus_Position_RPM + Sync_Threshold)){
+           if (Engine_Type_Select && Sync_Mode_Select == 0 && sync_flag == 0){
+           	   Get_Fast_Op_Vars(); // Read current RPM from eTPU
+           	   if (tooth == TDC_Minus_Position )
+           	       TDC_Minus_Position_RPM = RPM;
+           	   if (tooth == TDC_Plus_Position )
+           	       TDC_Plus_Position_RPM = RPM;
+           	   if (TDC_Minus_Position_RPM > 0 && TDC_Plus_Position_RPM > (TDC_Minus_Position_RPM + Sync_Threshold))
             	       sync_flag = 1;
-            	        task_wait_id(1, Cam_Pulse_Wait_Angle); // delay to put cam pulse about 180 degress after the mising tooth
-      			   }
-               }
            }else{
                 sync_flag = 1;	
            }
@@ -143,6 +135,7 @@ void Slow_Vars_Task(void)
 		   
             prev_tooth = tooth;
 
+               //task_wait_id(1, Cam_Pulse_Wait_Angle);
                task_wait(2);
 
         } // for

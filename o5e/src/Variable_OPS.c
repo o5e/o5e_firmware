@@ -142,7 +142,7 @@ uint16_t median_3 (const uint16_t a, const uint16_t, const uint16_t c)
 
 void Get_Slow_Op_Vars(void)
 {
-
+ uint32_t Pot_RPM;
 /* Slow stuff...10hz or so*/
 
     // Code for testing
@@ -168,7 +168,7 @@ void Get_Slow_Op_Vars(void)
             V_MAP[1] = Test_V_MAP_2;
             MAP[1] = (int16_t) table_lookup_jz(V_MAP[1], 0, MAP_2_Table);
 
-            // Updates toothgen with the desired test RPM
+            // Updates toothgen with the desired test RPM   
             fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM, (CPU_CLOCK / 32) / 2);
         }
     } else {                    //Run Mode, normal operation
@@ -201,6 +201,10 @@ void Get_Slow_Op_Vars(void)
         V_O2_UR[1] = (int16_t) ((V_O2_2_UR_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_2_UR_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);     // V_O2 is bin 12
         AFR[1] = (int16_t) table_lookup_jz (V_O2_UA[0],0, AFR_2_Table); 	// convert volts to AFR
 
+
+            Pot_RPM = (30 + ((200 * MAP[0]) >>12));
+            
+            fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Pot_RPM, (CPU_CLOCK / 32) / 2);
     }
 
 #   if 0
