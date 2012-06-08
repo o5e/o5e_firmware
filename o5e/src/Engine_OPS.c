@@ -80,7 +80,7 @@ void Slow_Vars_Task(void)
 // Note: this implies semi-sequential fuel and wasted spark.
 // Doesn't have to be very accurate - cam is not used for timing
 
-
+    #define Sync_Threshold 30
 
     void Cam_Pulse_Task(void)
     {
@@ -91,20 +91,56 @@ void Slow_Vars_Task(void)
         static uint_fast8_t prev_tooth;
         static uint_fast8_t position;
         static uint_fast8_t alternate = 0;
+        static uint_fast8_t sync_flag = 0;
+        static uint_fast8_t TDC_Tooth;
+        static uint_fast8_t TDC_Minus_Position;
+        static uint_fast8_t TDC_Plus_Position;
+        static uint32_t TDC_Minus_Position_RPM = 0;
+        static uint32_t TDC_Plus_Position_RPM;
+        static uint_fast8_t position_flag = 0;
+        static uint32_t Cam_Pulse_Wait_Angle;
+        
 
         position =  N_Teeth / 2;    // doesn't matter where, but this is a good spot
-
+        //these are needed for syncing a crank only odd fire engine
+        TDC_Tooth = ((Engine_Position << 2) / Degrees_Per_Tooth_x100) % Total_Teeth; //adjust from bin-2 to bin 0
+        //find teeth to compare rpm to test if compression stroke
+        TDC_Minus_Position = (Total_Teeth  + TDC_Tooth - (3000 * Degrees_Per_Tooth_x100)) % Total_Teeth;
+        TDC_Plus_Position = (TDC_Tooth + (3000 * Degrees_Per_Tooth_x100)) % Total_Teeth;
+        Cam_Pulse_Wait_Angle = (((Total_Teeth - TDC_Minus_Position) + Total_Teeth / 2) * Degrees_Per_Tooth_x100 / 100);
+        
         for (;;) {
         
-           	// output pulse once per crank rev
+           	// output pulse once per 2 crank revs
 
-           	tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to 2x total number of teeth
+           	tooth = fs_etpu_eng_pos_get_tooth_number();     // runs number of teeth
+           	
+           	 //find cylinder #1 on odd fire engines
+           	// this works by comparing the rpm before #1TDC to rpm after #1TDC
+           	// if the RPM after is great than the minus rpm plus a sync_theshold #1TDC position is known
 
-            if (prev_tooth < position && tooth >= position && (alternate ^= 1)) // detect passing tooth N/2
-                Set_Pin(FAKE_CAM_PIN,1);
-           	else
-              	Set_Pin(FAKE_CAM_PIN,0);
-
+           if (Engine_Type_Select && Sync_Mode_Select == 0){
+               if (sync_flag == 0){
+           	       Get_Fast_Op_Vars();; // Read current RPM from eTPU
+           	       if (tooth == TDC_Minus_Position )
+           	           TDC_Minus_Position_RPM = RPM;
+           	       if (tooth == TDC_Plus_Position )
+           	           TDC_Plus_Position_RPM = RPM;
+           	       if (TDC_Minus_Position_RPM != 0 && TDC_Plus_Position_RPM > (TDC_Minus_Position_RPM + Sync_Threshold)){
+            	       sync_flag = 1;
+            	        task_wait_id(1, Cam_Pulse_Wait_Angle); // delay to put cam pulse about 180 degress after the mising tooth
+      			   }
+               }
+           }else{
+                sync_flag = 1;	
+           }
+        
+                // after odd fire home found or any time on even fire engines
+           if (sync_flag == 1 && prev_tooth < position && tooth >= position && (alternate ^= 1))
+               Set_Pin(FAKE_CAM_PIN,1);
+    	   else
+           	   Set_Pin(FAKE_CAM_PIN,0);
+		   
             prev_tooth = tooth;
 
                task_wait(2);

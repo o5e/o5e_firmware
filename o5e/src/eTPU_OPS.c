@@ -144,7 +144,7 @@ int32_t init_eTPU()
     Cam_Window_Width = Cam_Window_Width_Set <<2; //adjust bin -2 to bin 0
     Cam_Edge_Select_eTPU = Cam_Edge_Select; //for normal operation allow user setting
     // set the cam window correctly for semi-sequentail mode
-    if Sync_Mode_Select {
+    if (Sync_Mode_Select ||(Engine_Type_Select && Sync_Mode_Select == 0)){
        Cam_Window_Open = 36000;
        Cam_Window_Width = 35999;
        Cam_Edge_Select_eTPU = 1; // use rising edge to match generated tooth
@@ -198,9 +198,7 @@ int32_t init_eTPU()
     // User input is always within 0-359 (or less) 
     // Example: 35-1 wheel with lobe position = 0 results in cam rising at the rising edge of tooth 37 (aka tooth 1)
     // TODO - When falling edge is used in testing the cam signal can be up to 1.5 teeth late becaue the math is base on the rising edge, issue #6
-    #define Total_Teeth (N_Teeth + Missing_Teeth) 
-    #define Degrees_Per_Tooth_x100 (36000 / Total_Teeth)
-    #define Start_Tooth (1 + Total_Teeth - (((uint32_t)Cam_Lobe_Pos << 2) / Degrees_Per_Tooth_x100))  // adjust x100 bin -2 value to x100 bin 0 before using
+
 
     error_code =
         fs_etpu_toothgen_init(TOOTHGEN_PIN1,              // crank channel
