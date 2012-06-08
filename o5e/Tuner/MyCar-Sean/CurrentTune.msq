@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 1.51 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Thu Jun 07 23:33:06 EDT 2012"/>
+<bibliography author="TunerStudio MS(Beta) 1.51 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Fri Jun 08 12:24:42 EDT 2012"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5E 1.0.7 20120405                                         " nPages="14" signature="MShift 2.111       "/>
-<page number="0" size="162">
+<page number="0" size="168">
 <constant name="Engine_Type_Select">"4 stroke odd fire"</constant>
 <constant name="Config_HS_2">"off"</constant>
 <constant name="Config_HS_1">"off"</constant>
@@ -41,6 +41,8 @@
 <constant digits="1" name="Cyl_Offset_11">0.0</constant>
 <constant digits="1" name="Cyl_Offset_10">0.0</constant>
 <constant digits="1" name="Cyl_Offset_12">0.0</constant>
+<constant name="Ignition_Invert">"Fire LOW"</constant>
+<constant digits="1" name="Odd_Fire_Sync_Angle">30.0</constant>
 <constant name="Config_Inj_10">"off"</constant>
 <constant name="Config_Inj_11">"off"</constant>
 <constant digits="4" name="Test_MAF_2" units="kg/s">0.2272943</constant>
@@ -60,7 +62,8 @@
 <constant name="Config_Inj_23">"off"</constant>
 <constant name="Config_Inj_24">"off"</constant>
 <constant digits="2" name="Test_V_TPS" units="V">2.4999936</constant>
-<constant name="Ignition_Type">"Waste Spark"</constant>
+<constant name="Ignition_Type">"Direct Fire"</constant>
+<constant digits="1" name="Odd_Fire_Sync_Threshold" units="rpm">50.0</constant>
 <constant digits="2" name="Test_V_O2_UR_1" units="V">2.4999936</constant>
 <constant digits="2" name="Test_V_O2_UR_2" units="V">2.4999936</constant>
 <constant digits="2" name="Test_V_O2_UA_1" units="V">2.4999936</constant>
@@ -364,6 +367,16 @@
          13.9999642 
          15.999959 
       </constant>
+<constant cols="1" digits="1" name="Inj_Dead_Time_Cal" rows="8" units="%">
+         147.997668 
+         99.999744 
+         69.994938 
+         44.995002 
+         26.00091 
+         10.998507 
+         0.0 
+         -18.005325 
+      </constant>
 <constant cols="1" digits="2" name="Load_Model_Cal" rows="16" units="AFR">
          14.7002028 
          14.7002028 
@@ -381,16 +394,6 @@
          13.5996163 
          13.2998115 
          13.0000067 
-      </constant>
-<constant cols="1" digits="1" name="Inj_Dead_Time_Cal" rows="8" units="%">
-         147.997668 
-         99.999744 
-         69.994938 
-         44.995002 
-         26.00091 
-         10.998507 
-         0.0 
-         -18.005325 
       </constant>
 <constant name="Fuel_Temp_Corr_Byte">"16 bit signed"</constant>
 <constant digits="1" name="Cold_start_IAC" units="%">100.0</constant>

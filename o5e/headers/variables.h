@@ -64,7 +64,7 @@ void Set_Page_Locations(uint8_t block);
 
 EXTERN const uint16_t pageSize[nPages]
 #ifndef NOINIT
-= { 162, 1810, 1544, 1990, 1672, 1672, 1672, 1672, 1952, 1952, 1952, 1952, 1952, 1952 }
+= { 168, 1810, 1544, 1990, 1672, 1672, 1672, 1672, 1952, 1952, 1952, 1952, 1952, 1952 }
 #endif
 ;
 
@@ -275,6 +275,11 @@ EXTERN struct Outputs Output_Channels;
 #define Engine_Type_Select (*(CONST U08 *)(&Page_Ptr[0][157]) & ((2<<1)-1))
 #define Cam_Window_Open_Set (*(CONST S16 *)(&Page_Ptr[0][158]))
 #define Cam_Window_Width_Set (*(CONST S16 *)(&Page_Ptr[0][160]))
+#define Odd_Fire_Sync_Threshold (*(CONST S16 *)(&Page_Ptr[0][162]))
+#define Odd_Fire_Sync_Angle (*(CONST S16 *)(&Page_Ptr[0][164]))
+#define Ignition_Invert (*(CONST U08 *)(&Page_Ptr[0][166]) & ((2<<0)-1))
+
+
 // Page 2
 #define Fuel_Temp_Corr_Table ((CONST struct table_jz *)(&Page_Ptr[1][0]))
 #define IAT_Fuel_Corr_Table ((CONST struct table_jz *)(&Page_Ptr[1][648]))

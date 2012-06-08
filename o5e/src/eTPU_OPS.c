@@ -344,7 +344,7 @@ int32_t init_eTPU()
                                                Cyl_Angle_eTPU[4],       // 
                                                Cyl_Angle_eTPU[5],       // offset angles * 100
                                                FS_ETPU_PRIORITY_MIDDLE,  
-                                               FS_ETPU_SPARK_FM0_ACTIVE_HIGH, 
+                                               Ignition_Invert,         // Fire high or low
                                                0,                       // min_coil_dur, usec 
                                                4000,                    // max_coil_dur, usec 
                                                0,                       // multi spark on time 
@@ -371,7 +371,7 @@ int32_t init_eTPU()
                                                    Cyl_Angle_eTPU[10], 
                                                    Cyl_Angle_eTPU[11],  // offset angles * 100
                                                    FS_ETPU_PRIORITY_MIDDLE, 
-                                                   FS_ETPU_SPARK_FM0_ACTIVE_HIGH, 
+                                                   Ignition_Invert,     // Fire high or low
                                                    0,                   // min_coil_dur, usec 
                                                    4000,                // max_coil_dur, usec
                                                    500,                 // multi spark on time 

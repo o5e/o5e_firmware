@@ -80,7 +80,6 @@ void Slow_Vars_Task(void)
 // Note: this implies semi-sequential fuel and wasted spark.
 // Doesn't have to be very accurate - cam is not used for timing
 
-    #define Sync_Threshold 50
 
     void Cam_Pulse_Task(void)
     {
@@ -97,15 +96,14 @@ void Slow_Vars_Task(void)
         static uint_fast8_t TDC_Plus_Position;
         static uint32_t TDC_Minus_Position_RPM = 0;
         static uint32_t Last_TDC_Minus_Position_RPM = 0;
-        static uint32_t TDC_Plus_Position_RPM = 0;
         
 
         position =  N_Teeth / 2;    // doesn't matter where, but this is a good spot
         //these are needed for syncing a crank only odd fire engine
         TDC_Tooth = ((Engine_Position << 2) / Degrees_Per_Tooth_x100) % Total_Teeth; //adjust from bin-2 to bin 0
         //find teeth to compare rpm to test if compression stroke
-        TDC_Minus_Position = (Total_Teeth  + TDC_Tooth - (3000 / Degrees_Per_Tooth_x100)) % Total_Teeth;
-        TDC_Plus_Position = (TDC_Tooth + (3000 / Degrees_Per_Tooth_x100)) % Total_Teeth;
+        TDC_Minus_Position = (Total_Teeth  + TDC_Tooth - ((Odd_Fire_Sync_Angle <<2) / Degrees_Per_Tooth_x100)) % Total_Teeth;
+
         for (;;) {
         
            	// output pulse once per 2 crank revs
@@ -120,11 +118,10 @@ void Slow_Vars_Task(void)
            	   Get_Fast_Op_Vars(); // Read current RPM from eTPU
            	   if (tooth == TDC_Minus_Position )
            	       TDC_Minus_Position_RPM = RPM;
-           	   //if (tooth == TDC_Plus_Position )
-           	   //    TDC_Plus_Position_RPM = RPM;
-           	   //if (TDC_Minus_Position_RPM > Sync_Threshold && TDC_Plus_Position_RPM > Sync_Threshold && TDC_Minus_Position_RPM < ( TDC_Plus_Position_RPM - Sync_Threshold))
-           	   if (TDC_Minus_Position_RPM > Sync_Threshold && Last_TDC_Minus_Position_RPM > Sync_Threshold && TDC_Minus_Position_RPM < (Last_TDC_Minus_Position_RPM - Sync_Threshold))
+           	   
+           	   if (TDC_Minus_Position_RPM > Odd_Fire_Sync_Threshold && Last_TDC_Minus_Position_RPM > Odd_Fire_Sync_Threshold && TDC_Minus_Position_RPM < (Last_TDC_Minus_Position_RPM - Odd_Fire_Sync_Threshold))
             	       sync_flag = 1;
+           	   
            	   if (tooth < prev_tooth) //detect missing tooth
            	   Last_TDC_Minus_Position_RPM = TDC_Minus_Position_RPM;
            	   
