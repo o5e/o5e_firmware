@@ -259,7 +259,94 @@ Crank   eTPU0
 Cam     eTPU1
 */
 
-#endif
+#endif 
+
+/*****************************************************************************************/
+#ifdef FREESCALE
+
+    // Note: AN12-AN15 have pad numbers and use B0011 to make them AN pins
+
+        // eTPU0, pin 114 is special and needs a 11 instead of 01 for primary function
+        SIU.PCR[114].R = B0011 | INPUT; 	// eTPU[0] CRANK_I (TCRCLKA or eTPU[0])
+        SIU.PCR[115].R = B0001 | INPUT;     // eTPU[1] CAM_IN_I
+        SIU.PCR[116].R = B0001 | INPUT; 	// eTPU[2] CAM_EX_I
+        SIU.PCR[117].R = B0001 | OUTPUT; 	// eTPU[3] TACH_O
+        SIU.PCR[118].R = GPIO | UNUSED; 	// eTPU[4] TP719
+        SIU.PCR[119].R = B0001 | OUTPUT; 	// eTPU[5] INJ5_O
+        SIU.PCR[120].R = B0001 | OUTPUT; 	// eTPU[6] INJ6_O
+        SIU.PCR[121].R = B0001 | OUTPUT; 	// eTPU[7] INJ7_O
+        SIU.PCR[122].R = B0001 | OUTPUT; 	// eTPU[8] INJ8_O
+        SIU.PCR[123].R = GPIO | OUTPUT; 	// 879_INJ5_O 
+        SIU.PCR[124].R = GPIO | OUTPUT; 	// 879_INJ6_O
+        SIU.PCR[125].R = B0001 | OUTPUT; 	// eTPU[11] INJ1_O
+        SIU.PCR[126].R = B0001 | OUTPUT; 	// eTPU[12] INJ2_O
+        SIU.PCR[127].R = B0001 | OUTPUT; 	// eTPU[13] INJ3_O
+        SIU.PCR[128].R = B0001 | OUTPUT; 	// eTPU[14] INJ4_O
+        SIU.PCR[129].R = B0001 | OUTPUT; 	// eTPU[15] IGN1_O
+        SIU.PCR[130].R = B0001 | OUTPUT;    // eTPU[16] IGN2_O
+        SIU.PCR[131].R = B0001 | OUTPUT;    // eTPU[17] IGN3_O
+        SIU.PCR[132].R = B0001 | OUTPUT;    // eTPU[18] IGN4_O
+        SIU.PCR[133].R = GPIO | OUTPUT;     // 810_MAXI
+        SIU.PCR[134].R = GPIO | OUTPUT;     // 810_NOMI
+        SIU.PCR[135].R = GPIO | OUTPUT; 	// 810_SPKDUR
+        SIU.PCR[136].R = GPIO | OUTPUT; 	// VIGN1
+        SIU.PCR[137].R = GPIO | UNUSED; 	// unused
+        SIU.PCR[138].R = GPIO | OUTPUT; 	// FPRLY
+        SIU.PCR[139].R = GPIO | OUTPUT; 	// 931A_DIS
+        SIU.PCR[140].R = GPIO | UNUSED; 	// unused
+        SIU.PCR[141].R = GPIO | UNUSED; 	// unused 
+        SIU.PCR[142].R = GPIO | OUTPUT; 	// COOLANT_TEMP_O
+        SIU.PCR[143].R = GPIO | INPUT; 		// COMPARATOR_I
+        SIU.PCR[144].R = GPIO | OUTPUT;     // 905_INT 
+        SIU.PCR[145].R = B0011 | OUTPUT;    // eTPU[31] KNK_WINDOW
+
+        //EMIOS primary
+        SIU.PCR[179].R = GPIO | OUTPUT; 	// eMIOS 0 fuel pump
+        SIU.PCR[180].R = GPIO | UNUSED; 	// eMIOS 1
+        SIU.PCR[181].R = GPIO | UNUSED; 	// eMIOS 2
+        SIU.PCR[183].R = B0001 | OUTPUT; 	// eMIOS 4 (B0001)
+
+        SIU.PCR[187].R = B0001 | OUTPUT;        // eMIOS 8 (B0001) or injector 9 eTPU[8] (B0010) 
+        SIU.PCR[188].R = B0001 | OUTPUT;        // eMIOS 9 (B0001) or injector 10 eTPU[9] (B0010)    
+        SIU.PCR[189].R = GPIO | OUTPUT; 	// flashing LED or eMIOS (10)  
+        SIU.PCR[190].R = GPIO | OUTPUT; 	// flashing LED or eMIOS (11)  
+        SIU.PCR[191].R = B0001 | OUTPUT;        // eMIOS 12 (B0001) or injector 11 eTPU[27](B0100)
+
+        SIU.PCR[192].R = B0001 | OUTPUT; 	// eMIOS 13 (B0001) or GPIO 
+        SIU.PCR[193].R = B0001 | OUTPUT;        // eMIOS 14 (B0001) or injector 12 eTPU[29](B0100)
+        SIU.PCR[194].R = B0001 | OUTPUT; 	// eMIOS 15 (B0001)
+
+        SIU.PCR[202].R = GPIO | UNUSED;         // eMIOS (23)
+         
+        //AN channel functions (do not require PCR settings)
+        //AN1 - Knock +
+        //AN2 - Knock -
+        //AN9 - MAP_1
+        //AN11 - V_Batt
+        //AN16 - V_TPS
+        //AN17 - POT on dev board
+        //AN18 - not working
+        //AN21 - V_CLT
+        //AN22 - not workingV_MAP_2
+        //AN23 - V_IAT
+        //AN24 - V_O2_1_UA
+        //AN25 - V_O2_1_UR
+        //AN27 - V_O2_2_UA
+        //AN28 - V_O2_2_UR
+        //AN30 - V_P1
+        //AN31 - V_P2
+        //AN32 - V_P3
+        //AN33 - V_P4
+        //AN34 - V_P5
+        //AN35 - V_P6
+
+/*
+Fuel    eTPU5 eTPU11 eTPU12 eTPU13 eTPU14 eTPU15 eTPU21 eTPU22 eTPU8 eTPU9 eTPU27 eTPU29
+Spark   eTPU2 eTPU3 eTPU4 eTPU8 eTPU6 eTPU7 
+Crank   eTPU0
+Cam     eTPU1
+*/
+#endif 
 
 #ifdef PWM1_PAD
    // Configure PWM output pad/pin
