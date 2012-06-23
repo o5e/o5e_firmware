@@ -477,7 +477,7 @@ void Set_Fuel(void)
 
             error_code = 1;
             while (error_code != 0)     // This tries until the channel is actually updated
-                error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Injection_Time);
+                error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Pulse_Width);
 
         }                       // for
 
