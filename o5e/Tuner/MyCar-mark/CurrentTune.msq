@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 1.51 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Fri Jun 08 12:24:42 EDT 2012"/>
-<versionInfo fileFormat="4.0" firmwareInfo="O5E 1.0.7 20120405                                         " nPages="14" signature="MShift 2.111       "/>
+<bibliography author="TunerStudio MS(Beta) 2.0.3 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Mon Jun 25 08:27:23 EDT 2012"/>
+<versionInfo fileFormat="4.0" firmwareInfo="" nPages="14" signature="MShift 2.111       "/>
 <page number="0" size="168">
-<constant name="Engine_Type_Select">"4 stroke odd fire"</constant>
+<constant name="Engine_Type_Select">"4 stroke"</constant>
 <constant name="Config_HS_2">"off"</constant>
 <constant name="Config_HS_1">"off"</constant>
 <constant name="Config_HS_4">"off"</constant>
 <constant name="Config_HS_3">"off"</constant>
 <constant digits="1" name="Engine_Position">150.0</constant>
-<constant name="N_Cyl">"2"</constant>
+<constant name="N_Cyl">"4"</constant>
 <constant digits="1" name="Test_CLT" units="C">0.0</constant>
 <constant digits="2" name="Test_V_MAF_1" units="V">2.4999936</constant>
 <constant digits="2" name="Test_V_MAF_2" units="V">2.4999936</constant>
@@ -27,17 +27,18 @@
 <constant name="Config_Ign_10">"off"</constant>
 <constant name="Crank_Edge_Select">"rising edge"</constant>
 <constant name="Config_Ign_12">"off"</constant>
-<constant digits="0" name="N_Teeth">9.0</constant>
+<constant digits="0" name="N_Teeth">35.0</constant>
 <constant name="Config_Ign_11">"off"</constant>
-<constant digits="0" name="Test_RPM" units="rpm">200.0</constant>
+<constant digits="0" name="Test_RPM" units="rpm">5000.0</constant>
 <constant digits="2" name="Test_V_MAP_1" units="V">2.4999936</constant>
 <constant digits="2" name="Test_V_MAP_2" units="V">2.4999936</constant>
 <constant name="Sync_Mode_Select">"full sync (720 degree)"</constant>
+<constant name="Pulses_Per_Rev">"4"</constant>
 <constant name="Config_Stepper">"off"</constant>
 <constant digits="2" name="Test_V_Batt" units="V">13.7001602</constant>
-<constant digits="1" name="Test_MAP_1" units="kPa">99.999744</constant>
+<constant digits="1" name="Test_MAP_1" units="kPa">49.999872</constant>
 <constant digits="1" name="Test_MAP_2" units="kPa">99.999744</constant>
-<constant name="Test_Enable">"Run Mode"</constant>
+<constant name="Test_Enable">"Test Mode!"</constant>
 <constant digits="1" name="Cyl_Offset_11">0.0</constant>
 <constant digits="1" name="Cyl_Offset_10">0.0</constant>
 <constant digits="1" name="Cyl_Offset_12">0.0</constant>
@@ -110,7 +111,7 @@
 <constant digits="1" name="Cyl_Offset_3">180.0</constant>
 <constant digits="1" name="Cyl_Offset_4">270.0</constant>
 <constant name="Config_Inj_4">"inj4"</constant>
-<constant digits="1" name="Cyl_Offset_2">450.0</constant>
+<constant digits="1" name="Cyl_Offset_2">90.0</constant>
 <constant name="Config_Inj_3">"inj3"</constant>
 <constant digits="1" name="Cyl_Offset_1">0.0</constant>
 <constant name="Config_Inj_6">"inj6"</constant>
@@ -122,8 +123,8 @@
 <constant digits="1" name="Test_IAT" units="C">0.0</constant>
 <constant name="Config_Inj_8">"inj8"</constant>
 <constant digits="2" name="Test_V_CLT" units="V">2.4999936</constant>
-<constant name="Missing_Teeth">"3"</constant>
-<constant digits="1" name="Drop_Dead_Angle">450.0</constant>
+<constant name="Missing_Teeth">"1"</constant>
+<constant digits="1" name="Drop_Dead_Angle">460.0</constant>
 </page>
 <page number="1" size="1810">
 <constant cols="1" digits="1" name="MAP_Angle_Cal" rows="24" units="deg">
@@ -193,7 +194,7 @@
 <constant name="Enable_Inj">"on"</constant>
 <constant digits="0" name="Warm_Idle_Temp" units="C">-273.167443</constant>
 <constant digits="1" name="Cold_IAC" units="%">50.0</constant>
-<constant name="Enable_Map_Control">"off"</constant>
+<constant name="Enable_Map_Control">"on"</constant>
 <constant digits="0" name="IAT_Fuel_Corr_Cols">16.0</constant>
 <constant digits="0" name="Warm_Start_Temp" units="C">-273.167443</constant>
 <constant digits="1" name="Dwell_Max" units="%">99.21875</constant>

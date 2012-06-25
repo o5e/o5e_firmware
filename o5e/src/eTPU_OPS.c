@@ -260,7 +260,7 @@ int32_t init_eTPU()
     if (error_code != 0) 
         system_error(12379, __FILE__, __LINE__, "");
 
-//    if (N_Injectors > 6) { TODO this should work but doesn't, OS locks when user changes Cyl_Count <6 to >6
+/*    if (N_Injectors > 6) { //TODO this should work but doesn't, OS locks when user changes Cyl_Count <6 to >6
         error_code = fs_etpu_fuel_init_6cylinders(FUEL_CHANNELS_7_12,   // channels  
                                                   1,                    // CAM in engine: A; channel: 1 
                                                   FS_ETPU_PRIORITY_LOW, 
@@ -281,7 +281,7 @@ int32_t init_eTPU()
             );
         if (error_code != 0) 
             system_error(12479, __FILE__, __LINE__, "");
-//    }
+    } */
 // MPC5554 can have more than 12 fuel
 #   ifdef MPC5554
     if (N_Injectors > 12) {

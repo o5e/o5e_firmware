@@ -280,7 +280,7 @@ void Set_Spark()
     } else {
         // Looks up the desired spark advance in degrees before Top Dead Center (TDC)
         Spark_Advance = Table_Lookup_JZ(RPM, Load, Spark_Advance_Table) ;  // Bin shift tuner angles from -2 to 0 for eTPU use 
-        Spark_Advance_eTPU = 7200 - Spark_Advance <<2;
+        Spark_Advance_eTPU = (72000 - (Spark_Advance <<2));
 
         // TODO Knock_Retard(); Issue #7
 
@@ -545,6 +545,8 @@ void Set_Fuel(void)
 
         // where should pulse end (injection timing)?
         uint32_t Inj_End_Angle_eTPU = (Table_Lookup_JZ(RPM, Load, Inj_End_Angle_Table)) << 2;  // Bin shift tuner angles from -2 to 0 for eTPU use 
+		if (Inj_End_Angle_eTPU >=  (Drop_Dead_Angle <<  2))
+			Inj_End_Angle_eTPU = ((Drop_Dead_Angle <<  2) - (1 * 100));  // set to 1 degree (times 100 for eTPU) under drop dead angle
 
         // Calculate angles for eTPU use, must reference the missing tooth not TDC
 
@@ -566,7 +568,7 @@ void Set_Fuel(void)
 
             error_code = 1;
             while (error_code != 0)     // This tries until the channel is actually updated
-                error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Injection_Time);
+                error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Pulse_Width);
 
         }                       // for
 
