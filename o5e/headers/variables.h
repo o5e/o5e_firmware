@@ -112,11 +112,41 @@ uint16_t Post_Start_Cylinder;
 uint32_t Last_Error;
 int16_t Dwell;
 int16_t TPS_Dot;
+uint32_t Sync_Status;
+uint32_t OS_Error; 
+int16_t Cam_Errors;
+int16_t Crank_Errors;
+uint32_t Last_Error_Time;
+uint8_t Spare1;
+uint8_t Spare2;
+uint8_t Spare3;
+uint8_t Spare4;
+uint8_t Spare5;
+uint8_t Spare6;
+uint8_t Spare7;
+uint8_t Spare8;
+uint8_t Spare9;
+uint8_t Spare10;
+uint8_t Spare11;
+uint8_t Spare12;
+uint8_t Spare13;
+uint8_t Spare14;
+uint8_t Spare15;
+uint8_t Spare16;
+uint8_t Spare17;
+uint8_t Spare18;
+uint8_t Spare19;
+uint8_t Spare20;
+uint8_t Spare21;
+uint8_t Spare22;
+uint8_t Spare23;
+uint8_t Spare24;
+
 
 };
 
 // this must match the offsets in the .ini file AND must be a multiple of 4
-#define Output_Channels_Size  120        // don't use sizeof() here
+#define Output_Channels_Size  160        // don't use sizeof() here
 
 // these are for convenience and more readable code - must match above
 #define RPM Output_Channels.RPM
@@ -278,7 +308,7 @@ EXTERN struct Outputs Output_Channels;
 #define Odd_Fire_Sync_Threshold (*(CONST S16 *)(&Page_Ptr[0][162]))
 #define Odd_Fire_Sync_Angle (*(CONST S16 *)(&Page_Ptr[0][164]))
 #define Ignition_Invert (*(CONST U08 *)(&Page_Ptr[0][166]) & ((2<<0)-1))
-
+#define N_Coils_Per_Cylinder (*(CONST U08 *)(&Page_Ptr[0][167]) & ((2<<0)-1))
 
 // Page 2
 #define Fuel_Temp_Corr_Table ((CONST struct table_jz *)(&Page_Ptr[1][0]))

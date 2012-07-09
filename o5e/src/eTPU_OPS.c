@@ -147,7 +147,7 @@ int32_t init_eTPU()
     if (Sync_Mode_Select ||(Engine_Type_Select && Sync_Mode_Select == 0)){
        Cam_Window_Open = 36000;
        Cam_Window_Width = 35999;
-       Cam_Edge_Select_eTPU = 1; // use rising edge to match generated tooth
+       Cam_Edge_Select_eTPU = 0; // use rising edge to match generated tooth
     }
 
 // Links cause a stall to notify some other channels and turn them off - 4 packed into each 32 bit word
@@ -174,15 +174,15 @@ int32_t init_eTPU()
                                         Crank_Edge_Select,              /* crank_edge_polarity: falling edge = 0, rising = 1 */
                                         N_Teeth,                        /* crank_number_of_physical_teeth: crank_number_of_physical_teeth */
                                         Missing_Teeth,                  /* crank_number_of_missing_teeth: crank_number_of_missing_teeth */
-                                        10,                             /* crank_blank_tooth_count: crank_blank_tooth_count */
+                                        2,                             /* crank_blank_tooth_count: crank_blank_tooth_count */
                                         60,                             /* crank_tcr2_ticks_per_tooth: crank_tcr2_ticks_per_tooth */
                                         0x199999,                       /* crank_windowing_ratio_normal: 0x199999 */
                                         0x199999,                       /* crank_windowing_ratio_after_gap: 0x199999 */
                                         0x199999,                       /* crank_windowing_ratio_across_gap: 0x199999 */
-                                        0x299999,                       /* crank_windowing_ratio_timeout: 0x299999 */
+                                        0x2fffff,                       /* crank_windowing_ratio_timeout: 0x299999 */
                                         0x9fffff,                       /* crank_gap_ratio: 0x9fffff */
                                         5,                              /* crank_blank_time_ms: 5 */
-                                        40000,                          /* crank_first_tooth_timeout_us: 40000 */
+                                        200000,                          /* crank_first_tooth_timeout_us: 40000 */
                                         Link1,Link2, Link3, Link4,      /* a stall will notify these other channels */
                                         etpu_tcr1_freq);                /* tcr1_timebase_freq: etpu_a_tcr1_freq */
     if (error_code != 0) 
@@ -198,6 +198,7 @@ int32_t init_eTPU()
     // User input is always within 0-359 (or less) 
     // Example: 35-1 wheel with lobe position = 0 results in cam rising at the rising edge of tooth 37 (aka tooth 1)
     // TODO - When falling edge is used in testing the cam signal can be up to 1.5 teeth late becaue the math is base on the rising edge, issue #6
+#define Start_Tooth (1 + Total_Teeth - (((uint32_t)Cam_Lobe_Pos << 2) / Degrees_Per_Tooth_x100))  // adjust x100 bin -2 value to x100 bin 0 before using
 
 
     error_code =
@@ -207,7 +208,7 @@ int32_t init_eTPU()
                               N_Teeth,                    // number of physical teeth
                               Missing_Teeth,              // number of missing teeth
                               (ufract24_t)(.5 * (1<<24)), // tooth duty cycle 50%
-                              15,                         // tooth number to generate first (not important)
+                              1,                          // tooth number to generate first (not important)
                               Test_RPM,                   // engine speed
                               etpu_a_tcr1_freq,           //
                               (uint8_t)Start_Tooth,       // tooth to start cam signal (tooth #s start with 1)
@@ -226,7 +227,7 @@ int32_t init_eTPU()
 
     // might be using wasted spark
     N_Coils = N_Cyl;
-    if (Ignition_Type == 1)
+    if ( N_Coils == 1)//N_Coils_Per_Cylinder
        N_Coils /= 2;
 
     // Calculate the cylinder angles from user inputs
@@ -260,7 +261,7 @@ int32_t init_eTPU()
     if (error_code != 0) 
         system_error(12379, __FILE__, __LINE__, "");
 
-/*    if (N_Injectors > 6) { //TODO this should work but doesn't, OS locks when user changes Cyl_Count <6 to >6
+    if (N_Injectors > 6) { //TODO this should work but doesn't, OS locks when user changes Cyl_Count <6 to >6
         error_code = fs_etpu_fuel_init_6cylinders(FUEL_CHANNELS_7_12,   // channels  
                                                   1,                    // CAM in engine: A; channel: 1 
                                                   FS_ETPU_PRIORITY_LOW, 
@@ -281,7 +282,7 @@ int32_t init_eTPU()
             );
         if (error_code != 0) 
             system_error(12479, __FILE__, __LINE__, "");
-    } */
+    } 
 // MPC5554 can have more than 12 fuel
 #   ifdef MPC5554
     if (N_Injectors > 12) {

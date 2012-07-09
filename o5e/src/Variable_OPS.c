@@ -201,10 +201,8 @@ void Get_Slow_Op_Vars(void)
         V_O2_UR[1] = (int16_t) ((V_O2_2_UR_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_2_UR_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);     // V_O2 is bin 12
         AFR[1] = (int16_t) table_lookup_jz (V_O2_UA[0],0, AFR_2_Table); 	// convert volts to AFR
 
-
-            Pot_RPM = (30 + ((200 * MAP[0]) >>12));
             
-            fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Pot_RPM, (CPU_CLOCK / 32) / 2);
+            fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM, (CPU_CLOCK / 32) / 2);
     }
 
 #   if 0

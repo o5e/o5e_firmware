@@ -98,7 +98,7 @@ void Slow_Vars_Task(void)
         static uint32_t Last_TDC_Minus_Position_RPM = 0;
         
 
-        position =  N_Teeth / 2;    // doesn't matter where, but this is a good spot
+        position =  Total_Teeth / 2;    // doesn't matter where, but this is a good spot
         //these are needed for syncing a crank only odd fire engine
         TDC_Tooth = ((Engine_Position << 2) / Degrees_Per_Tooth_x100) % Total_Teeth; //adjust from bin-2 to bin 0
         //find teeth to compare rpm to test if compression stroke
@@ -574,7 +574,7 @@ void Set_Fuel(void)
 
         // These are global across channels, so only do it once
         fs_etpu_fuel_set_compensation_time(Fuel_Channels[0], Dead_Time);
-        fs_etpu_fuel_set_normal_end_angle(Fuel_Channels[0], Inj_End_Angle_eTPU);        // degrees * 100
+        //fs_etpu_fuel_set_normal_end_angle(Fuel_Channels[0], Inj_End_Angle_eTPU);        // degrees * 100
         fs_etpu_fuel_set_recalc_offset_angle(Fuel_Channels[0], Fuel_Recalc_Angle_eTPU); // degrees * 100
     }                           // else
 }                               // Set_Fuel()

@@ -20,9 +20,9 @@
 #define NOINIT
 #define EXTERN extern
 #endif
-    #define Total_Teeth (N_Teeth + Missing_Teeth) 
-    #define Degrees_Per_Tooth_x100 (36000 / Total_Teeth)
-    #define Start_Tooth (1 + Total_Teeth - (((uint32_t)Cam_Lobe_Pos << 2) / Degrees_Per_Tooth_x100))  // adjust x100 bin -2 value to x100 bin 0 before using
+#define Total_Teeth (N_Teeth + Missing_Teeth) 
+#define Degrees_Per_Tooth_x100 (36000 / Total_Teeth)
+
 // Functions
 
 int32_t init_eTPU(void);
