@@ -2,18 +2,10 @@
 #ifndef Engine_OPS_H
 #define Engine_OPS_H
 
-#ifndef EXTERN
-#define EXTERN extern
-#endif
-
-extern void Slow_Vars_Task(void);
-extern void Fuel_Pump_Task(void);
-extern void Set_Spark(void);
-extern void Set_Fuel(void);
-extern void Engine10_Task(void);
-
-EXTERN uint32_t Pulse_Width;
+void Slow_Vars_Task(void);
+void Fuel_Pump_Task(void);
+void Engine10_Task(void);
+void Eng_Pos_Status_BLINK_Task(void);
+void Cam_Pulse_Task(void);
 
 #endif
-#undef EXTERN
-

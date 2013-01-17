@@ -1,24 +1,23 @@
-/**************************************************************************
- FILE NAME: System_INIT_OPS.c 
+/*********************************************************************************
 
- DESCRIPTION: 
-     This file contains functions for Initializing OPENECU 
-     System dependant code. 
+        @file   System_INIT_OPS.c
+        @author P. Schlein, Jon Zeeff 
+        @date   May 19, 2012
+        @brief  Open5xxxECU - system initialization
+        @note   
+        @version 1.1
+        @copyright 2011 P. Schlein, Jon Zeeff
 
-       ORIGINAL AUTHOR: Paul Schlein 
-       REV  AUTHOR      DATE      	DESCRIPTION OF CHANGE 
-       --- ----------- ----------       --------------------- 
-       3.1 J. Zeeff    1/Oct/11 	Add OS and basics for interrrupts 
-       3.0 P. Schlein  4/Sep/11 	Add Fuel Pump Init 
-       2.0 P. Schlein 28/Jul/11 	Add eDMA anf eMIOSFunctions 
-       1.0 P. Schlein 26/May/11 	Initial version 
+*************************************************************************************/
 
-**************************************************************************/
+/* 
+Portions Copyright 2011 P. Schlein - MIT License
+Portions Copyright 2011,2012  Jon Zeeff - All rights reserved
+*/
 
+#include <stdint.h>
 #include "config.h"
-#include "system.h"
-#include "SIU_OPS.h"
-#include "IntcInterrupts.h"
+#include "mpc563xm.h"
 #include "System_INIT_OPS.h"
 #include "eQADC_OPS.h"
 #include "eMIOS_OPS.h"
@@ -29,20 +28,10 @@
 #include "eSCI_DMA.h"
 #include "FLASH_OPS.h"
 #include "variables.h"
-#include "OS.h"
-#include "Functions.h"
+#include "eTPU_OPS.h"
+#include "led.h"
 
-#if 0
-// Interrupt service routine to increment OS clock
-// Not used
-
-void msec_ISR(void)
-{
-    os_task_tick();             // call routine to inc OS timer
-    EMIOS.CH[MSEC_TIMER_EMIOS_CHANNEL].CADR.R = 132;    // reload counter
-    EMIOS.CH[MSEC_TIMER_EMIOS_CHANNEL].CSR.B.FLAG = 1;  // Clear channel's flag 
-}
-#endif
+#define PartNumber SIU.MIDR.B.PARTNUM    // CPU ID - is in hex, example: 0x5634
 
 /**************************************************************************
      * FUNCTION : SYS_INIT 
@@ -53,22 +42,19 @@ void msec_ISR(void)
 **************************************************************************/
 void System_Init(void)
 {
-
-    set_LEDs(1);
+    led_set( 1 );
     // freeze here if wrong CPU
-#ifdef MPC5634
     if (PartNumber != 0x5634)
         for (;;) {
         }
-#endif
 
     // Initialize Flash and cpu speed
-    set_LEDs(2);
-    init_FLASH();
+    led_set( 2 );
+//    init_FLASH();  /**< already done by bsp on startup */
 
     // Interrupts setup 
-    set_LEDs(4);
-    INTC_InitINTCInterrupts();
+    led_set( 4 );
+    //INTC_InitINTCInterrupts();  /**< already done by bsp on startup */
 
     // Timer tick ISR for OS - See RM for source of 51 (first eMIOS interrupt vector)
     //INTC_InstallINTCInterruptHandler((INTCInterruptFn) msec_ISR, 51 + MSEC_TIMER_EMIOS_CHANNEL,0);
@@ -76,74 +62,52 @@ void System_Init(void)
     // other interrupts can be set up here
 
     // Initialize variables (checks if flash is loaded)
-    set_LEDs(5);
-    init_variables();
+    led_set( 5 );
+    init_variables(); /**< touches Flash_OK global */
 
     // Initialize OS
-    set_LEDs(6);
-    os_init();
+    led_set( 6 );
 
     if (Flash_OK) {
 
-    // Enable all timebases-move to eTPU_OPS.c later
-    set_LEDs(7);
-    fs_timer_start();
-
     // Initialize eTPU 
-    set_LEDs(8);
+    led_set( 7 );
     (void)init_eTPU();
     //init_PWM1(200); // uses eTPU
     //Init_Tach();    // uses eTPU
 
+    // Enable all timebases-move to eTPU_OPS.c later
+    led_set( 8 );
+    fs_timer_start();
+
     // Initialize ADC
-    set_LEDs(9);
+    led_set( 9 );
     init_ADC();         // DMA version
 
     // Initialize eDMA for AD
-    set_LEDs(10);
+    led_set( 10 );
     init_eDMA();
 
-    // Initialize SIU (pin functions)
-    set_LEDs(11);
-    init_SIU();
-
     // Initialize Watchdog 
-    set_LEDs(12);
-    Init_Watchdog();
+    led_set( 11 );
 
     } // if
 
+    // Initialize SIU (pin functions)
+    led_set( 12 );
+    init_SIU();
+
     // Initialize eMIOS (timers/clocks)
-    set_LEDs(13);
+    led_set( 13 );
     init_eMIOS();
 
     // Initialize eSCI (serial ports)
-    set_LEDs(14);               // careful, overwrites what SIU did
+    led_set( 14 );               // careful, overwrites what SIU did
     init_eSCI();
-
-    // Initialize eSCI DMA
-    set_LEDs(15);
     init_eSCI_DMA();
 
-}
-
-// diagnostic routine to set LEDs to binary code to see progress through the init routines
-#include "FreeScale/FSutil.h"
-
-// Note: this routine may over write pin settings set in SIU_OPS
-
-void set_LEDs(int n)
-{
-#ifdef MPC5634
-#   define LED1 188
-#   define LED2 189
-#   define LED3 190
-#   define LED4 191
-
-    init_LED(LED4, (n & 0x1) == 0);
-    init_LED(LED3, (n & 0x2) == 0);
-    init_LED(LED2, (n & 0x4) == 0);
-    init_LED(LED1, (n & 0x8) == 0);
-#endif
+    // Initialize SPI
+    led_set( 0 );
+    // Init_SPI();
 
 }

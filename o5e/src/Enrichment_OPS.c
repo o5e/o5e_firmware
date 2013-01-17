@@ -12,30 +12,18 @@
 /* 1.0     P. Schlein      12/Sep/11     Initial version with Placeholders        */
 /*================================================================================*/
 
-/*
-Copyright (c) 2011 
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-*/
-
-
-#include "config.h"
-#include "stdint.h"
-#include "Engine_OPS.h"
-#define EXTERN
+//#include <stdint.h>
+//#include "config.h"
+//#include "Engine_OPS.h"
 #include "Enrichment_OPS.h"
-#include "cpu.h"
-#include "system.h"
-#include "variables.h"
-#include "Table_Lookup_JZ.h"
-#include "etpu_util.h"
-#include "OS.h"
+//#include "variables.h"
+//#include "Table_Lookup_JZ.h"
+//#include "etpu_util.h"
+//#include "cocoos.h"
 
+//static int16_t Accel_Corr;
+//static uint8_t CLT_Corr;
+//static uint8_t Post_Start_Corr;
 
 /**********************************************************************************/
 /* FUNCTION     : Acceleration/Deceleration Correction                            */
@@ -56,8 +44,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 void Enrichment_Task()
 {
-
-
 #if 0
     //int16_t Max;                // bin 7
     //int16_t Step;               // bin 7
@@ -75,17 +61,17 @@ void Enrichment_Task()
 
     for (;;) {
        //Coolant temp correction
-//        CLT_Fuel_Corr = (int16_t) Table_Lookup_JZ(CLT, 0, Fuel_Temp_Corr_Table);
+//        CLT_Fuel_Corr = (int16_t) table_lookup_jz(CLT, 0, Fuel_Temp_Corr_Table);
 
        //Prime pulse require
-//       Prime_Corr = (int16_t) Table_Lookup_JZ(CLT, 0, Wetting_Temp_Corr_Table);
+//       Prime_Corr = (int16_t) table_lookup_jz(CLT, 0, Wetting_Temp_Corr_Table);
        
 
 
 
 
-        Wetting_Temp_Corr = (int16_t) Table_Lookup_JZ(CLT, Post_Start_Time, Wetting_Temp_Corr_Table);
-        Manifold_Wetting = (int16_t) Table_Lookup_JZ(RPM, Load, Manifold_Wetting_Table); 
+        Wetting_Temp_Corr = (int16_t) table_lookup_jz(CLT, Post_Start_Time, Wetting_Temp_Corr_Table);
+        Manifold_Wetting = (int16_t) table_lookup_jz(RPM, Load, Manifold_Wetting_Table); 
 
         // Determine is enrichment or derichment is required. The assumption is that 1 or the other can always 
         // be applied and that the "Current_Wetting" tracking will reduce to the correction to effectively    
@@ -141,7 +127,6 @@ void Enrichment_Task()
     }                           // for
 
     task_close();
-
 #endif
 
 }                               // Enrichment_Task() 

@@ -50,7 +50,11 @@ extern uint32_t fs_etpu_data_ram_ext;
 /*******************************************************************************
 * Global functions
 *******************************************************************************/
-
+#if __CWCC__
+#pragma push
+#pragma warn_unusedvar    off
+#pragma warn_implicitconv off
+#endif
 /*******************************************************************************
 * FUNCTION: fs_etpu_toothgen_init
 *
@@ -751,3 +755,6 @@ int32_t fs_etpu_toothgen_set_error_mimics( uint8_t channel_crank,
  *  Freescale Semiconductor assumes no responsibility for the
  *  maintenance and support of this software
  ********************************************************************/
+#if __CWCC__
+#pragma pop
+#endif

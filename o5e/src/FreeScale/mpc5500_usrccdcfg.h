@@ -53,8 +53,7 @@
 //#include "mpc5566.h"
 //#include "mpc5567.h"
 
-#include "cpu.h"
-
+#include "config.h"
 #include "mpc5500_ccdcfg.h"
 
 #ifdef  __cplusplus
@@ -63,7 +62,7 @@ extern "C" {
 
 /* P&E modification */
 /* Uncomment this macro if using P&E GNU tools */
-#define __PEGNU__
+/* #define __PEGNU__ */  /**< not sure why this is being done for mwerks */
 
 
 /*****************************************************************/

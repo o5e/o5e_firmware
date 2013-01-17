@@ -1,0 +1,42 @@
+cocoos priorities - highest (0) to lowest (254)
+0
+
+128 Engine_OPS: Engine10_Task()
+129 Engine_OPS: Fuel_Pump_Task()
+130 Engine_OPS: Slow_Vars_Task()
+131 Engine_OPS: Eng_Pos_Status_BLINK_Task()
+132 Engine_OPS: Cam_Pulse_Task()
+133 Tuner: Tuner_Task()
+134 main: LED_Task()
+
+unused: Enrichment_Task()
+
+cocoos queue assignments:
+N_QUEUES 0
+none
+
+cocoos semaphore assignments:
+N_SEMAPHORES 0
+none
+
+cocoos event assignments:
+N_EVENTS 0
+none
+
+hardware (INTC) priorities - highest (15) to lowest (0)
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+0

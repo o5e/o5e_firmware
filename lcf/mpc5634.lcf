@@ -1,0 +1,54 @@
+
+MEMORY
+{
+    flash: org = 0x00000000, len = 0x180000   /**< 512k map/1024k app          */
+    ram:   org = 0x40000000, len = 0x17800    /**< 32k map/62k app             */
+}
+
+_heap_size  = 0;                                 /**< malloc/free unused       */
+
+FORCEACTIVE { __rchw }
+
+SECTIONS
+{
+    GROUP :
+    {
+        .rchw      : {}  /**< rchw needs to be found in the first few blocks   */
+        . = ADDR(flash) + 0x80000; /**< skip the rest of bank 0                */
+
+        .init      : {}  /**< start of bank 1                                  */
+        .handlers  : {}
+        .text      : {}
+        .rodata    : {}
+        .sdata2    : {}  /* name is deceiving - these are actually const areas */
+        .sbss2     : {}  /* ...                                                */
+        .ctors     : {}
+        .dtors     : {}
+        extab      : {}
+        extabindex : {}
+    } > flash
+
+    GROUP :
+    {
+        _internal_ram_start = .;
+        . = ADDR(ram) + 0x8000; /**< skip the first 32k, used for cached maps  */
+
+        .vectors : {}
+        .ramfunc : {}
+        .sdata   : {}
+        .sbss    : {}
+        .data    : {}
+        .bss     : {}
+
+        // setup heap space
+        _heap_addr = ALIGN(4);
+        . += _heap_size;
+        _heap_end = .;
+
+        // everything else is stack
+        _stack_end  = ALIGN(8);
+        _stack_addr = ADDR(ram) + SIZEOF(ram);
+        _stack_size = _stack_addr - _stack_end;
+        _internal_ram_end = ADDR(ram) + SIZEOF(ram);
+    } > ram
+}

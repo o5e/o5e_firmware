@@ -1,23 +1,40 @@
+/*********************************************************************************
 
-/*******************************************************************************************
- FILE NAME: eQADC_OPS.c                                                                    
-                                                                                           
- DESCRIPTION:                                                                              
- This file contains functions for the MPC5xxx to initialize and run continuous A/D via DMA
- or DMA triggered by the eTPU
-                                                                                           
-===========================================================================================
- REV      AUTHOR         DATE          DESCRIPTION OF CHANGE                               
- ---      -----------    ----------    ---------------------                               
- 2.4      J. Zeeff       08/Jan/2011   cleanup and made it maintainable
- 1.0      P. Schlein     16/Mar/10     Initial version-from Cookbook                       
-*******************************************************************************************/
+        @file   eQADC_OPS.c  
+        @author Paul Schlein, Jon Zeeff 
+        @date   May 19, 2012
+        @brief  Open5xxxECU  - A/D
+        @note   This file contains functions for the MPC5xxx to initialize and run 
+        @note   continuous A/D via DMA or DMA triggered by the eTPU
+        @version .9
+        @copyright 2011, 2012 P. Schlein and Jon Zeeff
 
-#include "config.h"
-#include "system.h"
+*************************************************************************************/
 
-#define EXTERN
+/* 
+
+Portions Copyright 2011 P. Schlein - MIT License
+Portions Copyright 2011, 2012  Jon Zeeff - All rights reserved
+
+*/
+
+#include <stdint.h>
+#include "mpc563xm.h"
 #include "eQADC_OPS.h"
+
+uint32_t ADC_CmdQ0[40];
+uint32_t ADC_CmdQ1[1];
+uint32_t ADC_CmdQ2[1];
+uint32_t ADC_CmdQ3[1];
+uint32_t ADC_CmdQ4[1];
+uint32_t ADC_CmdQ5[1];
+
+vuint16_t ADC_RsltQ0[40];
+vuint16_t ADC_RsltQ1[1];
+vuint16_t ADC_RsltQ2[1];
+vuint16_t ADC_RsltQ3[1];
+vuint16_t ADC_RsltQ4[1];
+vuint16_t ADC_RsltQ5[1];
 
 /*******************************************************************************************
  FUNCTION     : init_ADC                                                                   
@@ -28,7 +45,6 @@
    10 bit accuracy for ADC_CLK<=16mhz
    @132mhz, divide by 22=ob01010, yields 375K Samples/sec MPC5554
                                                                                            
- WARNING      : S&B "MPC5554 Revealed" Used as Reference with Caution!                     
 *******************************************************************************************/
 
 void init_ADC(void)
@@ -56,7 +72,9 @@ void init_ADC(void)
     ADC_CmdQ2[0] = ADC(1) | RFIFO(2) | CHANNEL(40) | PAUSE;     // Convert VRH
     ADC_CmdQ3[0] = ADC(1) | RFIFO(3) | CHANNEL(41) | PAUSE;     // Convert VRL
     ADC_CmdQ4[0] = ADC(1) | RFIFO(4) | CHANNEL(17) | PAUSE;     // Convert POT
+
     // Q5 is triggered by the eTPU knock window for MAP
+    // IMO, replace this with "min MAP seen over last 720 degrees"
     ADC_CmdQ5[0] = ADC(1) | LST(1) | RFIFO(5) | CHANNEL(17) | PAUSE;     // Convert POT, AN17.  TODO change
 
     // Angle triggered Queue-On ADC2=B/N=1, RFIFO2=Msg Tag=1 , eMIOS 14 trigger
@@ -203,38 +221,3 @@ void init_ADC(void)
     SIU.ETISR.B.TSEL5 = 0x1;    // eTPU 26 or eMIOS 12  MAP
 
 }                               // init_ADC()
-
-
-// Simple code for testing A/D input without DMA
-
-#if 0
-
-void initADC0(void)
-{
-    EQADC.CFPR[0].R = 0x80800001;       /* Send CFIFO 0 a ADC0 configuration command */
-    /* enable ADC0 & sets prescaler= divide by 2 */
-    EQADC.CFCR[0].R = 0x0410;   /* Trigger CFIFO 0 using Single Scan SW mode */
-    while (EQADC.FISR[0].B.EOQF != 1) {
-    }                           /* Wait for End Of Queue flag */
-    EQADC.FISR[0].B.EOQF = 1;   /* Clear End Of Queue flag */
-}
-
-uint16_t Read_AD(uint_fast8_t channel)
-{
-    uint32_t Result;
-
-    /* SendConvCmd  */
-    EQADC.CFPR[0].R = 0x80000000 | (channel << 8);      /* Conversion command: convert channel n */
-    /* with ADC0, set EOQ, and send result to RFIFO 0 */
-    EQADC.CFCR[0].R = 0x0410;   /* Set Mode 1 and trigger CFIFO 0 using Single Scan SW mode */
-
-    while (EQADC.FISR[0].B.RFDF != 1) {
-    }                           /* Wait for RFIFO 0's Drain Flag to set */
-
-    Result = EQADC.RFPR[0].R;   /* ADC result */
-    // Result = (uint32_t) ((5000 * Result) / 0x3FFC);       /* ADC result in millivolts */
-    EQADC.FISR[0].B.RFDF = 1;   /* Clear RFIFO 0's Drain Flag */
-    EQADC.FISR[0].B.EOQF = 1;   /* Clear CFIFO's End of Queue flag */
-    return (uint16_t) Result;
-}
-#endif

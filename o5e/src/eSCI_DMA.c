@@ -6,28 +6,27 @@
         @brief  Open5xxxECU - setup eSCI A to use DMA and routines to use it
         @note   See AN4147
         @version 1.1
-        @copyright MIT License
+        @copyright 2012 Jon Zeeff
 
 *************************************************************************************/
 
 /*
-Copyright (c) 2011 Jon Zeeff
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Copyright 2011 Jon Zeeff - All rights reserved
+Copyright 2012, Sean Stasiak <sstasiak at gmail dot com>
 
 */
 
+#include <stdint.h>
+#include <string.h>   /**< pickup memcpy() */
+#include "mpc563xm.h"
 #include "config.h"
-#include "cpu.h"
-#include "system.h"
-#include "main.h"
-#include "string.h"
+#include "err.h"
 #include "eSCI_DMA.h"
 #include "eDMA_OPS.h"
+
+#ifndef min
+        #define min( a, b ) ( ((a) < (b)) ? (a) : (b) )
+#endif
 
 // big enough to send/receive any tuner packet
 static vuint8_t SCI_TxQ0[SERIAL_BUFFER_SIZE];
@@ -86,15 +85,15 @@ void init_eSCI_DMA(void)
 // this routine causes the DMA controller to send count bytes out the serial port
 // call write_serial_busy() before calling this
 
-uint_fast16_t
-write_serial(const uint8_t * const bytes, const uint_fast16_t count)
+uint16_t
+write_serial(const uint8_t * const bytes, const uint16_t count)
 {
     if (count > SERIAL_BUFFER_SIZE) {   // too big - not allowed 
-        system_error(25829, __FILE__, __LINE__, "");
+        err_push( CODE_OLDJUNK_FD );
         return 0;
     }
 
-    if (count == 0) return 0;
+    if (count == 0) return 0;   // nothing to do
 
     EDMA.CERQR.R = 18;          /* stop DMA on this channel */
 
@@ -102,7 +101,7 @@ write_serial(const uint8_t * const bytes, const uint_fast16_t count)
 
     EDMA.TCD[18].CITER = EDMA.TCD[18].BITER = count;    // Outer loop count
     EDMA.TCD[18].SADDR = (uint32_t) & SCI_TxQ0; 	// reset Start Address to beginning of buffer
-    //EDMA.TCD[18].SLAST = -count;        		// After major loop, reset src addr
+    EDMA.CDSBR.R = 18;                                    // clear DONE flag
 
     ESCI_A.SR.R = 0x80000000;   /* Clear TDRE flag */
 
@@ -117,9 +116,7 @@ write_serial(const uint8_t * const bytes, const uint_fast16_t count)
 //  Note: the DMA transfer is "in progress"
 //  TODO - check for overrun errors
 
-#include <stdio.h>
-
-uint_fast16_t read_serial(uint8_t * bytes, const uint_fast16_t max_bytes)
+uint16_t read_serial(uint8_t * bytes, const uint16_t max_bytes)
 {
     uint32_t n;
 
@@ -146,65 +143,5 @@ uint_fast16_t read_serial(uint8_t * bytes, const uint_fast16_t max_bytes)
 
     }                           // if
 
-    return (uint_fast16_t) n;
+    return (uint16_t) n;
 }
-
-// These aren't DMA, but are similar in function to above
-// read/write a string to serial port A or B
-// TODO - these routines can only be used on startup - it will block!
-
-uint_fast16_t send_serial_A(uint8_t * bytes, const uint_fast16_t length)
-{
-    uint_fast16_t n = length;
-    while (n-- != 0) {
-        while (ESCI_A.SR.B.TDRE == 0) {
-        }                       /* Wait for transmit data reg empty = 1 */
-        ESCI_A.SR.R = 0x80000000;       /* Clear TDRE flag */
-        ESCI_A.DR.B.D = *(bytes++);     /* Transmit 8 bits Data */
-    }
-    return length;
-}
-
-uint_fast16_t get_serial_A(uint8_t * bytes, const uint_fast16_t length)
-{
-    uint_fast16_t n = length;
-    while (n-- != 0) {
-        while (ESCI_A.SR.B.RDRF == 0) {
-        }                       /* Wait for receieve data reg = 1 */
-        *(bytes++) = ESCI_A.DR.B.D;     /* Read 8 bits Data */
-        ESCI_A.SR.R = 0x20000000;       /* Clear RDRF flag */
-    }
-    return length;
-}
-
-uint_fast16_t send_serial_B(uint8_t * bytes, const uint_fast16_t length)
-{
-    uint_fast16_t n = length;
-    while (n-- != 0) {
-        while (ESCI_B.SR.B.TDRE == 0) {
-        }                       /* Wait for transmit data reg empty = 1 */
-        ESCI_B.SR.R = 0x80000000;       /* Clear TDRE flag */
-        ESCI_B.DR.B.D = *(bytes++);     /* Transmit 8 bits Data */
-    }
-    return length;
-}
-
-/****************************************************************************/
-
-// Code to be compatible with CodeWarrior printf()
-
-int32_t ReadUARTN(void *bytes, unsigned long limit)
-{
-    return read_serial(bytes, (uint_fast16_t) limit);
-}
-
-int32_t WriteUARTN(const void *bytes, unsigned long length)
-{
-    return send_serial_A(bytes, (uint_fast16_t) length);
-}
-
-int32_t InitializeUART(int32_t baudRate)
-{
-    return 0;
-}
-

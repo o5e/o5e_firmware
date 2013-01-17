@@ -51,6 +51,12 @@ extern uint32_t fs_etpu_data_ram_start;
 extern uint32_t fs_etpu_data_ram_end;
 extern uint32_t fs_etpu_data_ram_ext;
 
+#if __CWCC__
+#pragma push
+#pragma warn_unusedvar    off
+#pragma warn_implicitconv off
+#endif
+
 /******************************************************************************
 FUNCTION     : fs_etpu_init
 PURPOSE      : To initialize the eTPU module.
@@ -1165,3 +1171,6 @@ uint32_t fs_etpu_coherent_write_32( uint8_t channel,
  *  Freescale Semiconductor assumes no responsibility for the
  *  maintenance and support of this software
  ********************************************************************/
+#if __CWCC__
+#pragma pop
+#endif
