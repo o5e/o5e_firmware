@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.0.4d - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Mon Jul 09 21:20:40 EDT 2012"/>
-<versionInfo fileFormat="4.0" firmwareInfo="O5E 1.0.7 20120405                                         " nPages="14" signature="MShift 2.111       "/>
-<page number="0" size="168">
+<bibliography author="TunerStudio MS(Beta) 2.0.7 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Fri Jan 18 13:02:22 EST 2013"/>
+<versionInfo fileFormat="4.0" firmwareInfo="gc 1.0.0" nPages="14" signature="MShift 2.111       "/>
+<page number="0" size="170">
 <constant name="Engine_Type_Select">"4 stroke"</constant>
 <constant digits="1" name="Engine_Position">0.0</constant>
 <constant name="N_Cyl">"6"</constant>
@@ -10,7 +10,7 @@
 <constant digits="2" name="Test_V_MAF_1" units="V">-2.441E-4</constant>
 <constant digits="2" name="Test_V_MAF_2" units="V">-2.441E-4</constant>
 <constant digits="2" name="Test_V_IAT" units="V">-2.441E-4</constant>
-<constant name="Test_Value">"senor Value"</constant>
+<constant name="Test_Value">"Sensor Value"</constant>
 <constant digits="2" name="Test_AFR_1" units="AFR">0.0</constant>
 <constant digits="2" name="Test_AFR_2" units="AFR">0.0</constant>
 <constant digits="1" name="Cam_Lobe_Pos">540.0</constant>
@@ -118,8 +118,9 @@
 <constant digits="2" name="Test_V_CLT" units="V">-2.441E-4</constant>
 <constant name="Missing_Teeth">"2"</constant>
 <constant digits="1" name="Drop_Dead_Angle">-0.04</constant>
+<constant digits="0" name="Jitter" units="%">2.0</constant>
 </page>
-<page number="1" size="1810">
+<page number="1" size="1824">
 <constant cols="1" digits="1" name="MAP_Angle_Cal" rows="24" units="deg">
          450.0 
          450.0 
@@ -151,6 +152,7 @@
 <constant digits="1" name="Warm_IAC" units="%">10.15625</constant>
 <constant digits="0" name="Stage_RPM" units="rpm">5000.0</constant>
 <constant digits="3" name="Inj_Dead_9" units="msec">8.192</constant>
+<constant digits="0" name="Password">-1.0</constant>
 <constant digits="3" name="Inj_Dead_5" units="msec">0.0</constant>
 <constant digits="3" name="Inj_Dead_6" units="msec">0.0</constant>
 <constant digits="3" name="Inj_Dead_7" units="msec">0.0</constant>
@@ -297,6 +299,10 @@
          10000.0 
       </constant>
 <constant digits="3" name="Inj_Dead_20" units="msec">8.192</constant>
+<constant digits="0" name="Spare_P">-1.0</constant>
+<constant digits="0" name="Spare_O">-1.0</constant>
+<constant digits="0" name="Spare_N">65535.0</constant>
+<constant digits="0" name="Spare_M">255.0</constant>
 <constant digits="3" name="Inj_Dead_18" units="msec">8.192</constant>
 <constant digits="3" name="Inj_Dead_19" units="msec">8.192</constant>
 <constant digits="3" name="Inj_Dead_14" units="msec">8.192</constant>
@@ -1103,23 +1109,23 @@
 <constant name="MAP_4_Byte">"16 bit signed"</constant>
 <constant name="AFR_2_Byte">"16 bit signed"</constant>
 <constant name="MAP_3_Byte">"16 bit signed"</constant>
-<constant cols="1" digits="0" name="TPS_Flow_Cal" rows="16">
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
-         -1.0 
+<constant cols="1" digits="3" name="TPS_Flow_Cal" rows="16" units="%">
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
+         -1.000974 
       </constant>
 <constant digits="0" name="MAP_1_Rows">1.0</constant>
 <constant name="MAP_1_Variable">"Variable axis"</constant>

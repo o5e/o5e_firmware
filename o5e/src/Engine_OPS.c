@@ -34,6 +34,8 @@
 #include "bsp.h"   /**< pickup systime      */
 #include "main.h"  /**< pickup Degree_Clock */
 
+#include "etpu_toothgen.h"
+
 uint32_t *fs_free_param;
 static uint32_t Pulse_Width;
 static void Check_Engine(void);
@@ -93,6 +95,7 @@ void Cam_Pulse_Task(void)
    // note: use "rising edge" cam with fake cam signals and a larger than normal window
 
     for (;;) {
+    
 
         tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to number of teeth
 
@@ -112,6 +115,47 @@ void Cam_Pulse_Task(void)
 
 }  // Cam_Pulse_Task()
 
+// This code is for testing only
+// It isused to simulate jitter in the crank signal by altering the test rpm, which alters the tooth period
+// The tooth width is a % of tooth period, so this will cause the tooth size to alternate 
+// small/big/......., while keeping the average rpm constant
+
+void Crank_Tooth_Jitter_Task(void)
+{
+    task_open();                // standard OS entry
+    task_wait(1);
+
+    static int8_t tooth;                 // current position
+    static int32_t degree_per_tooth;
+    static int32_t degrees_to_wait;
+    static int8_t Period_Teeth = 1;
+    static int24_t jitter_rpm;
+    static int24_t set_RPM;
+
+    
+
+    // do these once for speed
+    //degree_per_tooth = (360*1<<12)/(N_Teeth + Missing_Teeth);
+    //degrees_to_wait = (degree_per_tooth * Period_Teeth/2)>>12;
+    jitter_rpm = ((Jitter*1 << 12)/100 * Test_RPM)>>12;
+    
+     fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM, etpu_tcr1_freq); //set a base RPM to get started                                          
+
+
+    for (;;) {
+    
+       
+         set_RPM = Test_RPM + jitter_rpm;
+         fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);
+         task_wait(1);      
+         set_RPM = Test_RPM - jitter_rpm;
+         fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);      
+         task_wait(1);                       // waiting for rising edge point
+
+        
+    }                           // for
+    task_close();
+}//Crank_Tooth_Jitter_Task()
 
 // Debug
 // Blink based on engine position status - for testing
