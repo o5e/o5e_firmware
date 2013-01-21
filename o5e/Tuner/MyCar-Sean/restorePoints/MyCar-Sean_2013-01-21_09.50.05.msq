@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.0.7 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Mon Jan 21 09:54:02 EST 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.0.7 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Mon Jan 21 09:50:05 EST 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="gc 1.0.0" nPages="14" signature="MShift 2.111       "/>
 <page number="0" size="170">
 <constant name="Engine_Type_Select">"4 stroke"</constant>
@@ -118,7 +118,7 @@
 <constant digits="2" name="Test_V_CLT" units="V">-2.441E-4</constant>
 <constant name="Missing_Teeth">"1"</constant>
 <constant digits="1" name="Drop_Dead_Angle">-0.04</constant>
-<constant digits="0" name="Jitter" units="%">11.0</constant>
+<constant digits="0" name="Jitter" units="%">7.0</constant>
 </page>
 <page number="1" size="1824">
 <constant cols="1" digits="1" name="MAP_Angle_Cal" rows="24" units="deg">
