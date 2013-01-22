@@ -123,10 +123,6 @@ struct etpu_config_t my_etpu_config = {
 
 };
 
-//static void init_PWM1(uint32_t freq);
-//static void Init_Tach(void);
-//static void update_PWM1(uint32_t duty_cycle);
-//static void Update_Tach(uint32_t frequency);
 
 /*********************************************************************************
 
@@ -330,7 +326,42 @@ int32_t init_eTPU()
     if (error_code != 0)
         err_push( CODE_OLDJUNK_D7 ); 
   
-  
+/****************************************************************************
+
+   @note Use the eTPU to maintain a single channel servo or PWM valve position.
+
+   @note Standard servo motors use 50Hz and duty cycle can range from 5% to 10% (500-1000 or 1-2 msec)
+   @note Ford PWM idle valves run best at a frequency of around 300-320 Hz with 0-100% duty cycle
+   @note Bosch 3 wire PWM idle valves run best at a frequency of 200 Hz with 10-80% duty cycle
+   @param Supply duty cycle % x 100
+
+   @ note - it would probably be better to use the eMIOS for this
+
+*****************************************************************************/
+
+
+    // start with 0% DC
+    error_code = fs_etpu_pwm_init(PWM1_CHANNEL, 
+                                  FS_ETPU_PRIORITY_LOW, 
+                                  1000,                     //frequency in hz
+                                  1000,                     //duty cycle
+                                  FS_ETPU_PWM_ACTIVEHIGH, 
+                                  FS_ETPU_TCR1, 
+                                  etpu_tcr1_freq);
+    if (error_code != 0)
+        err_push( CODE_OLDJUNK_D9 );
+/*
+static void update_PWM1(uint32_t duty_cycle)
+{
+    if (duty_cycle > 10000)     // clip to 100% DC
+        duty_cycle = 10000;
+
+    // update to new duty cycle
+    error_code = fs_etpu_pwm_update(PWM1_CHANNEL, PWM1_frequency, (uint16_t)duty_cycle, etpu_tcr1_freq);
+    if (error_code != 0)
+        err_push( CODE_OLDJUNK_D8 );
+}                               // update_PWM1()
+*/  
   
   
  return 0;
@@ -381,25 +412,4 @@ static void update_PWM1(uint32_t duty_cycle)
 }                               // update_PWM1()
 */
 
-/****************************************************************************
-
-   @note Use the eTPU to Output an RPM signal.
-
-*****************************************************************************/
-/*static void Init_Tach(void)
-{
-    error_code =
-        fs_etpu_pwm_init(TACH_CHANNEL, FS_ETPU_PRIORITY_LOW, 1, 1000, FS_ETPU_PWM_ACTIVEHIGH, FS_ETPU_TCR1, etpu_tcr1_freq);
-    if (error_code != 0)
-        err_push( CODE_OLDJUNK_D7 );
-}
-
-static void Update_Tach(uint32_t frequency)
-{
-    // update to new freq
-    error_code = fs_etpu_pwm_update(TACH_CHANNEL, frequency, 1000, etpu_tcr1_freq);
-    if (error_code != 0)
-        err_push( CODE_OLDJUNK_D6 );
-}
-*/
 
