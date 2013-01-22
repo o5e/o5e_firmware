@@ -265,8 +265,10 @@ void Engine10_Task(void)
 
         // Update Tach signal
         uint32_t frequency = ((RPM * Pulses_Per_Rev) * (uint32_t) ((1 << 14) / 60.) >> 14);
+         
         //Update_Tach(frequency);
-
+		fs_etpu_pwm_update(TACH_CHANNEL, frequency, 1000, etpu_tcr1_freq);
+		
         // consider replacing MAP window with the minimum MAP value seen
         task_wait(9);           // allow others tasks to run
     }                           // for      
