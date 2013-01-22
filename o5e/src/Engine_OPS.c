@@ -174,7 +174,7 @@ void Eng_Pos_Status_BLINK_Task(void)
             led_on( LED2 );
             task_wait(903);     // allow others tasks to run          
             led_off( LED2 );
-            task_wait(903);     // allow others tasks to run          
+            task_wait(903);   // allow others tasks to run          
         } else if (status == FS_ETPU_ENG_POS_HALF_SYNC) {   
             // fast and slow blink
             led_on( LED2 );

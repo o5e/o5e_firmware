@@ -329,10 +329,10 @@ extern struct Outputs Output_Channels;
 #define Dwell_Max (*(CONST U08 * )(&Page_Ptr[1][1607]))
 #define Load_Model_Table ((CONST struct table_jz * )(&Page_Ptr[1][1608]))
 #define Model_Tuning_Enable (*(CONST U08 * )(&Page_Ptr[1][1808]) & ((2<<0)-1))
-#define Spare_M (*(CONST U08 * )(&Page_Ptr[1][1813]) & ((2<<0)-1))
-#define Spare_N (*(CONST S16 * )(&Page_Ptr[1][1814]))
-#define Spare_O (*(CONST S32 * )(&Page_Ptr[1][1816])) 
-#define Spare_P (*(CONST S32 * )(&Page_Ptr[1][1820]))
+#define Spare9 (*(CONST U08 * )(&Page_Ptr[1][1813]) & ((2<<0)-1))
+#define Spare10 (*(CONST S16 * )(&Page_Ptr[1][1814]))
+#define Spare11 (*(CONST S32 * )(&Page_Ptr[1][1816])) 
+#define Spare12 (*(CONST S32 * )(&Page_Ptr[1][1820]))
 
 // Page 3
 #define Dummy_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[2][0]))
