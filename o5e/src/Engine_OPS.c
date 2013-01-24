@@ -166,12 +166,12 @@ void Eng_Pos_Status_BLINK_Task(void)
     task_wait(1);
 
     for (;;) {
-        static int32_t  status; //int8_t
+        static int8_t status;
  
         // reads the etpu crank position function status
 
-        status = fs_etpu_fpm_get_freq (Wheel_Speed_Channels[3], etpu_a_tcr1_freq); //fs_etpu_eng_pos_get_engine_position_status();
-/*
+        status = fs_etpu_eng_pos_get_engine_position_status();
+
         if (status == FS_ETPU_ENG_POS_FULL_SYNC) {        // position known, so all is well slow blink
             led_on( LED2 );
             task_wait(903);     // allow others tasks to run          
@@ -194,11 +194,7 @@ void Eng_Pos_Status_BLINK_Task(void)
             led_off( LED2 );
             task_wait(133);     // allow others tasks to run          
         }
-*/
-            led_on( LED2 );
-            task_wait(status);     // allow others tasks to run          
-            led_off( LED2 );
-            task_wait(status);     // allow others tasks to run 
+
 
 
         Sync_Status = (int16_t)status;   // send to tuner
