@@ -31,12 +31,15 @@
 #include "etpu_spark.h"
 #include "etpu_pwm.h"
 #include "eTPU_OPS.h"
+#include "etpu_fpm.h"
 #include "main.h"   /**< pickup msec_clock */
 
 uint8_t N_Injectors;
 uint8_t N_Coils;
 uint8_t Spark_Channels[12] = { SPARK_CHANNELS_1_6, SPARK_CHANNELS_7_12 } ;
 uint8_t Fuel_Channels[24] = { FUEL_CHANNELS_1_6, FUEL_CHANNELS_7_12, FUEL_CHANNELS_13_18, FUEL_CHANNELS_19_24 };
+uint8_t Wheel_Speed_Channels[4] = {WHEEL_SPEED_1_4};
+
 
 static uint24_t Cyl_Angle_eTPU[24];
 static int32_t error_code;
@@ -341,7 +344,7 @@ int32_t init_eTPU()
 
 
     // start with 0% DC
-    error_code = fs_etpu_pwm_init(PWM1_CHANNEL, 
+     error_code = fs_etpu_pwm_init(PWM1_CHANNEL, 
                                   FS_ETPU_PRIORITY_LOW, 
                                   1000,                     //frequency in hz
                                   1000,                     //duty cycle
@@ -362,8 +365,25 @@ static void update_PWM1(uint32_t duty_cycle)
         err_push( CODE_OLDJUNK_D8 );
 }                               // update_PWM1()
 */  
-  
-  
+ /****************************************************************************
+
+   @note Use the eTPU to read frequency.
+
+*****************************************************************************/  
+for (i = 0; i <  4; ++i) {
+
+	 error_code = fs_etpu_fpm_init (Wheel_Speed_Channels[i],
+                         		    FS_ETPU_PRIORITY_LOW,
+                         		    FS_ETPU_FPM_CONTINUOUS,
+                         		    FS_ETPU_FPM_RISING_EDGE,    //or FS_ETPU_FPM_FALLING_EDGE
+                          			FS_ETPU_TCR1, 
+                          			0x700);						//# of tcr ticks to use in freq cal
+
+
+
+
+}
+ 
  return 0;
 }                               // init_eTPU()
 
