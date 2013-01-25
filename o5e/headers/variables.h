@@ -128,7 +128,7 @@ uint8_t Spares[28];
 #define Injection_Time Output_Channels.Injection_Time
 #define Spark_Advance Output_Channels.Spark_Advance
 #define Inj_End_Angle Output_Channels.Inj_End_Angle
-#define Eng_Model_Corr Output_Channels.End_Model_Corr
+#define Eng_Model_Corr Output_Channels.Eng_Model_Corr
 #define Post_Start_Time Output_Channels.Post_Start_Time
 #define Post_Start_Cycles Output_Channels.Post_Start_Cycles
 #define Post_Start_Cylinders Output_Channels.Post_Start_Cylinders
@@ -268,6 +268,7 @@ extern struct Outputs Output_Channels;
 #define Odd_Fire_Sync_Angle (*(CONST S16 * )(&Page_Ptr[0][164]))
 #define Ignition_Invert (*(CONST U08 * )(&Page_Ptr[0][166]) & ((2<<0)-1))
 #define N_Coils_Per_Cylinder (*(CONST U08 * )(&Page_Ptr[0][166]) & ((2<<0)-1))
+#define Jitter (*(CONST S16 * )(&Page_Ptr[0][168]))
 // Page 2
 #define Fuel_Temp_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[1][0]))
 #define IAT_Fuel_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[1][648]))
@@ -328,6 +329,11 @@ extern struct Outputs Output_Channels;
 #define Dwell_Max (*(CONST U08 * )(&Page_Ptr[1][1607]))
 #define Load_Model_Table ((CONST struct table_jz * )(&Page_Ptr[1][1608]))
 #define Model_Tuning_Enable (*(CONST U08 * )(&Page_Ptr[1][1808]) & ((2<<0)-1))
+#define Spare9 (*(CONST U08 * )(&Page_Ptr[1][1813]) & ((2<<0)-1))
+#define Spare10 (*(CONST S16 * )(&Page_Ptr[1][1814]))
+#define Spare11 (*(CONST S32 * )(&Page_Ptr[1][1816])) 
+#define Spare12 (*(CONST S32 * )(&Page_Ptr[1][1820]))
+
 // Page 3
 #define Dummy_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[2][0]))
 #define Accel_Limit_Table ((CONST struct table_jz * )(&Page_Ptr[2][168]))

@@ -56,9 +56,14 @@ void main( void )
         if (Sync_Mode_Select == 1) {   // user option to generate a cam signal
            (void)task_create(Cam_Pulse_Task, 4 + 128, 0, 0, 0);      // create the task
         }
-    }
-    (void)task_create(Tuner_Task, 5 + 128, 0, 0, 0);     // create the task
-    (void)task_create(LED_Task, 6 + 128, 0, 0, 0);       // create the task 
+
+    } 
+   // #ifdef SIMULATOR ////create the task to jitter toothgen signal during testing
+    	(void)task_create(Crank_Tooth_Jitter_Task, 5 + 128, 0, 0, 0);
+   // #endif
+    
+    (void)task_create(Tuner_Task, 6 + 128, 0, 0, 0);     // create the task
+    (void)task_create(LED_Task, 7 + 128, 0, 0, 0);       // create the task 
 
   os_start();
 }

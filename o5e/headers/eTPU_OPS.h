@@ -72,6 +72,13 @@ extern uint8_t Spark_Channels[12];
 // What eTPU channel to use for each injector in an array form
 extern uint8_t Fuel_Channels[24];
 
+// What eTPU channel to use fro each speed speed in an array form
+extern uint8_t Wheel_Speed_Channels[4];
+
+//Make tcr clocks available
+extern uint32_t etpu_a_tcr1_freq;
+extern uint32_t etpu_b_tcr1_freq;
+
 #ifdef __cplusplus
 }
 #endif

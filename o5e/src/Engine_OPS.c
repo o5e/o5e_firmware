@@ -29,10 +29,13 @@
 #include "etpu_spark.h"
 #include "etpu_fuel.h"
 #include "etpu_pwm.h"
+#include "etpu_fpm.h"
 #include "etpu_app_eng_pos.h"
 #include "eTPU_OPS.h"
 #include "bsp.h"   /**< pickup systime      */
 #include "main.h"  /**< pickup Degree_Clock */
+
+#include "etpu_toothgen.h"
 
 uint32_t *fs_free_param;
 static uint32_t Pulse_Width;
@@ -93,6 +96,7 @@ void Cam_Pulse_Task(void)
    // note: use "rising edge" cam with fake cam signals and a larger than normal window
 
     for (;;) {
+    
 
         tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to number of teeth
 
@@ -112,6 +116,45 @@ void Cam_Pulse_Task(void)
 
 }  // Cam_Pulse_Task()
 
+// This code is for testing only
+// It isused to simulate jitter in the crank signal by altering the test rpm, which alters the tooth period
+// The tooth width is a % of tooth period, so this will cause the tooth size to alternate 
+// small/big/......., while keeping the average rpm constant
+
+void Crank_Tooth_Jitter_Task(void)
+{
+    task_open();                // standard OS entry
+    task_wait(1);
+
+    static int8_t tooth;                 // current position
+    static int32_t degrees_to_wait;
+    static int24_t jitter_rpm;
+    static int24_t set_RPM;
+
+    
+
+    // do these once for speed
+    jitter_rpm = Test_RPM * Jitter / 100;
+    degrees_to_wait = 360 /(N_Teeth + Missing_Teeth);
+  
+     fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM, etpu_tcr1_freq); //set a base RPM to get started                                          
+
+
+    for (;;) {
+    
+       
+         set_RPM = Test_RPM + jitter_rpm;
+         fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);
+         //task_wait_id(1, degrees_to_wait);
+         task_wait (1);  
+         set_RPM = Test_RPM - jitter_rpm;
+         fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);      
+         //task_wait_id(1, degrees_to_wait);                       // waiting for rising edge point
+		 task_wait (1); 
+        
+    }                           // for
+    task_close();
+}//Crank_Tooth_Jitter_Task()
 
 // Debug
 // Blink based on engine position status - for testing
@@ -126,13 +169,14 @@ void Eng_Pos_Status_BLINK_Task(void)
         static int8_t status;
  
         // reads the etpu crank position function status
+
         status = fs_etpu_eng_pos_get_engine_position_status();
 
         if (status == FS_ETPU_ENG_POS_FULL_SYNC) {        // position known, so all is well slow blink
             led_on( LED2 );
             task_wait(903);     // allow others tasks to run          
             led_off( LED2 );
-            task_wait(903);     // allow others tasks to run          
+            task_wait(903);   // allow others tasks to run          
         } else if (status == FS_ETPU_ENG_POS_HALF_SYNC) {   
             // fast and slow blink
             led_on( LED2 );
@@ -150,6 +194,8 @@ void Eng_Pos_Status_BLINK_Task(void)
             led_off( LED2 );
             task_wait(133);     // allow others tasks to run          
         }
+
+
 
         Sync_Status = (int16_t)status;   // send to tuner
         Check_Engine();         // get status of eTPU routines for debugger and tuner
@@ -223,8 +269,10 @@ void Engine10_Task(void)
 
         // Update Tach signal
         uint32_t frequency = ((RPM * Pulses_Per_Rev) * (uint32_t) ((1 << 14) / 60.) >> 14);
+         
         //Update_Tach(frequency);
-
+		fs_etpu_pwm_update(TACH_CHANNEL, frequency, 1000, etpu_tcr1_freq);
+		
         // consider replacing MAP window with the minimum MAP value seen
         task_wait(9);           // allow others tasks to run
     }                           // for      

@@ -162,7 +162,9 @@ void Get_Slow_Op_Vars(void)
            compiled out in one place instead of spreading this functionality
            across multiple files */
         // Updates toothgen with the desired test RPM
-        fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM, etpu_tcr1_freq);
+//#ifndef SIMULATOR
+//        fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM, etpu_tcr1_freq);
+//#endif
 
     } else {                    // Run Mode, normal operation
 
