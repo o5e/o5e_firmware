@@ -38,13 +38,13 @@ Copyright 2012, Sean Stasiak <sstasiak at gmail dot com>
 #   define MAX_AD_VOLTAGE 5.
 
 #   define VBATT_VOLTAGE_DIVIDER (49.0/10.0)
-#   define V_Batt_AD    ADC_RsltQ0[11]
+#   define V_Batt_AD    ADC_RsltQ0[25]
 #   define CLT_VOLTAGE_DIVIDER 1.0
-#   define V_CLT_AD    ADC_RsltQ0[21]
+#   define V_CLT_AD    ADC_RsltQ0[39]
 #   define IAT_VOLTAGE_DIVIDER 1.0
-#   define V_IAT_AD    ADC_RsltQ0[23]
+#   define V_IAT_AD    ADC_RsltQ0[38]
 #   define TPS_VOLTAGE_DIVIDER 1.0
-#   define V_TPS_AD    ADC_RsltQ0[16]
+#   define V_TPS_AD    ADC_RsltQ0[31]
 #   define MAP_1_VOLTAGE_DIVIDER 1.0
 #   define V_MAP_1_AD    ADC_RsltQ5 [0]       
 #   define MAP_2_VOLTAGE_DIVIDER 1.0
@@ -80,13 +80,13 @@ Copyright 2012, Sean Stasiak <sstasiak at gmail dot com>
 #   define P14_VOLTAGE_DIVIDER 1.0
 #   define V_P14_AD    ADC_RsltQ0 [35]
 #   define O2_1_UA_VOLTAGE_DIVIDER 1.0
-#   define V_O2_1_UA_AD    ADC_RsltQ0 [24]
+#   define V_O2_1_UA_AD    ADC_RsltQ0 [23]
 #   define O2_1_UR_VOLTAGE_DIVIDER 1.0
-#   define V_O2_1_UR_AD    ADC_RsltQ0 [25]
+#   define V_O2_1_UR_AD    ADC_RsltQ0 [24]
 #   define O2_2_UA_VOLTAGE_DIVIDER 1.0
-#   define V_O2_2_UA_AD    ADC_RsltQ0 [27]
+#   define V_O2_2_UA_AD    ADC_RsltQ0 [28]
 #   define O2_2_UR_VOLTAGE_DIVIDER 1.0
-#   define V_O2_2_UR_AD    ADC_RsltQ0 [28]
+#   define V_O2_2_UR_AD    ADC_RsltQ0 [30]
 #   define Knock_1_VOLTAGE_DIVIDER 1.0
 #   define V_Knock_1_AD    ADC_RsltQ0 [0]   // TODO
 #   define Knock_2_VOLTAGE_DIVIDER 1.0

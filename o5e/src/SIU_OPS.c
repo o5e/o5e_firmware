@@ -82,7 +82,7 @@ void init_SIU(void)
         SIU.PCR[121].R = B0001 | OUTPUT; 	// eTPU[7] ignition 7
         SIU.PCR[122].R = GPIO  | OUTPUT; 	// eTPU[8] ignition 8
         SIU.PCR[123].R = GPIO  | OUTPUT; 	// eTPU[9] injector 2
-        SIU.PCR[124].R = B0001 | OUTPUT; 	// eTPU[10] ignition 3
+        SIU.PCR[124].R = B0001 | OUTPUT; 	// eTPU[10] injector 3
         SIU.PCR[125].R = B0001 | OUTPUT; 	// eTPU[11] injector 4
         SIU.PCR[126].R = B0001 | OUTPUT; 	// eTPU[12] injector 5
         SIU.PCR[127].R = B0001 | OUTPUT; 	// eTPU[13] injector 6
@@ -107,11 +107,11 @@ void init_SIU(void)
 
         //EMIOS primary
         SIU.PCR[179].R = B0001 | OUTPUT; 	// eMIOS 0 DBW1
-        SIU.PCR[180].R = B0001 | OUTPUT; 	// eMIOS 1 DBW2
-        SIU.PCR[181].R = B0001 | OUTPUT; 	// eMIOS 2 DBW3
-        SIU.PCR[183].R = B0001 | OUTPUT; 	// eMIOS 4 DBW4
+        SIU.PCR[180].R = GPIO | UNUSED; 	// eMIOS 1 no pin on the 144 processor
+        SIU.PCR[181].R = B0001 | OUTPUT; 	// eMIOS 2 DBW2
+        SIU.PCR[183].R = B0001 | OUTPUT; 	// eMIOS 4 DBW3
 
-        SIU.PCR[187].R = GPIO | UNUSED;     // eMIOS 8 (B0001) 
+        SIU.PCR[187].R = B0001 | OUTPUT;    // eMIOS 8 DBW4 
         SIU.PCR[188].R = GPIO | UNUSED;     // eMIOS 9 Pin LED_0 emios 23 used for msec clock
           /* Pins define elsewhere in FS code
         SIU.PCR[189].R = GPIO | OUTPUT;     // eMIOS 10 Pin LED_1 and emios 10 is reserved for eQADC trigger
@@ -122,7 +122,7 @@ void init_SIU(void)
         SIU.PCR[193].R = GPIO | OUTPUT;     // eMIOS 14 Pin fake cam signal,  and emios 14 is reserved for eQADC trigger
         SIU.PCR[194].R = GPIO | OUTPUT; 	// eMIOS no pin on 5634 and emios 15 is reserved for eQADC trigger
 
-        SIU.PCR[202].R = GPIO | UNUSED;     // eMIOS 23 (B0001)
+        SIU.PCR[202].R = GPIO | UNUSED;;     // eMIOS 23 
          
         //AN channel functions (do not require PCR settings)
         //AN0 - Knock1 +
@@ -130,28 +130,33 @@ void init_SIU(void)
         //AN2 - Knock2 +
         //AN3 - Knock2 -
         //AN9 - MAP_1
-        //AN11 - V_Batt
+        //AN11 - 
          SIU.PCR[215].R = ALT2 | OUTPUT; 	//AN12 used for eTPU[19]  ignition 1 
          SIU.PCR[216].R = ALT2 | OUTPUT; 	//AN13 used for eTPU[21]  injection 1   
          SIU.PCR[217].R = ALT2 | OUTPUT; 	//AN14 used for eTPU[27] Tach signal  
          SIU.PCR[218].R = ALT2 | OUTPUT; 	//AN15 used for eTPU[29] PWM1 output               
-        //AN16 - V_TPS
+        //AN16 - 
         //AN17 - POT on dev board
         //AN18 - 
-        //AN21 - V_CLT
+        //AN21 - V_P1
         //AN22 - V_MAP_2
-        //AN23 - V_IAT
-        //AN24 - V_O2_1_UA
-        //AN25 - V_O2_1_UR
-        //AN27 - V_O2_2_UA
-        //AN28 - V_O2_2_UR
-        //AN30 - V_P1
-        //AN31 - V_P2
+        //AN23 - V_O2_1_UA
+        //AN24 - V_O2_1_UR 
+        //AN25 - V_Batt
+        //AN27 - MAP_1
+        //AN28 - V_O2_2_UA 
+        //AN30 - V_O2_2_UR
+        //AN31 - V_TPS
         //AN32 - V_P3
         //AN33 - V_P4
         //AN34 - V_P5
         //AN35 - V_P6
-
+        //AN36 - no pin on 144 verison
+        //AN37 - no pin on 144 verison
+        //AN38 - V_IAT
+        //AN39 - V_CLT
+        
+        
 /*
 Fuel    eTPU21 eTPU9 eTPU10 eTPU11 eTPU12 eTPU13 eTPU18 eTPU20 eTPU22 eTPU23 eTPU24 eTPU25
 Spark   eTPU19 eTPU2 eTPU3 eTPU4 eTPU5 eTPU6 eTPU7 eTPU8
