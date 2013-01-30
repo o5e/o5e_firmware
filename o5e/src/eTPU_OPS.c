@@ -203,7 +203,7 @@ int32_t init_eTPU()
                                         0xffffff,                       /* crank_windowing_ratio_normal: 0x199999 */
                                         0xffffff,                       /* crank_windowing_ratio_after_gap: 0x199999 */
                                         0xffffff,                       /* crank_windowing_ratio_across_gap: 0x199999 */
-                                        0xffffff,  /* crank_windowing_ratio_timeout: 0x299999 */
+                                        0xffffff, 					    /* crank_windowing_ratio_timeout: 0x299999 */
                                         crank_gap_ratio,                /* crank_gap_ratio: 0x9fffff */
                                         5,                              /* crank_blank_time_ms */
                                         700000/Total_Teeth,             /* crank_first_tooth_timeout_us */
