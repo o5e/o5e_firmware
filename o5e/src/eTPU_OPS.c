@@ -159,12 +159,16 @@ int32_t init_eTPU()
 
     // cam window starts 1/2 of the window before the cam signal
     int32_t Window_Start;
+     Window_Start = ((int32_t)Cam_Lobe_Pos << 2) - (((int32_t)Cam_Window_Width_Set << 2) / 2);// cam_angle_window_start 
+    //removed gap stuff for testing
+    /* 
     int32_t crank_gap_ratio = 0xafffff;
     
-    Window_Start = ((int32_t)Cam_Lobe_Pos << 2) - (((int32_t)Cam_Window_Width_Set << 2) / 2);/* cam_angle_window_start  */
+   
     if (Missing_Teeth > 1) {
     	crank_gap_ratio = 0xffffff;
-    }    
+    } 
+    */   
 
     #define Ticks_Per_Tooth  120        // Max 200
 
@@ -200,11 +204,11 @@ int32_t init_eTPU()
                                         Missing_Teeth,                  /* crank_number_of_missing_teeth */
                                         Total_Teeth/3,                  /* crank_blank_tooth_count */
                                         Ticks_Per_Tooth,                /* crank_tcr2_ticks_per_tooth */
-                                        0xffffff,                       /* crank_windowing_ratio_normal: 0x199999 */
-                                        0xffffff,                       /* crank_windowing_ratio_after_gap: 0x199999 */
-                                        0xffffff,                       /* crank_windowing_ratio_across_gap: 0x199999 */
-                                        0xffffff,  /* crank_windowing_ratio_timeout: 0x299999 */
-                                        crank_gap_ratio,                /* crank_gap_ratio: 0x9fffff */
+                                        crank_windowing_ratio_normal_set,   /* crank_windowing_ratio_normal: 0x199999 */
+                                        crank_windowing_ratio_after_gap_set,/* crank_windowing_ratio_after_gap: 0x199999 */
+                                        crank_windowing_ratio_across_gap_set,/* crank_windowing_ratio_across_gap: 0x199999 */
+                                        crank_windowing_ratio_timeout_set,  /* crank_windowing_ratio_timeout: 0x299999 */
+                                        crank_gap_ratio_set,                /* crank_gap_ratio: 0x9fffff */
                                         5,                              /* crank_blank_time_ms */
                                         700000/Total_Teeth,             /* crank_first_tooth_timeout_us */
                                         Link1, Link2, Link3, Link4,      /* a stall will notify these other channels */

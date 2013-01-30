@@ -269,6 +269,11 @@ extern struct Outputs Output_Channels;
 #define Ignition_Invert (*(CONST U08 * )(&Page_Ptr[0][166]) & ((2<<0)-1))
 #define N_Coils_Per_Cylinder (*(CONST U08 * )(&Page_Ptr[0][166]) & ((2<<0)-1))
 #define Jitter (*(CONST S16 * )(&Page_Ptr[0][168]))
+#define crank_windowing_ratio_normal_set (*(CONST U32 * )(&Page_Ptr[0][170]))
+#define crank_windowing_ratio_after_gap_set (*(CONST U32 * )(&Page_Ptr[0][174])) 
+#define crank_windowing_ratio_across_gap_set (*(CONST U32 * )(&Page_Ptr[0][178]))
+#define crank_windowing_ratio_timeout_set (*(CONST U32 * )(&Page_Ptr[0][182]))
+#define crank_gap_ratio_set  (*(CONST U32 * )(&Page_Ptr[0][186]))
 // Page 2
 #define Fuel_Temp_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[1][0]))
 #define IAT_Fuel_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[1][648]))
