@@ -129,12 +129,14 @@ void Crank_Tooth_Jitter_Task(void)
     static int8_t tooth;                 // current position
     static int32_t degrees_to_wait;
     static int24_t jitter_rpm;
+    static int24_t jitter_previous;
     static int24_t set_RPM;
 
     
 
     // do these once for speed
     jitter_rpm = Test_RPM * Jitter / 100;
+    jitter_previous = Jitter;
     degrees_to_wait = 360 /(N_Teeth + Missing_Teeth);
   
      fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM, etpu_tcr1_freq); //set a base RPM to get started                                          
@@ -142,14 +144,17 @@ void Crank_Tooth_Jitter_Task(void)
 
     for (;;) {
     
-       
+        if(jitter_previous != Jitter){
+           jitter_rpm = Test_RPM * Jitter / 100;
+           jitter_previous = Jitter; 
+        }
          set_RPM = Test_RPM + jitter_rpm;
          fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);
-         //task_wait_id(1, degrees_to_wait);
-         task_wait (1);  
+         task_wait (1); 
+          
          set_RPM = Test_RPM - jitter_rpm;
          fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);      
-         //task_wait_id(1, degrees_to_wait);                       // waiting for rising edge point
+        
 		 task_wait (1); 
         
     }                           // for
