@@ -204,19 +204,13 @@ int32_t init_eTPU()
                                         Missing_Teeth,                  /* crank_number_of_missing_teeth */
                                         Total_Teeth/3,                  /* crank_blank_tooth_count */
                                         Ticks_Per_Tooth,                /* crank_tcr2_ticks_per_tooth */
-<<<<<<< HEAD
+
                                         crank_windowing_ratio_normal_set,   /* crank_windowing_ratio_normal: 0x199999 */
                                         crank_windowing_ratio_after_gap_set,/* crank_windowing_ratio_after_gap: 0x199999 */
                                         crank_windowing_ratio_across_gap_set,/* crank_windowing_ratio_across_gap: 0x199999 */
                                         crank_windowing_ratio_timeout_set,  /* crank_windowing_ratio_timeout: 0x299999 */
                                         crank_gap_ratio_set,                /* crank_gap_ratio: 0x9fffff */
-=======
-                                        0xffffff,                       /* crank_windowing_ratio_normal: 0x199999 */
-                                        0xffffff,                       /* crank_windowing_ratio_after_gap: 0x199999 */
-                                        0xffffff,                       /* crank_windowing_ratio_across_gap: 0x199999 */
-                                        0xffffff, 					    /* crank_windowing_ratio_timeout: 0x299999 */
-                                        crank_gap_ratio,                /* crank_gap_ratio: 0x9fffff */
->>>>>>> development_5634
+
                                         5,                              /* crank_blank_time_ms */
                                         700000/Total_Teeth,             /* crank_first_tooth_timeout_us */
                                         Link1, Link2, Link3, Link4,      /* a stall will notify these other channels */
