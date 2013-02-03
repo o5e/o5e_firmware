@@ -95,7 +95,7 @@ void init_SIU(void)
         SIU.PCR[134].R = B0001 | INPUT;    // eTPU[20] pin available
         SIU.PCR[135].R = GPIO  | UNUSED; 	// eTPU[21] injector 4
         SIU.PCR[136].R = B0001 | OUTPUT; 	// eTPU[22] injector 3
-        SIU.PCR[137].R = B0001 | OUTPUT; 	// eTPU[23] fake cam signal
+        SIU.PCR[137].R = GPIO  | OUTPUT; 	// eTPU[23] fake cam signal
         SIU.PCR[138].R = B0001 | OUTPUT; 	// eTPU[24] injector 2
         SIU.PCR[139].R = B0001 | OUTPUT; 	// eTPU[25] injector 1 
         SIU.PCR[140].R = GPIO  | UNUSED; 	// eTPU[26] pin available, eTPU26 used for MAP window internal

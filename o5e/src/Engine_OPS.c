@@ -81,40 +81,70 @@ void Slow_Vars_Task(void)
 // This code could use the eTPU Synchronized Pulse-Width Modulation Function instead.
 
 void Cam_Pulse_Task(void)
-{
-    task_open();                // standard OS entry
-    task_wait(1);
+    {
+        task_open();                // standard OS entry
+        task_wait(1);
 
-    static int8_t tooth;                 // current position
-    static int8_t prev_tooth = 99;
-    static uint8_t start_tooth;
+        static uint_fast8_t tooth;
+        static uint8_t start_tooth;
+        static uint_fast8_t prev_tooth = 255;
+        static uint_fast8_t alternate = 1;
+        static uint_fast8_t sync_flag = 0;
+        static uint_fast8_t TDC_Tooth;
+        static uint_fast8_t TDC_Minus_Position;
+        static uint_fast8_t TDC_Plus_Position;
+        static uint32_t TDC_Minus_Position_RPM = 0;
+        static uint32_t Last_TDC_Minus_Position_RPM = 0;
+        
+        start_tooth = (typeof(start_tooth))Start_Tooth;     // position is based on user setting of cam position
+        //position =  Total_Teeth / 2;    // doesn't matter where, but this is a good spot
+        //these are needed for syncing a crank only odd fire engine
+        TDC_Tooth = ((Engine_Position << 2) / Degrees_Per_Tooth_x100) % Total_Teeth; //adjust from bin-2 to bin 0
+        //find teeth to compare rpm to test if compression stroke
+        TDC_Minus_Position = (Total_Teeth  + TDC_Tooth - ((Odd_Fire_Sync_Angle <<2) / Degrees_Per_Tooth_x100)) % Total_Teeth;
 
-    // do these once for speed
-    start_tooth = (typeof(start_tooth))Start_Tooth;     // position is based on user setting of cam position
-                                               
-   // note: cam position must be in the range 361 - 719.  540 is recommended.
-   // note: use "rising edge" cam with fake cam signals and a larger than normal window
+        for (;;) {
+        
+                // output pulse once per 2 crank revs
 
-    for (;;) {
-    
+                tooth = fs_etpu_eng_pos_get_tooth_number();     // runs number of teeth
+                
+                 //find cylinder #1 on odd fire engines
+                // this works by comparing the rpm before #1TDC to rpm after #1TDC
+                // if the RPM after is great than the minus rpm plus a sync_theshold #1TDC position is known
 
-        tooth = fs_etpu_eng_pos_get_tooth_number();     // runs 1 to number of teeth
+           if (Engine_Type_Select && Sync_Mode_Select == 0 && sync_flag == 0){
+                   Get_Fast_Op_Vars(); // Read current RPM from eTPU
+                   if (tooth == TDC_Minus_Position )
+                       TDC_Minus_Position_RPM = RPM;
+                   
+                   if (TDC_Minus_Position_RPM > Odd_Fire_Sync_Threshold && Last_TDC_Minus_Position_RPM > Odd_Fire_Sync_Threshold && TDC_Minus_Position_RPM < (Last_TDC_Minus_Position_RPM - Odd_Fire_Sync_Threshold))
+                       sync_flag = 1;
+                   
+                   if (tooth < prev_tooth) //detect missing tooth
+                   Last_TDC_Minus_Position_RPM = TDC_Minus_Position_RPM;
+                   
+           }else{
+                sync_flag = 1;  
+           }
+        
+                // after odd fire home found or any time on even fire engines
+           if (sync_flag == 1 && prev_tooth < start_tooth && tooth >= start_tooth && (alternate ^= 1)){
+              	Set_Pin(FAKE_CAM_PIN, 1);           // create rising edge 
+                task_wait(1);                       // always 1 msec wide
+                Set_Pin(FAKE_CAM_PIN, 0);           // falling edge 
+                task_wait (3);                       //wait not more than 1.5 revolutions at 24k rpm in msec - TODO-angle would be better
+           } else
+				task_wait(1);
+                   
+            prev_tooth = tooth;
+            
+        } // for
 
-        if (prev_tooth < start_tooth && tooth >= start_tooth) {            // this works even with 1/2 sync
-            Set_Pin(FAKE_CAM_PIN, 1);           // create rising edge 
-            task_wait(1);                       // always 1 msec wide
-            Set_Pin(FAKE_CAM_PIN, 0);           // falling edge 
-            uint16_t period;
-            period = (fs_etpu_get_chan_local_24(0,  FS_ETPU_CRANK_TOOTH_PERIOD_A_OFFSET) * Total_Teeth) / (etpu_tcr1_freq/1000);
-            task_wait(period + period/2 - 1);   // skip 1.5 rotations (in msec)
-        } else 
-            task_wait(1);                       // waiting for rising edge point
+    task_close();     
 
-        prev_tooth = tooth;
-    }                           // for
-    task_close();
+} // Cam_Pulse_Task()
 
-}  // Cam_Pulse_Task()
 
 // This code is for testing only
 // It isused to simulate jitter in the crank signal by altering the test rpm, which alters the tooth period
@@ -122,6 +152,7 @@ void Cam_Pulse_Task(void)
 // small/big/......., while keeping the average rpm constant
 
 void Crank_Tooth_Jitter_Task(void)
+
 {
     task_open();                // standard OS entry
     task_wait(1);
