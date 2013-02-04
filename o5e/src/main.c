@@ -58,9 +58,9 @@ void main( void )
         }
 
     } 
-   // #ifdef SIMULATOR ////create the task to jitter toothgen signal during testing
-    	(void)task_create(Crank_Tooth_Jitter_Task, 5 + 128, 0, 0, 0);
-   // #endif
+  // #ifdef SIMULATOR ////create the task to jitter toothgen signal during testing
+    	(void)task_create(Test_RPM_Task, 5 + 128, 0, 0, 0);
+  // #endif
     
     (void)task_create(Tuner_Task, 6 + 128, 0, 0, 0);     // create the task
     (void)task_create(LED_Task, 7 + 128, 0, 0, 0);       // create the task 

@@ -94,7 +94,7 @@ int16_t TPS_Dot;
 int16_t Sync_Status;            // see Freescale code for values 
 int16_t Cam_Errors;             // count of errors seen
 int16_t Crank_Errors;           // count of errors seen
-int16_t Spare1;
+int16_t Pot_RPM;
 uint32_t Last_Error_Time;       // time that Last_Error or Crank or Cam error occured
 uint8_t Spares[28];
 };
@@ -137,6 +137,7 @@ uint8_t Spares[28];
 #define TPS_Dot Output_Channels.TPS_Dot
 #define Sync_Status Output_Channels.Sync_Status
 #define Cam_Errors Output_Channels.Cam_Errors
+#define Pot_RPM Output_Channels.Pot_RPM
 #define Crank_Errors Output_Channels.Crank_Errors
 #define Last_Error_Time Output_Channels.Last_Error_Time
 
@@ -269,11 +270,30 @@ extern struct Outputs Output_Channels;
 #define Ignition_Invert (*(CONST U08 * )(&Page_Ptr[0][166]) & ((2<<0)-1))
 #define N_Coils_Per_Cylinder (*(CONST U08 * )(&Page_Ptr[0][166]) & ((2<<0)-1))
 #define Jitter (*(CONST S16 * )(&Page_Ptr[0][168]))
-#define crank_windowing_ratio_normal_set (*(CONST U32 * )(&Page_Ptr[0][170]))
-#define crank_windowing_ratio_after_gap_set (*(CONST U32 * )(&Page_Ptr[0][174])) 
-#define crank_windowing_ratio_across_gap_set (*(CONST U32 * )(&Page_Ptr[0][178]))
-#define crank_windowing_ratio_timeout_set (*(CONST U32 * )(&Page_Ptr[0][182]))
-#define crank_gap_ratio_set  (*(CONST U32 * )(&Page_Ptr[0][186]))
+#define RPM_Pot (*(CONST S16 * )(&Page_Ptr[0][170]))
+#define crank_windowing_ratio_normal_set (*(CONST U32 * )(&Page_Ptr[0][172]))
+#define crank_windowing_ratio_after_gap_set (*(CONST U32 * )(&Page_Ptr[0][176])) 
+#define crank_windowing_ratio_across_gap_set (*(CONST U32 * )(&Page_Ptr[0][180]))
+#define crank_windowing_ratio_timeout_set (*(CONST U32 * )(&Page_Ptr[0][184]))
+#define crank_gap_ratio_set  (*(CONST U32 * )(&Page_Ptr[0][188]))
+#define RPM_Change_Rate_1  (*(CONST U32 * )(&Page_Ptr[0][192]))
+#define RPM_Change_Rate_Array ((CONST U32 * )(&Page_Ptr[0][192]))
+#define RPM_Change_Rate_2  (*(CONST U32 * )(&Page_Ptr[0][196]))
+#define RPM_Change_Rate_3  (*(CONST U32 * )(&Page_Ptr[0][200]))
+#define RPM_Change_Rate_4  (*(CONST U32 * )(&Page_Ptr[0][204]))
+#define Test_RPM_1  (*(CONST S16 * )(&Page_Ptr[0][208]))
+#define Test_RPM_Array  (*(CONST S16 * )(&Page_Ptr[0][208]))
+#define Test_RPM_2  (*(CONST S16 * )(&Page_Ptr[0][210]))
+#define Test_RPM_3  (*(CONST S16 * )(&Page_Ptr[0][212]))
+#define Test_RPM_4  (*(CONST S16 * )(&Page_Ptr[0][214]))
+#define Test_RPM_Dwell_1  (*(CONST S16 * )(&Page_Ptr[0][216]))
+#define Test_RPM_Dwell_Array  (*(CONST S16 * )(&Page_Ptr[0][216]))
+#define Test_RPM_Dwell_2  (*(CONST S16 * )(&Page_Ptr[0][218]))
+#define Test_RPM_Dwell_3  (*(CONST S16 * )(&Page_Ptr[0][220]))
+#define Test_RPM_Dwell_4  (*(CONST S16 * )(&Page_Ptr[0][222]))
+#define Test_RPM_Type (*(CONST U08 * )(&Page_Ptr[0][224]) & ((2<<1)-1))
+
+
 // Page 2
 #define Fuel_Temp_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[1][0]))
 #define IAT_Fuel_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[1][648]))

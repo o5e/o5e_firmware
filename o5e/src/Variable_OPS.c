@@ -52,7 +52,7 @@ Copyright 2012, Sean Stasiak <sstasiak at gmail dot com>
 #   define MAP_3_VOLTAGE_DIVIDER 1.0
 #   define V_MAP_3_AD    ADC_RsltQ0 [23]
 #   define P1_VOLTAGE_DIVIDER 1.0
-#   define V_P1_AD    ADC_RsltQ0 [30]
+#   define V_P1_AD    ADC_RsltQ0 [17]
 #   define P2_VOLTAGE_DIVIDER 1.0
 #   define V_P2_AD    ADC_RsltQ0 [31]
 #   define P3_VOLTAGE_DIVIDER 1.0
@@ -212,7 +212,7 @@ void Get_Fast_Op_Vars(void)
         // Test_Value = 0 allows the actual value to be input bypassing reading the ADC and the table lookup       
         if (Test_Value == 0) {
             V_Batt = Test_V_Batt;
-            RPM = Test_RPM;
+            RPM = Test_RPM_1;
             TPS = Test_TPS;
             MAP[0] = Test_MAP_1;
 
@@ -245,6 +245,10 @@ void Get_Fast_Op_Vars(void)
         /* Angle based stuff */
         V_MAP[0] = (int16_t) ((V_MAP_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP is bin 12
         MAP[0] = (int16_t) table_lookup_jz(V_MAP[0], 0, MAP_1_Table);
+        /* convert P1*/
+        Pot_RPM = (int16_t) ((V_P1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P1_VOLTAGE_DIVIDER ) * (1 << 20))) >> 8);       // V_P1_AD is bin 12
+        Pot_RPM=  (3000* Pot_RPM) >>12;
+        
     }
 
 }                               // Get_Fast_Op_Vars()

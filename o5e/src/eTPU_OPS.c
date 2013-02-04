@@ -238,7 +238,7 @@ int32_t init_eTPU()
                               Missing_Teeth,              // number of missing teeth
                               (ufract24_t)(.5 * (1<<24)), // tooth duty cycle 50%
                               1,                          // tooth number to generate first (not important)
-                              Test_RPM,                   // engine speed
+                              500,                          // engine speed
                               etpu_a_tcr1_freq,           //
                               (uint8_t)Start_Tooth,       // tooth to start cam signal (tooth #s start with 1)
                               (uint8_t)Start_Tooth+1      // tooth to end cam signal

@@ -151,7 +151,7 @@ void Cam_Pulse_Task(void)
 // The tooth width is a % of tooth period, so this will cause the tooth size to alternate 
 // small/big/......., while keeping the average rpm constant
 
-void Crank_Tooth_Jitter_Task(void)
+void Test_RPM_Task(void)// test routine, only run ifdef SIMULATOR (see main.c)
 
 {
     task_open();                // standard OS entry
@@ -162,35 +162,61 @@ void Crank_Tooth_Jitter_Task(void)
     static int24_t jitter_rpm;
     static int24_t jitter_previous;
     static int24_t set_RPM;
+    
 
     
 
     // do these once for speed
-    jitter_rpm = Test_RPM * Jitter / 100;
-    jitter_previous = Jitter;
-    degrees_to_wait = 360 /(N_Teeth + Missing_Teeth);
-  
-     fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM, etpu_tcr1_freq); //set a base RPM to get started                                          
-
-
+    //degrees_to_wait = 360 /(N_Teeth + Missing_Teeth); degree based wait not working
+    
+    
     for (;;) {
     
+  	if (Test_RPM_Type == 0){	// simply set the RPM
+            fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM_1, etpu_tcr1_freq); //set a base RPM to get started
+            task_wait (11);                           	 
+    		}
+
+
+	else if(Test_RPM_Type == 1){ //use constant rpm with jitter
+    
         if(jitter_previous != Jitter){
-           jitter_rpm = Test_RPM * Jitter / 100;
+           jitter_rpm = Test_RPM_1 * Jitter / 100;
            jitter_previous = Jitter; 
         }
-         set_RPM = Test_RPM + jitter_rpm;
+         set_RPM = Test_RPM_1 + jitter_rpm;
          fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);
-         task_wait (1); 
+         task_wait (1); //TODO this should be angle based
           
-         set_RPM = Test_RPM - jitter_rpm;
+         set_RPM = Test_RPM_1 - jitter_rpm;
          fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);      
-        
-		 task_wait (1); 
+        }//else if
+      else if (Test_RPM_Type == 2){ //Run RPM cycle
+
+    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_1, Test_RPM_1, etpu_tcr1_freq); //set a base RPM to get started 
+    	task_wait (Test_RPM_Dwell_1);
+    			 
+    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_2, Test_RPM_2, etpu_tcr1_freq); //set a base RPM to get started 
+    	task_wait (Test_RPM_Dwell_2);
+    	
+    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_3, Test_RPM_3, etpu_tcr1_freq); //set a base RPM to get started 
+    	task_wait (Test_RPM_Dwell_3);
+    	
+    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_4, Test_RPM_4, etpu_tcr1_freq); //set a base RPM to get started 
+    	task_wait (Test_RPM_Dwell_4);
+      }//else if
+      
+      else{// use signal from POT to set RPM
+              // Read the Pot
+        Get_Fast_Op_Vars();
+      
+      fs_etpu_toothgen_adj(TOOTHGEN_PIN1,0xFFFFFF,Pot_RPM , etpu_tcr1_freq); //set a base RPM to get started
+            task_wait (11);   	
+      }
         
     }                           // for
     task_close();
-}//Crank_Tooth_Jitter_Task()
+}//Test_RPM_Task()
 
 // Debug
 // Blink based on engine position status - for testing
