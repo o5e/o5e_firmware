@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.0.8 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Wed Feb 06 11:35:01 EST 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.0.8 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Wed Feb 06 14:06:17 EST 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="gc 1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="226">
 <constant name="Engine_Type_Select">"4 stroke"</constant>
@@ -61,13 +61,13 @@
 <constant digits="2" name="Test_V_TPS" units="V">-2.441E-4</constant>
 <constant digits="0" name="crank_windowing_ratio_timeout">1.6777215E7</constant>
 <constant name="Ignition_Type">"Direct Fire"</constant>
-<constant digits="0" name="crank_gap_ratio">1.6777215E7</constant>
+<constant digits="0" name="crank_gap_ratio">1.671168E7</constant>
 <constant digits="1" name="Odd_Fire_Sync_Threshold" units="rpm">-1.0</constant>
 <constant digits="0" name="RPM_Change_Rate_4">100.0</constant>
 <constant digits="0" name="RPM_Change_Rate_1">200.0</constant>
 <constant digits="2" name="Test_V_O2_UR_1" units="V">-2.441E-4</constant>
-<constant digits="0" name="RPM_Change_Rate_3">-65436.0</constant>
-<constant digits="0" name="RPM_Change_Rate_2">255.0</constant>
+<constant digits="0" name="RPM_Change_Rate_3">100.0</constant>
+<constant digits="0" name="RPM_Change_Rate_2">200.0</constant>
 <constant digits="2" name="Test_V_O2_UR_2" units="V">-2.441E-4</constant>
 <constant digits="2" name="Test_V_O2_UA_1" units="V">-2.441E-4</constant>
 <constant digits="2" name="Test_V_O2_UA_2" units="V">-2.441E-4</constant>
