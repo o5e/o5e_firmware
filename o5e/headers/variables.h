@@ -43,7 +43,7 @@ void Set_Page_Locations(uint8_t block);
 #define   SIGNATURE      "MShift 2.111       "
 //                       "1234567890123456789"
 
-#define  NPAGES  	14
+#define  NPAGES  	15
 
 extern uint16_t const pageSize[NPAGES];
 
@@ -430,6 +430,29 @@ extern struct Outputs Output_Channels;
 #define Coil_Trim_10_Table ((CONST struct table_jz * )(&Page_Ptr[13][488]))
 #define Coil_Trim_11_Table ((CONST struct table_jz * )(&Page_Ptr[13][976]))
 #define Coil_Trim_12_Table ((CONST struct table_jz * )(&Page_Ptr[13][1464]))
+// Page 15
+#define  Link_Inj_2_1 (*(CONST U08 * )(&Page_Ptr[14][0]) & ((2<<2)-1))
+#define Link_inj_2_1_on (*(CONST U08 * )(&Page_Ptr[14][1]) & ((2<<1)-1))
+#define Link_inj_2_1_on_set (*(CONST S16 * )(&Page_Ptr[14][2]))
+#define Link_inj_2_1_off (*(CONST U08 * )(&Page_Ptr[14][4]) & ((2<<1)-1))
+#define Link_inj_2_1_off_set (*(CONST S16 * )(&Page_Ptr[14][6]))
+#define Link_Inj_2_2 (*(CONST U08 * )(&Page_Ptr[14][8]) & ((2<<2)-1))
+#define Link_inj_2_2_on (*(CONST U08 * )(&Page_Ptr[14][9]) & ((2<<1)-1))
+#define Link_inj_2_2_on_set (*(CONST S16 * )(&Page_Ptr[14][10]))
+#define Link_inj_2_2_off (*(CONST U08 * )(&Page_Ptr[14][12]) & ((2<<1)-1))
+#define Link_inj_2_2_off_set (*(CONST S16 * )(&Page_Ptr[14][14]))
+#define Link_Inj_2_3 (*(CONST U08 * )(&Page_Ptr[14][16]) & ((2<<2)-1))
+#define Link_inj_2_3_on (*(CONST U08 * )(&Page_Ptr[17][0]) & ((2<<1)-1))
+#define Link_inj_2_3_on_set (*(CONST S16 * )(&Page_Ptr[14][18]))
+#define Link_inj_2_3_off (*(CONST U08 * )(&Page_Ptr[14][20]) & ((2<<1)-1))
+#define Link_inj_2_3_off_set (*(CONST S16 * )(&Page_Ptr[14][22]))
+#define Link_Inj_2_4 (*(CONST U08 * )(&Page_Ptr[14][24]) & ((2<<2)-1))
+#define Link_inj_2_4_on (*(CONST U08 * )(&Page_Ptr[14][25]) & ((2<<1)-1))
+#define Link_inj_2_4_on_set (*(CONST S16 * )(&Page_Ptr[14][26]))
+#define Link_inj_2_4_off (*(CONST U08 * )(&Page_Ptr[14][28]) & ((2<<1)-1))
+#define Link_inj_2_4_off_set (*(CONST S16 * )(&Page_Ptr[14][30]))
+#define PWM_Inj_2_1_Table ((CONST struct table_jz * )(&Page_Ptr[14][32]))
+
 // ---------------------------------------------------
 // Below here does not come from the .ini file
 
