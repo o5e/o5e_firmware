@@ -146,7 +146,8 @@ int32_t init_eTPU()
 {
     uint32_t i;
     uint24_t Drop_Dead_Angle_eTPU;
-
+    #define Fake_Cam_Window_Width 12000 // Use 120*100 for the width of the cam window when FAKe cam is used
+	#define Fake_Cam_Lobe_Position 54000 // Use 540 8 100 as athe location of fake cam
     // Load firmware into eTPU
     error_code = (int32_t)
         fs_etpu_init(my_etpu_config, (uint32_t *) etpu_code, sizeof(etpu_code), (uint32_t *) etpu_globals, sizeof(etpu_globals));
@@ -156,10 +157,20 @@ int32_t init_eTPU()
 
     if (N_Cyl > 12)
         err_push( CODE_OLDJUNK_DF );
-
+    
+    int32_t Cam_Window_width;
+    int32_t Cam_Lode_Position_eTPU;
+    int32_t Window_Start;    
+    if (Sync_Mode_Select == 0) {
+     Cam_Window_width =  (Cam_Window_Width_Set >>2); //cam_window_width_set is bin-2
+     Cam_Lode_Position_eTPU = ((int32_t)Cam_Lobe_Pos << 2);	
+    }else{
+       Cam_Window_width =  Fake_Cam_Window_Width;
+       Cam_Lode_Position_eTPU = Fake_Cam_Lobe_Position;
+	}
     // cam window starts 1/2 of the window before the cam signal
-    int32_t Window_Start;
-     Window_Start = ((int32_t)Cam_Lobe_Pos << 2) - (((int32_t)Cam_Window_Width_Set << 2) / 2);// cam_angle_window_start 
+
+     Window_Start =  (Cam_Lode_Position_eTPU - Cam_Window_width / 2); //((int32_t)Cam_Lobe_Pos << 2) - ((int32_t)Cam_Window_Width  / 2);// cam_angle_window_start 
     //removed gap stuff for testing
     /* 
     int32_t crank_gap_ratio = 0xafffff;
@@ -194,12 +205,12 @@ int32_t init_eTPU()
 
     error_code = fs_etpu_app_eng_pos_init(1,                            /* CAM in engine: A; channel: 1 */
                                         FS_ETPU_CAM_PRIORITY_MIDDLE,    /* cam_priority: Middle */
-                                        Crank_Edge_Select,              /* cam_edge_polarity: rising(1) or falling edge(0) */
+                                        Cam_Edge_Select,                /* cam_edge_polarity: rising(1) or falling edge(0) */
                                         Window_Start,                   /* cam_angle_window_start: cam_window_open*100   */
-                                        (int32_t)Cam_Window_Width_Set << 2,      /* cam_angle_window_width: cam_window_width*100   */
+                                        Cam_Window_width,               /* cam_angle_window_width: cam_window_width*100   */
                                         0,                              /* CRANK in engine: A; channel: 0 */
                                         FS_ETPU_CRANK_PRIORITY_MIDDLE,  /* crank_priority: Middle */
-                                        Cam_Edge_Select,                /* crank_edge_polarity: rising(1) or falling edge(0) */
+                                        Crank_Edge_Select,               /* crank_edge_polarity: rising(1) or falling edge(0) */
                                         N_Teeth,                        /* crank_number_of_physical_teeth */
                                         Missing_Teeth,                  /* crank_number_of_missing_teeth */
                                         Total_Teeth/3,                  /* crank_blank_tooth_count */
