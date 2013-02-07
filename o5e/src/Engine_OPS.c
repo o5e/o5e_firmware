@@ -189,7 +189,8 @@ void Test_RPM_Task(void)// test routine, only run ifdef SIMULATOR (see main.c)
          task_wait (1); //TODO this should be angle based
           
          set_RPM = Test_RPM_1 - jitter_rpm;
-         fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);      
+         fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);
+         task_wait (1); //TODO this should be angle based               
         }//else if
       else if (Test_RPM_Type == 2){ //Run RPM cycle
 
