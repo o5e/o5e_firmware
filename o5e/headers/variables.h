@@ -96,7 +96,8 @@ int16_t Cam_Errors;             // count of errors seen
 int16_t Crank_Errors;           // count of errors seen
 int16_t Pot_RPM;
 uint32_t Last_Error_Time;       // time that Last_Error or Crank or Cam error occured
-uint8_t Spares[28];
+uint32_t  seconds ;
+uint8_t Spares[24];
 };
 
 // this must match the offsets in the .ini file AND must be a multiple of 4
@@ -140,6 +141,7 @@ uint8_t Spares[28];
 #define Pot_RPM Output_Channels.Pot_RPM
 #define Crank_Errors Output_Channels.Crank_Errors
 #define Last_Error_Time Output_Channels.Last_Error_Time
+#define seconds
 
 //*******************************************************
 // initialized to all zeros
