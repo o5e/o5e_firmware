@@ -145,7 +145,16 @@ struct etpu_config_t my_etpu_config = {
 int32_t init_eTPU()
 {
     uint32_t i;
-    uint24_t Drop_Dead_Angle_eTPU;
+
+    int32_t Cam_Window_Width;
+    int32_t Window_Start;
+    uint24_t Drop_Dead_Angle_eTPU;    
+    uint24_t Engine_Position_eTPU;
+    uint24_t Cam_Lode_Position_eTPU;
+    uint8_t Gen_Tooth_open;
+    uint8_t Gen_Tooth_close;
+    uint8_t Cam_Edge_Select_eTPU;
+    
     #define Fake_Cam_Window_Width 12000 // Use 120*100 for the width of the cam window when FAKe cam is used
 	#define Fake_Cam_Lobe_Position 54000 // Use 540 8 100 as athe location of fake cam
     // Load firmware into eTPU
@@ -157,20 +166,21 @@ int32_t init_eTPU()
 
     if (N_Cyl > 12)
         err_push( CODE_OLDJUNK_DF );
-    
-    int32_t Cam_Window_width;
-    int32_t Cam_Lode_Position_eTPU;
-    int32_t Window_Start;    
-    if (Sync_Mode_Select == 0) {
-     Cam_Window_width =  (Cam_Window_Width_Set >>2); //cam_window_width_set is bin-2
-     Cam_Lode_Position_eTPU = ((int32_t)Cam_Lobe_Pos << 2);	
-    }else{
-       Cam_Window_width =  Fake_Cam_Window_Width;
+        // The goal here is to open a cam window that that will work with the cam position
+    Engine_Position_eTPU = (72000 - ((uint32_t)Engine_Position << 2));   // adjust bin -2 to bin 0
+    Cam_Lode_Position_eTPU = (72000-((uint32_t)Cam_Lobe_Pos<< 2));   // adjust bin -2 to bin 0
+    Cam_Window_Width = Cam_Window_Width_Set <<2; //adjust bin -2 to bin 0
+    Cam_Edge_Select_eTPU = Cam_Edge_Select; //for normal operation allow user setting
+
+          // set the cam window correctly for semi-sequentail mode   
+    if (Sync_Mode_Select ||(Engine_Type_Select && Sync_Mode_Select == 0)){
+       Cam_Window_Width =  Fake_Cam_Window_Width;
        Cam_Lode_Position_eTPU = Fake_Cam_Lobe_Position;
+       Cam_Edge_Select_eTPU = 0; // use rising edge to match generated tooth  
 	}
     // cam window starts 1/2 of the window before the cam signal
 
-     Window_Start =  (Cam_Lode_Position_eTPU - Cam_Window_width / 2); //((int32_t)Cam_Lobe_Pos << 2) - ((int32_t)Cam_Window_Width  / 2);// cam_angle_window_start 
+     Window_Start =  (Cam_Lode_Position_eTPU - Cam_Window_Width / 2); // cam_angle_window_start 
     //removed gap stuff for testing
     /* 
     int32_t crank_gap_ratio = 0xafffff;
@@ -205,9 +215,9 @@ int32_t init_eTPU()
 
     error_code = fs_etpu_app_eng_pos_init(1,                            /* CAM in engine: A; channel: 1 */
                                         FS_ETPU_CAM_PRIORITY_MIDDLE,    /* cam_priority: Middle */
-                                        Cam_Edge_Select,                /* cam_edge_polarity: rising(1) or falling edge(0) */
+                                        Cam_Edge_Select_eTPU,                /* cam_edge_polarity: rising(1) or falling edge(0) */
                                         Window_Start,                   /* cam_angle_window_start: cam_window_open*100   */
-                                        Cam_Window_width,               /* cam_angle_window_width: cam_window_width*100   */
+                                        Cam_Window_Width,               /* cam_angle_window_width: cam_window_width*100   */
                                         0,                              /* CRANK in engine: A; channel: 0 */
                                         FS_ETPU_CRANK_PRIORITY_MIDDLE,  /* crank_priority: Middle */
                                         Crank_Edge_Select,               /* crank_edge_polarity: rising(1) or falling edge(0) */
@@ -274,7 +284,7 @@ int32_t init_eTPU()
        N_Coils = (N_Coils + 1) / 2;
 
     // Calculate the cylinder angles from user inputs
-    uint24_t Engine_Position_eTPU = (72000 - ((uint32_t)Engine_Position << 2));   // adjust bin -2 to bin 0
+    Engine_Position_eTPU = (72000 - ((uint32_t)Engine_Position << 2));   // adjust bin -2 to bin 0
 
     for (i = 0; i < N_Cyl; ++i) {
         Cyl_Angle_eTPU[i] = (((int32_t)Cyl_Offset_Array[i] << 2 ) + Engine_Position_eTPU) % 72000;  // << to convert bin -2 to bin 0
