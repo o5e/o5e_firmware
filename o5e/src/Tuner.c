@@ -77,6 +77,7 @@ Special pages:
 #define CAN_failure 0x8b
 #define auth_failure 0x8c
 
+
 /*
 
 Example with crc:
@@ -122,6 +123,7 @@ void Tuner_Task(void)
     for (;;) {
         task_wait(1);           // let other tasks run
         count = 0;
+
 
         // wait until outbound serial port is not busy
         while (write_serial_busy())

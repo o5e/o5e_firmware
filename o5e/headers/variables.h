@@ -141,7 +141,7 @@ uint8_t Spares[24];
 #define Pot_RPM Output_Channels.Pot_RPM
 #define Crank_Errors Output_Channels.Crank_Errors
 #define Last_Error_Time Output_Channels.Last_Error_Time
-#define seconds
+#define seconds Output_Channels.seconds
 
 //*******************************************************
 // initialized to all zeros

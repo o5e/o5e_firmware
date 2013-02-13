@@ -27,6 +27,7 @@ Copyright 2012, Sean Stasiak <sstasiak at gmail dot com>
 #include "Table_Lookup_JZ.h"
 #include "eQADC_OPS.h"
 #include "eTPU_OPS.h"
+#include "mpc563xm.h" //pickup EMIOS for the clock to work
 
 /*  eTPU APIs                                                                  */
 #include "etpu_toothgen.h"
@@ -204,6 +205,8 @@ void Get_Slow_Op_Vars(void)
 
 void Get_Fast_Op_Vars(void)
 {
+        //TS looks at "seconds" to know ift he OS is running....we're giving it msec but that will do
+       seconds = (EMIOS.CH[MSEC_EMIOS_CHANNEL].CCNTR.R);
     // Code for testing
     // Test_Enable allows real time variables to be set in TunerStudio to test code
 

@@ -27,6 +27,12 @@ Copyright (c) 2012 Sean Stasiak <sstasiak at gmail dot com>
 #include "err.h"
 #include "led.h"
 
+
+
+
+
+
+
 static void LED_Task(void);
 
 // Note: CocoOS allows less critical tasks to run less frequently and prevents spagetti code caused by state machines
@@ -68,7 +74,8 @@ void main( void )
   os_start();
 }
 
-// Task to verify that OS is running - flash a LED and feed the watchdog
+
+// Task to verify that OS is running - flash a LED, feed the watchdog, feed TunerStudio
 
 static void LED_Task(void)
 {
@@ -79,6 +86,7 @@ static void LED_Task(void)
     for (;;) {
         /* don't even bother hitting wd here, this is the wrong way to it */
         //Feed_Watchdog();        // will reset cpu if not fed
+
 
         // DEBUG - check for DMA errors
         /* if we have DMA errors, so what ? */
