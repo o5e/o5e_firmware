@@ -40,6 +40,7 @@ Copyright (c) 2012 Sean Stasiak <sstasiak at gmail dot com>
 
 
 static void Angle_Clock_Task(void);
+static Evt_t event;             // dummy event for angle task
 static void LED_Task(void);
 
 // Note: CocoOS allows less critical tasks to run less frequently and prevents spagetti code caused by state machines
