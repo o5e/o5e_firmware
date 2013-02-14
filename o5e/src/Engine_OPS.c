@@ -633,8 +633,9 @@ static void Set_Fuel(void)
         // fuel dead time - extra pulse needed to open the injector
         // take user value and adjust based on battery voltage
         Dead_Time = (Dead_Time_Set * table_lookup_jz(V_Batt, 0, Inj_Dead_Time_Table)) >> 13;
-
+         
         Injection_Time = Pulse_Width + Dead_Time;
+        
 
         // TODO - add code for semi-seq fuel 
         // Sanity check - greater than 99% duty cycle?

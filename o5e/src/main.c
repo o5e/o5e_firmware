@@ -97,7 +97,7 @@ static void Angle_Clock_Task(void)
 
         // update crank shaft degree/angle clock (free running, not synced to an absolute engine position)
 
-#       define ANGLE_TICKS_PER_DEGREE 10
+#define ANGLE_TICKS_PER_DEGREE 10
         i = (angle_clock() - prev_angle) & 0xffffff;    // 24 bit hw counter 
         j = i * (((uint64_t)1 << 32) / ANGLE_TICKS_PER_DEGREE);        // avoid a run time divide
         i = (uint32_t) (j >> 32);                       // convert back to bin 0
