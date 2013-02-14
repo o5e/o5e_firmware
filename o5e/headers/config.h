@@ -35,8 +35,8 @@
 #define PWM1_HZ      50     // recommend 50 for servos, 200 or 300 for IAC
 
 // increasing clock available for general use - runs at CPU_CLOCK/1000000 ticks per msec
-#define MSEC_EMIOS_CHANNEL 9  // eMIOS channel to use for the msec timer (OS and many other uses will roll!!)
 //not currently used anywhere
+//#define MSEC_EMIOS_CHANNEL 9  // eMIOS channel to use for the msec timer (OS and many other uses will roll!!)
 //#define hclock()  (volatile uint32_t)(EMIOS.CH[MSEC_EMIOS_CHANNEL].CCNTR.R)//!!
 
 // angle clock in degrees

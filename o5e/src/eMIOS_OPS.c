@@ -76,17 +76,17 @@ EMIOS.CH[i].CCR.B.BSL = 0x03;     // Use internal counter
 EMIOS.CH[i].CCR.B.EDSEL = 1;      // 
 EMIOS.CH[i].CCR.B.MODE = 0x58;    // OPWFM mode 
 } // for
-    
+//not currently used anywhere    
 //  Configure a free running timer for general purpose and OS use               
 //  Note:  with Prescalars set to 250 (249+1) and 4 (3+1), this counter runs at system clock speed / 1000
 
-EMIOS.CH[MSEC_EMIOS_CHANNEL].CCR.B.FEN = 0x00;     // Disable Interrupt Request                               
-EMIOS.CH[MSEC_EMIOS_CHANNEL].CCR.B.UCPRE = 0x3;    // Further 1/4x with internal channel prescaler      
-EMIOS.CH[MSEC_EMIOS_CHANNEL].CCR.B.UCPREN = 1;     // Enable internal channel prescaler                       
-EMIOS.CH[MSEC_EMIOS_CHANNEL].CADR.R = 0xffffff;    // run free - no modulus
-EMIOS.CH[MSEC_EMIOS_CHANNEL].CCR.B.BSL = 0x03;     // Use internal counter                                    
-EMIOS.CH[MSEC_EMIOS_CHANNEL].CCR.B.EDSEL = 1;      // 
-EMIOS.CH[MSEC_EMIOS_CHANNEL].CCR.B.MODE = 0x50; // Set MC up buffer mode                                   
+//EMIOS.CH[MSEC_EMIOS_CHANNEL].CCR.B.FEN = 0x00;     // Disable Interrupt Request                               
+//EMIOS.CH[MSEC_EMIOS_CHANNEL].CCR.B.UCPRE = 0x3;    // Further 1/4x with internal channel prescaler      
+//EMIOS.CH[MSEC_EMIOS_CHANNEL].CCR.B.UCPREN = 1;     // Enable internal channel prescaler                       
+//EMIOS.CH[MSEC_EMIOS_CHANNEL].CADR.R = 0xffffff;    // run free - no modulus
+//EMIOS.CH[MSEC_EMIOS_CHANNEL].CCR.B.BSL = 0x03;     // Use internal counter                                    
+//EMIOS.CH[MSEC_EMIOS_CHANNEL].CCR.B.EDSEL = 1;      // 
+//EMIOS.CH[MSEC_EMIOS_CHANNEL].CCR.B.MODE = 0x50; // Set MC up buffer mode                                   
 // enable STM counter in case we want to use it for measuring code execution speed
 STM.CR.R = 0x00003;     // enable, no divisor, stop with debug
 } // init_eMIOS()
