@@ -41,5 +41,7 @@
 
 // angle clock in degrees
 #define angle_clock() (volatile uint32_t)(eTPU->TB2R_A.R)
+// used by thr eTPU angle clock
+#define Ticks_Per_Tooth  120        // Max 200
 
 #endif
