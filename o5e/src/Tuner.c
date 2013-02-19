@@ -151,17 +151,29 @@ void Tuner_Task(void)
             continue;
         }
 
-        if (tmp_buf[0] == 'Q' && count == 1) {        // SIGNATURE
-            write_tuner((const void *)SIGNATURE, sizeof(SIGNATURE));
-            continue;
-        }
-
         if (tmp_buf[0] == 'T' && count == 1) {        //  reboot cpu
             __start();  /**< this is NOT a reboot, this is a restart */
             continue;
         }
 
+        if (tmp_buf[0] == 'F' && count == 1) {        // protocol interrogation
+            write_tuner((const void *)PROTOCOL, sizeof(PROTOCOL));
+            continue;
+        }
+
         // below processes commands in packets - 3rd byte is command
+
+        if (tmp_buf[2] == 'Q') {                        // signature
+            if ((count = check_crc(tmp_buf)) == -1) {   // check crc on packet
+                err_push( CODE_OLDJUNK_F9 );            // using same error code as below...  not sure how our scheme is. 
+                continue;
+            }
+
+            static uint8_t signature[20] = SIGNATURE;
+            make_packet(OK, (const void *)&signature, sizeof(signature));
+            continue;
+        }
+
 
         if (tmp_buf[2] == 'R') {                        // send random number
             if ((count = check_crc(tmp_buf)) == -1) {   // check crc on packet
