@@ -26,15 +26,8 @@ Copyright (c) 2012 Sean Stasiak <sstasiak at gmail dot com>
 #include "Engine_OPS.h"
 #include "err.h"
 #include "led.h"
-
-//#include "etpu_struct.h"
+#include "etpu_struct.h"
 #include "etpu_util.h"
-//#include "FreeScale/FSutil.h"
-//#include "eSCI_OPS.h"
-//#include "mpc5500_ccdcfg.h"
-//#include "Functions.h"
-
-
 
 
 
@@ -84,31 +77,33 @@ void main( void )
 static void Angle_Clock_Task(void)
 {
     static uint32_t prev_angle; // previous cam position in ticks
-    static uint32_t i;
-    register uint64_t j;
-
+    static uint32_t i;   
+    register uint64_t j =0;
+    static uint8_t status;
+    
+#define ANGLE_TICKS_PER_DEGREE ((Ticks_Per_Tooth * (N_Teeth + Missing_Teeth)) / 360)
     task_open();                // NOTE: must be first line
-    task_wait(1);
 
-  
+    Degree_Clock = 0;
     prev_angle = angle_clock(); // previous cam position in ticks
 
     for (;;) {
 
+      	
         // update crank shaft degree/angle clock (free running, not synced to an absolute engine position)
-
-#define ANGLE_TICKS_PER_DEGREE 10
+//Match the degrees per tic to teh eTPU settings
         i = (angle_clock() - prev_angle) & 0xffffff;    // 24 bit hw counter 
         j = i * (((uint64_t)1 << 32) / ANGLE_TICKS_PER_DEGREE);        // avoid a run time divide
-        i = (uint32_t) (j >> 32);                       // convert back to bin 0
-        if (i > 0) {                                    // delta full degrees
+        i = (uint32_t) (j >> 32);       // convert back to bin 0
+        if (i > 0) {            // delta full degrees
             Degree_Clock += i;
             prev_angle = (prev_angle + i * ANGLE_TICKS_PER_DEGREE) & 0xffffff;
-            os_task_tick(1, (uint16_t) i);              // increment os angle clock value
-        }
+            os_task_tick(1, (uint16_t) i);      // increment os angle clock value
+        }        
         event_signal(event);    // dummy to cause task change - all higher priority tasks will be run
+
         
-    }                           // for ever
+     } // for ever
     
     task_close();
 }

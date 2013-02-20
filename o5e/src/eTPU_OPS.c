@@ -191,7 +191,7 @@ int32_t init_eTPU()
     } 
     */   
 
-    #define Ticks_Per_Tooth  120        // Max 200
+
 
     // check that these are always true for the tcr1 rate in use
     // trr = ((Tooth_Period << 3) / (Ticks_Per_Tooth)) << 6;
