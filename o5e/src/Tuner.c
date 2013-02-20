@@ -161,6 +161,11 @@ void Tuner_Task(void)
             continue;
         }
 
+        if (tmp_buf[0] == 'Q' && count == 1) {        // signature
+            write_tuner((const void *)SIGNATURE, sizeof(SIGNATURE));
+            continue;
+        }
+
         // below processes commands in packets - 3rd byte is command
 
         if (tmp_buf[2] == 'Q') {                        // signature
@@ -192,7 +197,8 @@ void Tuner_Task(void)
                 continue;
             }
 
-          make_packet(OK, "", 0);
+			static uint8_t version[59] = VERSION;
+			make_packet(OK, (const void *)version, sizeof(version));
           continue;
         }
 
