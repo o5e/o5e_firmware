@@ -158,14 +158,13 @@ void Tuner_Task(void)
 
         if (tmp_buf[0] == 'F' && count == 1) {        // protocol interrogation
             write_tuner((const void *)PROTOCOL, sizeof(PROTOCOL));
-<<<<<<< HEAD
-=======
+
             continue;
         }
 
         if (tmp_buf[0] == 'Q' && count == 1) {        // signature
             write_tuner((const void *)SIGNATURE, sizeof(SIGNATURE));
->>>>>>> mark_5634
+
             continue;
         }
 
