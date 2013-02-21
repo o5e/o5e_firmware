@@ -130,12 +130,12 @@ static void os_schedule( void ) {
     running_tid = os_task_highest_prio_ready_task();   
 #endif
     
-    if ( running_tid != NO_TID ) {
+//    if ( running_tid != NO_TID ) {
         os_task_run();
-    }
-    else {
-        os_idle();
-    }
+//    }
+//    else {
+//        os_idle();
+//    }
 }
 
 /*********************************************************************************/

@@ -22,7 +22,8 @@
 /* --| STATICS  |--------------------------------------------------------- */
 /* --| INLINES  |--------------------------------------------------------- */
 /* --| INTERNAL |--------------------------------------------------------- */
-void
+
+void 
   os_idle( void )
 {
 
@@ -32,9 +33,10 @@ void
   /*                                                               */
   /* ideally, I just put the core to sleep until the next int      */
   /* rolls in                                                      */
+
   static uint32_t prev_angle = 0;
   prev_angle = angle_clock(); // previous crank position in ticks
-  // update crank shaft degree/angle clock (free running, not synced to an absolute engine position)
+  //update crank shaft degree/angle clock (free running, not synced to an absolute engine position)
   register uint32_t i;
   register uint64_t j;
 
@@ -42,10 +44,11 @@ void
   j = i * (((uint64_t)1 << 32) / ANGLE_TICKS_PER_DEGREE);        // avoid a run time divide
   i = (uint32_t) (j >> 32);                       // convert back to bin 0
   if (i > 0) {                                    // delta full degrees
-    Degree_Clock += i;                          /**< polled/used in Engine_OPS.c */
+    Degree_Clock += i;                          //< polled/used in Engine_OPS.c 
     prev_angle = (prev_angle + i * ANGLE_TICKS_PER_DEGREE) & 0xffffff;
     os_task_tick(1, (uint16_t) i);              // increment os angle clock value
   } // if
 }
 /* --| PUBLIC   |--------------------------------------------------------- */
-uint32_t Degree_Clock;
+
+uint32_t Degree_Clock = 0;
