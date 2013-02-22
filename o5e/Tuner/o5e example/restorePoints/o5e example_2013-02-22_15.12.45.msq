@@ -1,90 +1,92 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.0.8 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Mon Feb 04 14:40:11 EST 2013"/>
-<versionInfo fileFormat="4.0" firmwareInfo="gc 1.0.0" nPages="14" signature="MShift 2.111       "/>
+<bibliography author="TunerStudio MS 2.0.8 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Fri Feb 22 15:12:45 EST 2013"/>
+<versionInfo fileFormat="4.0" firmwareInfo="" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="226">
+<constant name="Show_All">"off"</constant>
 <constant name="Engine_Type_Select">"4 stroke"</constant>
 <constant digits="1" name="Engine_Position">0.0</constant>
-<constant name="N_Cyl">"6"</constant>
-<constant digits="1" name="Test_CLT" units="C">39.9956482</constant>
+<constant name="N_Cyl">"4"</constant>
+<constant digits="1" name="Test_CLT" units="C">0.0</constant>
 <constant digits="2" name="Test_V_MAF_1" units="V">-2.441E-4</constant>
 <constant digits="2" name="Test_V_MAF_2" units="V">-2.441E-4</constant>
 <constant digits="2" name="Test_V_IAT" units="V">-2.441E-4</constant>
 <constant name="Test_Value">"Sensor Value"</constant>
 <constant digits="2" name="Test_AFR_1" units="AFR">0.0</constant>
 <constant digits="2" name="Test_AFR_2" units="AFR">0.0</constant>
-<constant digits="1" name="Cam_Lobe_Pos">540.0</constant>
+<constant digits="1" name="Cam_Lobe_Pos">180.0</constant>
 <constant name="Config_LS_3">"invalid"</constant>
 <constant name="Config_LS_2">"Tach"</constant>
-<constant digits="0" name="crank_windowing_ratio_normal" units="%">99.9999971</constant>
+<constant digits="0" name="crank_windowing_ratio_normal">1.6777215E7</constant>
 <constant name="Config_LS_1">"malfunction light"</constant>
-<constant name="Config_Ign_10">"PWM"</constant>
+<constant name="Config_Ign_10">"off"</constant>
 <constant name="Crank_Edge_Select">"rising edge"</constant>
-<constant name="Config_Ign_12">"PWM"</constant>
+<constant name="Config_Ign_12">"off"</constant>
 <constant digits="0" name="N_Teeth">34.0</constant>
-<constant name="Config_Ign_11">"PWM"</constant>
+<constant name="Config_Ign_11">"off"</constant>
 <constant digits="0" name="Test_RPM" units="rpm">500.0</constant>
 <constant digits="2" name="Test_V_MAP_1" units="V">-2.441E-4</constant>
 <constant digits="2" name="Test_V_MAP_2" units="V">-2.441E-4</constant>
-<constant name="Test_RPM_Type">"Pot controlled"</constant>
+<constant name="Test_RPM_Type">"Fixed "</constant>
 <constant name="Sync_Mode_Select">"half sync (360 degree)"</constant>
 <constant name="Pulses_Per_Rev">"1"</constant>
 <constant digits="2" name="Test_V_Batt" units="V">11.9999693</constant>
 <constant digits="1" name="Test_MAP_1" units="kPa">49.999872</constant>
 <constant digits="1" name="Test_MAP_2" units="kPa">49.999872</constant>
-<constant name="Test_Enable">"Run Mode"</constant>
+<constant name="Test_Enable">"Test Mode!"</constant>
 <constant digits="1" name="Cyl_Offset_11">-0.04</constant>
 <constant digits="1" name="Cyl_Offset_10">-0.04</constant>
 <constant digits="1" name="Cyl_Offset_12">-0.04</constant>
 <constant name="Ignition_Invert">"Fire HIGH"</constant>
-<constant digits="1" name="Odd_Fire_Sync_Angle">-0.04</constant>
-<constant name="Config_Inj_10">"PWM"</constant>
-<constant name="Config_Inj_11">"PWM"</constant>
+<constant digits="1" name="Odd_Fire_Sync_Angle">20.0</constant>
+<constant name="Config_Inj_10">"off"</constant>
+<constant name="Config_Inj_11">"off"</constant>
 <constant digits="4" name="Test_MAF_2" units="kg/s">0.0</constant>
-<constant name="Config_Inj_14">"PWM"</constant>
-<constant name="Config_Inj_15">"PWM"</constant>
+<constant name="Config_Inj_14">"off"</constant>
+<constant name="Config_Inj_15">"off"</constant>
 <constant digits="4" name="Test_MAF_1" units="kg/s">0.0</constant>
-<constant name="Config_Inj_12">"PWM"</constant>
-<constant name="Config_Inj_13">"PWM"</constant>
-<constant name="Config_Inj_18">"PWM"</constant>
-<constant name="Config_Inj_19">"PWM"</constant>
-<constant name="Config_Inj_16">"PWM"</constant>
-<constant name="Config_Inj_17">"PWM"</constant>
-<constant digits="1" name="Cam_Window_Width_Set">50.0</constant>
-<constant digits="0" name="RPM_Pot" units="%">-1.0</constant>
-<constant digits="0" name="crank_windowing_ratio_after_gap" units="%">99.9999971</constant>
-<constant name="Config_Inj_20">"PWM"</constant>
-<constant name="Config_Inj_21">"PWM"</constant>
-<constant name="Config_Inj_22">"PWM"</constant>
-<constant name="Config_Inj_23">"PWM"</constant>
-<constant name="Config_Inj_24">"PWM"</constant>
+<constant name="Config_Inj_12">"off"</constant>
+<constant name="Config_Inj_13">"off"</constant>
+<constant name="Config_Inj_18">"off"</constant>
+<constant name="Config_Inj_19">"off"</constant>
+<constant name="Config_Inj_16">"off"</constant>
+<constant name="Config_Inj_17">"off"</constant>
+<constant digits="1" name="Cam_Window_Width_Set">120.0</constant>
+<constant digits="0" name="RPM_Pot">-1.0</constant>
+<constant digits="0" name="crank_windowing_ratio_after_gap">1.6777215E7</constant>
+<constant name="Config_Inj_20">"off"</constant>
+<constant name="Config_Inj_21">"off"</constant>
+<constant name="Config_Inj_22">"off"</constant>
+<constant name="Config_Inj_23">"off"</constant>
+<constant name="Config_Inj_24">"off"</constant>
 <constant digits="2" name="Test_V_TPS" units="V">-2.441E-4</constant>
-<constant digits="0" name="crank_windowing_ratio_timeout" units="%">99.9999971</constant>
+<constant name="Load_Sense">"MAP - 1 atm"</constant>
+<constant digits="0" name="crank_windowing_ratio_timeout">1.6777215E7</constant>
 <constant name="Ignition_Type">"Direct Fire"</constant>
-<constant digits="0" name="crank_gap_ratio" units="%">655.4176717</constant>
-<constant digits="1" name="Odd_Fire_Sync_Threshold" units="rpm">-1.0</constant>
-<constant digits="4" name="RPM_Change_Rate_4" units="%">0.0100009</constant>
-<constant digits="4" name="RPM_Change_Rate_1" units="%">0.0100009</constant>
+<constant digits="0" name="crank_gap_ratio">1.671168E7</constant>
+<constant digits="1" name="Odd_Fire_Sync_Threshold" units="rpm">50.0</constant>
+<constant digits="0" name="RPM_Change_Rate_4">5000.0</constant>
+<constant digits="0" name="RPM_Change_Rate_1">5000.0</constant>
 <constant digits="2" name="Test_V_O2_UR_1" units="V">-2.441E-4</constant>
-<constant digits="4" name="RPM_Change_Rate_3" units="%">0.0100009</constant>
-<constant digits="4" name="RPM_Change_Rate_2" units="%">0.0100009</constant>
+<constant digits="0" name="RPM_Change_Rate_3">5000.0</constant>
+<constant digits="0" name="RPM_Change_Rate_2">5000.0</constant>
 <constant digits="2" name="Test_V_O2_UR_2" units="V">-2.441E-4</constant>
 <constant digits="2" name="Test_V_O2_UA_1" units="V">-2.441E-4</constant>
 <constant digits="2" name="Test_V_O2_UA_2" units="V">-2.441E-4</constant>
-<constant name="Config_Ign_8">"PWM"</constant>
-<constant name="Config_Ign_9">"PWM"</constant>
-<constant name="Config_Ign_6">"PWM"</constant>
-<constant name="Config_Ign_7">"PWM"</constant>
-<constant name="Config_Ign_4">"PWM"</constant>
-<constant name="Config_Ign_5">"PWM"</constant>
-<constant name="Config_Ign_2">"PWM"</constant>
-<constant name="Config_Ign_3">"PWM"</constant>
+<constant name="Config_Ign_8">"off"</constant>
+<constant name="Config_Ign_9">"off"</constant>
+<constant name="Config_Ign_6">"off"</constant>
+<constant name="Config_Ign_7">"off"</constant>
+<constant name="Config_Ign_4">"off"</constant>
+<constant name="Config_Ign_5">"off"</constant>
+<constant name="Config_Ign_2">"off"</constant>
+<constant name="Config_Ign_3">"off"</constant>
 <constant name="Config_Ign_1">"on"</constant>
-<constant digits="3" name="Test_TPS" units="%">9.997533</constant>
-<constant digits="0" name="Test_RPM_2" units="rpm">1000.0</constant>
-<constant digits="0" name="Test_RPM_1" units="rpm">500.0</constant>
-<constant digits="0" name="Test_RPM_4" units="rpm">1500.0</constant>
-<constant digits="0" name="Test_RPM_3" units="rpm">2000.0</constant>
+<constant digits="3" name="Test_TPS" units="%">0.0</constant>
+<constant digits="0" name="Test_RPM_2" units="rpm">2000.0</constant>
+<constant digits="0" name="Test_RPM_1" units="rpm">100.0</constant>
+<constant digits="0" name="Test_RPM_4" units="rpm">6000.0</constant>
+<constant digits="0" name="Test_RPM_3" units="rpm">4000.0</constant>
 <constant cols="1" digits="0" name="Version" rows="20">
          255.0 
          255.0 
@@ -110,7 +112,7 @@
 <constant name="N_Coils_Per_Cylinder">"= 1/2 cylinders"</constant>
 <constant name="Cam_Edge_Select">"rising edge"</constant>
 <constant digits="1" name="Cam_Window_Open_Set">60.0</constant>
-<constant digits="0" name="crank_windowing_ratio_across_gap" units="%">99.9999971</constant>
+<constant digits="0" name="crank_windowing_ratio_across_gap">1.6777215E7</constant>
 <constant digits="1" name="Cyl_Offset_9">-0.04</constant>
 <constant digits="1" name="Cyl_Offset_7">-0.04</constant>
 <constant digits="1" name="Cyl_Offset_8">-0.04</constant>
@@ -118,26 +120,26 @@
 <constant digits="1" name="Cyl_Offset_6">500.0</constant>
 <constant digits="1" name="Cyl_Offset_3">240.0</constant>
 <constant digits="1" name="Cyl_Offset_4">360.0</constant>
-<constant name="Config_Inj_4">"PWM"</constant>
+<constant name="Config_Inj_4">"off"</constant>
 <constant digits="1" name="Cyl_Offset_2">120.0</constant>
-<constant name="Config_Inj_3">"PWM"</constant>
+<constant name="Config_Inj_3">"off"</constant>
 <constant digits="1" name="Cyl_Offset_1">0.12</constant>
-<constant name="Config_Inj_6">"PWM"</constant>
-<constant name="Config_Inj_5">"PWM"</constant>
-<constant digits="0" name="Test_RPM_Dwell_1" units="msec">5000.0</constant>
-<constant name="Config_Inj_2">"PWM"</constant>
+<constant name="Config_Inj_6">"off"</constant>
+<constant name="Config_Inj_5">"off"</constant>
+<constant digits="0" name="Test_RPM_Dwell_1" units="msec">1000.0</constant>
+<constant name="Config_Inj_2">"off"</constant>
 <constant name="Config_Inj_1">"inj1"</constant>
-<constant digits="0" name="Test_RPM_Dwell_4" units="msec">5000.0</constant>
-<constant digits="0" name="Test_RPM_Dwell_3" units="msec">5000.0</constant>
-<constant digits="0" name="Test_RPM_Dwell_2" units="msec">5000.0</constant>
-<constant name="Config_Inj_9">"PWM"</constant>
-<constant name="Config_Inj_7">"PWM"</constant>
+<constant digits="0" name="Test_RPM_Dwell_4" units="msec">1000.0</constant>
+<constant digits="0" name="Test_RPM_Dwell_3" units="msec">1000.0</constant>
+<constant digits="0" name="Test_RPM_Dwell_2" units="msec">1000.0</constant>
+<constant name="Config_Inj_9">"off"</constant>
+<constant name="Config_Inj_7">"off"</constant>
 <constant digits="1" name="Test_IAT" units="C">39.9956482</constant>
-<constant name="Config_Inj_8">"PWM"</constant>
+<constant name="Config_Inj_8">"off"</constant>
 <constant digits="2" name="Test_V_CLT" units="V">-2.441E-4</constant>
 <constant name="Missing_Teeth">"2"</constant>
 <constant digits="1" name="Drop_Dead_Angle">-0.04</constant>
-<constant digits="0" name="Jitter" units="%">15.0</constant>
+<constant digits="0" name="Jitter">15.0</constant>
 </page>
 <page number="1" size="1824">
 <constant cols="1" digits="1" name="MAP_Angle_Cal" rows="24" units="deg">
@@ -352,7 +354,7 @@
          0.0 
       </constant>
 <constant digits="3" name="Inj_Dead_23" units="msec">8.192</constant>
-<constant name="Enable_Accel_Decel">"off"</constant>
+<constant name="Enable_Accel_Decel">"On"</constant>
 <constant digits="3" name="Inj_Dead_24" units="msec">8.192</constant>
 <constant digits="3" name="Inj_Dead_21" units="msec">8.192</constant>
 <constant digits="3" name="Inj_Dead_22" units="msec">8.192</constant>
@@ -376,7 +378,7 @@
          15.999959 
       </constant>
 <constant digits="0" name="Eng_Model_Cols">24.0</constant>
-<constant name="IAC_Enable">"off"</constant>
+<constant name="IAC_Enable">"2 PWM (bosch)"</constant>
 <constant cols="1" digits="2" name="Inj_Dead_Time_Bins" rows="8" units="V">
          7.9999795 
          8.999977 
@@ -2732,8 +2734,70 @@
       </constant>
 <constant name="Coil_Trim_11_Variable">"Variable axis"</constant>
 </page>
+<page number="14" size="214">
+<constant digits="0" name="Link_inj_2_4_off_set">-1.0</constant>
+<constant digits="0" name="Link_inj_2_3_off_set">-1.0</constant>
+<constant digits="0" name="Link_inj_2_3_on_set">-1.0</constant>
+<constant digits="0" name="Link_inj_2_2_off_set">-1.0</constant>
+<constant digits="0" name="Link_inj_2_1_PWM_hysteresis">-1.0</constant>
+<constant digits="0" name="Link_inj_2_4_on_set">-1.0</constant>
+<constant digits="0" name="Link_inj_2_1_PWM_setpoint">-1.0</constant>
+<constant digits="0" name="Link_inj_2_1_off_set">-1.0</constant>
+<constant name="Link_Inj_2_4">"RPM"</constant>
+<constant name="Link_Inj_2_3">"RPM"</constant>
+<constant name="Link_Inj_2_2">"RPM"</constant>
+<constant name="Link_Inj_2_1">"RPM"</constant>
+<constant cols="1" digits="1" name="PWM_Inj_2_1_Bins" rows="16">
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+      </constant>
+<constant digits="0" name="Link_inj_2_2_on_set">-1.0</constant>
+<constant name="PWM_Inj_2_1_Byte">"8 bit unsigned"</constant>
+<constant digits="0" name="Link_inj_2_1_PWM_differential">-1.0</constant>
+<constant digits="0" name="Link_inj_2_1_on_set">-1.0</constant>
+<constant digits="0" name="Link_inj_2_1_PWM_proportional">-1.0</constant>
+<constant digits="0" name="Link_inj_2_1_PWM_Dutycycle">-1.0</constant>
+<constant name="PWM_Inj_2_1_Variable">"Variable axis"</constant>
+<constant digits="0" name="PWM_Inj_2_1_Cols">65535.0</constant>
+<constant digits="0" name="PWM_Inj_2_1_Rows">65535.0</constant>
+<constant cols="1" digits="1" name="PWM_Inj_2_1_Cal" rows="16">
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+      </constant>
+<constant digits="0" name="Link_inj_2_1_PWM_Frequency">-1.0</constant>
+</page>
 <settings Comment="These setting are only used if this msq is opened without a project.">
 <setting name="CELSIUS" value="CELSIUS"/>
 </settings>
-<userComments Comment="These are user comments that can be related to a particular setting or dialog."/>
+<userComments Comment="These are user comments that can be related to a particular setting or dialog.">
+<userComment name="Config_Ign_2" value=""/>
+</userComments>
 </msq>
