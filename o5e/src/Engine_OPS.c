@@ -89,7 +89,7 @@ void Cam_Pulse_Task(void)
         static uint8_t start_tooth;
         static uint_fast8_t prev_tooth = 255;
         static uint_fast8_t alternate = 1;
-        static uint_fast8_t sync_flag = 0;
+        static uint_fast8_t sync_flag = 1;//normally zero when odd fire stuff is running
         static uint_fast8_t TDC_Tooth;
         static uint_fast8_t TDC_Minus_Position;
         static uint_fast8_t TDC_Plus_Position;
@@ -104,11 +104,11 @@ void Cam_Pulse_Task(void)
         TDC_Minus_Position = (Total_Teeth  + TDC_Tooth - ((Odd_Fire_Sync_Angle <<2) / Degrees_Per_Tooth_x100)) % Total_Teeth;
 
         for (;;) {
-        
+
                 // output pulse once per 2 crank revs
 
                 tooth = fs_etpu_eng_pos_get_tooth_number();     // runs number of teeth
-                
+         /* not safe to use with the cam window opened up much past 120 degrees.....currently setto 720               
                  //find cylinder #1 on odd fire engines
                 // this works by comparing the rpm before #1TDC to rpm after #1TDC
                 // if the RPM after is great than the minus rpm plus a sync_theshold #1TDC position is known
@@ -124,9 +124,10 @@ void Cam_Pulse_Task(void)
                    if (tooth < prev_tooth) //detect missing tooth
                    Last_TDC_Minus_Position_RPM = TDC_Minus_Position_RPM;
                    
-           }else{
+           }else{ 
+           
                 sync_flag = 1;  
-           }
+           }*/
         
                 // after odd fire home found or any time on even fire engines
            if (sync_flag == 1 && prev_tooth < start_tooth && tooth >= start_tooth  && (alternate ^= 1)){
