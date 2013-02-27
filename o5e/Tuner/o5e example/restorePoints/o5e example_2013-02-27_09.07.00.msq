@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS 2.0.8 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Wed Feb 27 10:03:42 EST 2013"/>
+<bibliography author="TunerStudio MS 2.0.8 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Wed Feb 27 09:07:00 EST 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="226">
 <constant name="Engine_Type_Select">"4 stroke"</constant>
@@ -26,7 +26,7 @@
 <constant digits="0" name="Test_RPM" units="rpm">500.0</constant>
 <constant digits="2" name="Test_V_MAP_1" units="V">-2.441E-4</constant>
 <constant digits="2" name="Test_V_MAP_2" units="V">-2.441E-4</constant>
-<constant name="Test_RPM_Type">"RPM Cylce"</constant>
+<constant name="Test_RPM_Type">"Fixed "</constant>
 <constant name="Sync_Mode_Select">"half sync (360 degree)"</constant>
 <constant name="Pulses_Per_Rev">"1"</constant>
 <constant name="Config_Stepper">"off"</constant>
@@ -84,7 +84,7 @@
 <constant name="Config_Ign_1">"on"</constant>
 <constant digits="3" name="Test_TPS" units="%">0.0</constant>
 <constant digits="0" name="Test_RPM_2" units="rpm">4000.0</constant>
-<constant digits="0" name="Test_RPM_1" units="rpm">500.0</constant>
+<constant digits="0" name="Test_RPM_1" units="rpm">6000.0</constant>
 <constant digits="0" name="Test_RPM_4" units="rpm">6000.0</constant>
 <constant digits="0" name="Test_RPM_3" units="rpm">5000.0</constant>
 <constant cols="1" digits="0" name="Version" rows="20">

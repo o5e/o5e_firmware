@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS 2.0.8 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Wed Feb 27 10:03:42 EST 2013"/>
+<bibliography author="TunerStudio MS 2.0.8 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Wed Feb 27 08:17:48 EST 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="226">
 <constant name="Engine_Type_Select">"4 stroke"</constant>
@@ -84,7 +84,7 @@
 <constant name="Config_Ign_1">"on"</constant>
 <constant digits="3" name="Test_TPS" units="%">0.0</constant>
 <constant digits="0" name="Test_RPM_2" units="rpm">4000.0</constant>
-<constant digits="0" name="Test_RPM_1" units="rpm">500.0</constant>
+<constant digits="0" name="Test_RPM_1" units="rpm">1000.0</constant>
 <constant digits="0" name="Test_RPM_4" units="rpm">6000.0</constant>
 <constant digits="0" name="Test_RPM_3" units="rpm">5000.0</constant>
 <constant cols="1" digits="0" name="Version" rows="20">
@@ -129,7 +129,7 @@
 <constant digits="0" name="Test_RPM_Dwell_1" units="msec">5000.0</constant>
 <constant name="Config_Inj_2">"off"</constant>
 <constant name="Config_Inj_1">"inj1"</constant>
-<constant digits="0" name="Test_RPM_Dwell_4" units="msec">5000.0</constant>
+<constant digits="0" name="Test_RPM_Dwell_4" units="msec">3000.0</constant>
 <constant digits="0" name="Test_RPM_Dwell_3" units="msec">3000.0</constant>
 <constant digits="0" name="Test_RPM_Dwell_2" units="msec">5000.0</constant>
 <constant name="Config_Inj_9">"off"</constant>
@@ -2741,7 +2741,7 @@
 <constant digits="0" name="Generic_Output_1_Link_3_off_set">-1.0</constant>
 <constant digits="0" name="Generic_Output_4_Link_1_PWM_proportional">-1.0</constant>
 <constant digits="0" name="Generic_Output_1_Link_3_PWM_hysteresis">-1.0</constant>
-<constant name="Generic_Output_1_type">"Switch w/4 links"</constant>
+<constant name="Generic_Output_1_type">"PWM Fixed DutyCycle w/frequeny contol"</constant>
 <constant name="Generic_Output_4_Link_2">"MAP_2"</constant>
 <constant name="Generic_Output_4_Link_3">"MAP_2"</constant>
 <constant name="Generic_Output_4_Link_1">"MAP_2"</constant>
@@ -2893,7 +2893,7 @@
       </constant>
 <constant digits="0" name="Generic_Output_3_Link_3_on_set">-1.0</constant>
 <constant name="Generic_Output_1_Link_4_on">"Not Used"</constant>
-<constant name="Generic_Output_1_Link_4_off">"Off Below"</constant>
+<constant name="Generic_Output_1_Link_4_off">"Not Used"</constant>
 <constant name="Generic_Output_1_PWM_1_Byte">"8 bit unsigned"</constant>
 <constant cols="1" digits="1" name="Generic_Output_2_PWM_1_Bins" rows="16">
          -1.0 

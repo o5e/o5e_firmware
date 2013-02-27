@@ -60,7 +60,7 @@ void main( void )
         (void)task_create(Fuel_Pump_Task, 1 + 128, 0, 0, 0);     // create the task
         (void)task_create(Slow_Vars_Task, 2 + 128, 0, 0, 0);     // create the task
         (void)task_create(Eng_Pos_Status_BLINK_Task, 3 + 128, 0, 0, 0);      //create the task 
-        if (Sync_Mode_Select == 1) {   // user option to generate a cam signal
+        if ((Sync_Mode_Select == 1) ||(Sync_Mode_Select == 1 && Engine_Type_Select == 1)){   // user option to generate a cam signal
            (void)task_create(Cam_Pulse_Task, 4 + 128, 0, 0, 0);      // create the task
         }
 

@@ -129,11 +129,11 @@ void Cam_Pulse_Task(void)
            }
         
                 // after odd fire home found or any time on even fire engines
-           if (sync_flag == 1 && prev_tooth < start_tooth && tooth >= start_tooth && (alternate ^= 1)){
+           if (sync_flag == 1 && prev_tooth < start_tooth && tooth >= start_tooth  && (alternate ^= 1)){
               	Set_Pin(FAKE_CAM_PIN, 1);           // create rising edge 
                 task_wait(1);                       // always 1 msec wide
                 Set_Pin(FAKE_CAM_PIN, 0);           // falling edge 
-                task_wait (3);                       //wait not more than 1.5 revolutions at 24k rpm in msec - TODO-angle would be better
+                task_wait (3);                       // TODO-angle would be better
            } else
 				task_wait(1);
                    

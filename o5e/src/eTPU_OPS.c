@@ -155,7 +155,7 @@ int32_t init_eTPU()
     uint8_t Gen_Tooth_close;
     uint8_t Cam_Edge_Select_eTPU;
     
-    #define Fake_Cam_Window_Width 12000 // Use 120*100 for the width of the cam window when FAKe cam is used
+    #define Fake_Cam_Window_Width 72000 // Use 120*100 for the width of the cam window when Fake cam is used
 	#define Fake_Cam_Lobe_Position 54000 // Use 540 8 100 as athe location of fake cam
     // Load firmware into eTPU
     error_code = (int32_t)
