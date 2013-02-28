@@ -326,7 +326,7 @@ void Engine10_Task(void)
 
         // TODO  - add load sense method selection and calcs. This only works right with 1 bar MAP
         // Load = Get_Load();
-        Load = (MAP[0] << 2);   // convert bin 12 to 14 and account for /100Kpa
+        Load = (MAP[1] << 2);   // convert bin 12 to 14 and account for /100Kpa using MAP 2 until angle reading fixed
 
         // set spark advance and dwell based on current conditions
         Set_Spark();
