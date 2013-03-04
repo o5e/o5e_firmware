@@ -80,12 +80,12 @@ void init_SIU(void)
         SIU.PCR[119].R = B0001 | OUTPUT; 	// eTPU[5] injector 9
         SIU.PCR[120].R = B0001 | OUTPUT; 	// eTPU[6] ignition 3
         SIU.PCR[121].R = B0001 | OUTPUT; 	// eTPU[7] ignition 2
-        SIU.PCR[122].R = GPIO  | OUTPUT; 	// eTPU[8] injector 5
-        SIU.PCR[123].R = GPIO  | OUTPUT; 	// eTPU[9] injector 6
+        SIU.PCR[122].R = B0001 | OUTPUT; 	// eTPU[8] injector 5
+        SIU.PCR[123].R = B0001 | OUTPUT; 	// eTPU[9] injector 6
         SIU.PCR[124].R = B0001 | OUTPUT; 	// eTPU[10] ignition 1
-        SIU.PCR[125].R = B0001 | OUTPUT; 	// eTPU[11] Tach - injector 12
+        SIU.PCR[125].R = GPIO  | OUTPUT; 	// eTPU[11] Tach - injector 12
         SIU.PCR[126].R = B0001 | OUTPUT; 	// eTPU[12] injector 7
-        SIU.PCR[127].R = B0001 | OUTPUT; 	// eTPU[13] fuel pump  - injector 11
+        SIU.PCR[127].R = GPIO  | OUTPUT; 	// eTPU[13] fuel pump  - injector 11
         SIU.PCR[128].R = B0001 | INPUT; 	// eTPU[14] injector 8
         SIU.PCR[129].R = B0001 | INPUT; 	// eTPU[15] injector 10
         SIU.PCR[130].R = B0001 | INPUT;     // eTPU[16] wheelspeed FL
@@ -93,7 +93,7 @@ void init_SIU(void)
         SIU.PCR[132].R = B0001 | INPUT;    // eTPU[18] wheelspeed RL 
         SIU.PCR[133].R = B0001 | INPUT;    // eTPU[19] wheelspeed RR
         SIU.PCR[134].R = B0001 | INPUT;    // eTPU[20] pin available
-        SIU.PCR[135].R = GPIO  | UNUSED; 	// eTPU[21] injector 4
+        SIU.PCR[135].R = B0001 | OUTPUT; 	// eTPU[21] injector 4
         SIU.PCR[136].R = B0001 | OUTPUT; 	// eTPU[22] injector 3
         SIU.PCR[137].R = GPIO  | OUTPUT; 	// eTPU[23] fake cam signal
         SIU.PCR[138].R = B0001 | OUTPUT; 	// eTPU[24] injector 2

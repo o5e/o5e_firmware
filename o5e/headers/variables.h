@@ -361,7 +361,7 @@ extern struct Outputs Output_Channels;
 #define Model_Tuning_Enable (*(CONST U08 * )(&Page_Ptr[1][1808]) & ((2<<0)-1))
 #define Spare9 (*(CONST U08 * )(&Page_Ptr[1][1813]) & ((2<<0)-1))
 #define Spare10 (*(CONST S16 * )(&Page_Ptr[1][1814]))
-#define Spare11 (*(CONST S32 * )(&Page_Ptr[1][1816])) 
+#define Fuel_Pump_Prime_Time (*(CONST S32 * )(&Page_Ptr[1][1816])) 
 #define Spare12 (*(CONST S32 * )(&Page_Ptr[1][1820]))
 
 // Page 3

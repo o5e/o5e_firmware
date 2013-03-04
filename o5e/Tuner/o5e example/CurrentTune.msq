@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS 2.0.8 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Wed Feb 27 11:42:14 EST 2013"/>
-<versionInfo fileFormat="4.0" firmwareInfo="" nPages="15" signature="MShift 2.111       "/>
+<bibliography author="TunerStudio MS 2.0.8 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Mon Mar 04 14:36:02 EST 2013"/>
+<versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="226">
 <constant name="Engine_Type_Select">"4 stroke"</constant>
 <constant digits="1" name="Engine_Position">0.0</constant>
@@ -236,7 +236,6 @@
       </constant>
 <constant name="Dwell_Variable">"Fixed axis"</constant>
 <constant name="Eng_Model_Byte">"16 bit signed"</constant>
-<constant digits="0" name="Spare11">-1.0</constant>
 <constant digits="0" name="Spare10">65535.0</constant>
 <constant name="Dwell_Byte">"16 bit signed"</constant>
 <constant digits="0" name="Spare12">-1.0</constant>
@@ -334,6 +333,7 @@
 <constant digits="3" name="Inj_Dead_11" units="msec">8.192</constant>
 <constant digits="3" name="Inj_Dead_12" units="msec">8.192</constant>
 <constant digits="3" name="Inj_Dead_13" units="msec">8.192</constant>
+<constant digits="0" name="Fuel_Pump_Prime_Time">10.0</constant>
 <constant digits="0" name="Rev_Limit" units="rpm">8000.0</constant>
 <constant cols="1" digits="1" name="Fuel_Temp_Corr_Cal" rows="16" units="%">
          29.003832 
@@ -2736,50 +2736,268 @@
 </page>
 <page number="14" size="856">
 <constant digits="0" name="Generic_Output_2_Link_2_on_set">-1.0</constant>
-<constant digits="0" name="Generic_Output_4_PWM_Cols">16.0</constant>
+<constant digits="0" name="Generic_Output_4_PWM_Cols">65535.0</constant>
+<constant digits="0" name="Generic_Output_3_Link_1_off_set">-1.0</constant>
+<constant digits="0" name="Generic_Output_1_Link_3_off_set">-1.0</constant>
 <constant digits="0" name="Generic_Output_4_Link_1_PWM_proportional">-1.0</constant>
+<constant name="Generic_Output_1_type">"Not Used"</constant>
 <constant name="Generic_Output_4_Link_2">"MAP_2"</constant>
 <constant name="Generic_Output_4_Link_3">"MAP_2"</constant>
+<constant digits="0" name="Generic_Output_3_Link_1_PWM_Dutycycle">-1.0</constant>
 <constant name="Generic_Output_4_Link_1">"MAP_2"</constant>
+<constant name="Generic_Output_3_type">"Not Used"</constant>
+<constant digits="0" name="Generic_Output_1_Link_1_PWM_Frequency">-1.0</constant>
 <constant digits="0" name="Generic_Output_4_Link_1_on_set">-1.0</constant>
+<constant name="Generic_Output_3_Link_3_on">"Not Used"</constant>
 <constant name="Generic_Output_4_Link_4">"MAP_2"</constant>
+<constant name="Generic_Output_1_Link_1_on">"Not Used"</constant>
+<constant name="Generic_Output_3_Link_1_on">"Not Used"</constant>
+<constant digits="0" name="Generic_Output_1_Link_2_off_set">-1.0</constant>
 <constant digits="0" name="Generic_Output_4_Link_1_PWM_setpoint">-1.0</constant>
+<constant name="Generic_Output_1_Link_2_off">"Not Used"</constant>
 <constant digits="0" name="Generic_Output_2_Link_3_off_set">-1.0</constant>
+<constant name="Generic_Output_2_Link_4_off">"Not Used"</constant>
 <constant digits="0" name="Generic_Output_2_Link_1_on_set">-1.0</constant>
+<constant digits="0" name="Generic_Output_2_Link_1_PWM_Frequency">-1.0</constant>
+<constant name="Generic_Output_3_Link_2_off">"Not Used"</constant>
+<constant name="Generic_Output_2_Link_4_on">"Not Used"</constant>
+<constant digits="0" name="Generic_Output_1_Link_1_PWM_Dutycycle">-1.0</constant>
+<constant digits="0" name="Generic_Output_1_Link_4_off_set">-1.0</constant>
+<constant name="Generic_Output_2_Link_1_on">"Not Used"</constant>
+<constant digits="0" name="Generic_Output_1_PWM_Cols">65535.0</constant>
+<constant name="Generic_Output_3_PWM_Variable">"Variable axis"</constant>
+<constant name="Generic_Output_3_PWM_Byte">"8 bit unsigned"</constant>
+<constant digits="0" name="Generic_Output_3_Link_4_on_set">-1.0</constant>
+<constant name="Generic_Output_2_type">"Not Used"</constant>
+<constant digits="0" name="Generic_Output_3_Link_1_PWM_differential">-1.0</constant>
+<constant name="Generic_Output_2_Link_2_off">"Not Used"</constant>
+<constant cols="1" digits="1" name="Generic_Output_1_PWM_Cal" rows="16">
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+      </constant>
+<constant cols="1" digits="1" name="Generic_Output_1_PWM_Bins" rows="16">
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+      </constant>
+<constant digits="0" name="Generic_Output_1_Link_1_off_set">-1.0</constant>
 <constant name="Generic_Output_4_PWM_Variable">"Variable axis"</constant>
 <constant digits="0" name="Generic_Output_2_Link_3_on_set">-1.0</constant>
-<constant digits="0" name="Generic_Output_2_PWM_Cols">16.0</constant>
+<constant digits="0" name="Generic_Output_2_PWM_Cols">65535.0</constant>
+<constant digits="0" name="Generic_Output_2_Link_1_PWM_differential">-1.0</constant>
+<constant digits="0" name="Generic_Output_3_Link_1_PWM_hysteresis">-1.0</constant>
 <constant digits="0" name="Generic_Output_4_Link_1_PWM_integral">-1.0</constant>
 <constant digits="0" name="Generic_Output_2_Link_4_off_set">-1.0</constant>
+<constant digits="0" name="Generic_Output_2_Link_1_PWM_setpoint">-1.0</constant>
+<constant name="Generic_Output_2_Link_1_off">"Not Used"</constant>
 <constant digits="0" name="Generic_Output_4_Link_3_off_set">-1.0</constant>
+<constant digits="0" name="Generic_Output_3_Link_1_PWM_integral">-1.0</constant>
+<constant digits="0" name="Generic_Output_1_Link_1_PWM_proportional">-1.0</constant>
 <constant digits="0" name="Generic_Output_4_Link_1_PWM_Dutycycle">-1.0</constant>
 <constant name="Generic_Output_2_Link_4">"MAP_2"</constant>
+<constant digits="0" name="Generic_Output_3_Link_2_on_set">-1.0</constant>
 <constant name="Generic_Output_2_Link_2">"MAP_2"</constant>
+<constant name="Generic_Output_1_Link_3_off">"Not Used"</constant>
 <constant name="Generic_Output_2_Link_3">"MAP_2"</constant>
+<constant digits="0" name="Generic_Output_1_Link_1_PWM_setpoint">-1.0</constant>
 <constant name="Generic_Output_2_Link_1">"MAP_2"</constant>
-<constant digits="0" name="Generic_Output_4_PWM_Rows">1.0</constant>
+<constant digits="0" name="Generic_Output_4_PWM_Rows">65535.0</constant>
 <constant digits="0" name="Generic_Output_4_Link_3_on_set">-1.0</constant>
+<constant digits="0" name="Generic_Output_3_PWM_Rows">65535.0</constant>
+<constant digits="0" name="Generic_Output_1_Link_3_on_set">-1.0</constant>
+<constant digits="0" name="Generic_Output_3_Link_3_on_set">-1.0</constant>
+<constant name="Generic_Output_3_Link_2_on">"Not Used"</constant>
+<constant name="Generic_Output_1_Link_4_on">"Not Used"</constant>
+<constant name="Generic_Output_1_Link_4_off">"Not Used"</constant>
 <constant digits="0" name="Generic_Output_4_Link_1_PWM_differential">-1.0</constant>
+<constant cols="1" digits="1" name="Generic_Output_2_PWM_Bins" rows="16">
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+      </constant>
+<constant digits="0" name="Generic_Output_1_PWM_Rows">65535.0</constant>
 <constant name="Generic_Output_1_Link_4">"RPM"</constant>
 <constant name="Generic_Output_1_Link_3">"RPM"</constant>
+<constant name="Generic_Output_1_PWM_Byte">"8 bit unsigned"</constant>
 <constant name="Generic_Output_1_Link_2">"RPM"</constant>
+<constant digits="0" name="Generic_Output_3_Link_2_off_set">-1.0</constant>
 <constant name="Generic_Output_1_Link_1">"RPM"</constant>
+<constant digits="0" name="Generic_Output_3_Link_1_PWM_setpoint">-1.0</constant>
+<constant name="Generic_Output_1_Link_3_on">"Not Used"</constant>
+<constant name="Generic_Output_2_Link_3_on">"Not Used"</constant>
 <constant digits="0" name="Generic_Output_4_Link_4_on_set">-1.0</constant>
-<constant name="Generic_Output_3_Link_3">"RPM"</constant>
-<constant name="Generic_Output_3_Link_4">"RPM"</constant>
-<constant name="Generic_Output_3_Link_2">"RPM"</constant>
-<constant name="Generic_Output_3_Link_1">"RPM"</constant>
+<constant cols="1" digits="1" name="Generic_Output_4_PWM_Cal" rows="16">
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+      </constant>
+<constant digits="0" name="Generic_Output_2_Link_1_PWM_hysteresis">-1.0</constant>
+<constant name="Generic_Output_2_Link_3_off">"Not Used"</constant>
+<constant digits="0" name="Generic_Output_3_PWM_Cols">65535.0</constant>
+<constant digits="0" name="Generic_Output_2_Link_1_PWM_proportional">-1.0</constant>
+<constant digits="0" name="Generic_Output_1_Link_2_on_set">-1.0</constant>
+<constant name="Generic_Output_1_Link_1_off">"Not Used"</constant>
+<constant name="Generic_Output_3_Link_1_off">"Not Used"</constant>
+<constant cols="1" digits="1" name="Generic_Output_3_PWM_Cal" rows="16">
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+      </constant>
+<constant digits="0" name="Generic_Output_3_Link_1_PWM_proportional">-1.0</constant>
+<constant name="Generic_Output_3_Link_4_on">"Not Used"</constant>
+<constant digits="0" name="Generic_Output_2_Link_1_PWM_Dutycycle">-1.0</constant>
+<constant digits="0" name="Generic_Output_3_Link_1_PWM_Frequency">-1.0</constant>
+<constant name="Generic_Output_3_Link_3_off">"Not Used"</constant>
+<constant name="Generic_Output_3_Link_3">"MAP_2"</constant>
+<constant name="Generic_Output_3_Link_4">"MAP_2"</constant>
+<constant digits="0" name="Generic_Output_1_Link_1_PWM_differential">-1.0</constant>
+<constant digits="0" name="Generic_Output_2_Link_1_PWM_integral">-1.0</constant>
+<constant name="Generic_Output_3_Link_2">"MAP_2"</constant>
+<constant name="Generic_Output_3_Link_1">"MAP_2"</constant>
+<constant name="Generic_Output_3_Link_4_off">"Not Used"</constant>
+<constant digits="0" name="Generic_Output_1_Link_4_on_set">-1.0</constant>
 <constant digits="0" name="Generic_Output_4_Link_4_off_set">-1.0</constant>
 <constant digits="0" name="Generic_Output_2_Link_2_off_set">-1.0</constant>
 <constant digits="0" name="Generic_Output_4_Link_1_PWM_Frequency">-1.0</constant>
+<constant digits="0" name="Generic_Output_3_Link_4_off_set">-1.0</constant>
+<constant cols="1" digits="1" name="Generic_Output_4_PWM_Bins" rows="16">
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+      </constant>
+<constant name="Generic_Output_4_PWM_Byte">"8 bit unsigned"</constant>
 <constant digits="0" name="Generic_Output_2_Link_4_on_set">-1.0</constant>
 <constant digits="0" name="Generic_Output_4_Link_1_off_set">-1.0</constant>
 <constant digits="0" name="Generic_Output_2_Link_1_off_set">-1.0</constant>
+<constant name="Generic_Output_1_Link_2_on">"Not Used"</constant>
 <constant digits="0" name="Generic_Output_4_Link_2_on_set">-1.0</constant>
-<constant digits="0" name="Generic_Output_2_PWM_Rows">1.0</constant>
+<constant digits="0" name="Generic_Output_3_Link_1_on_set">-1.0</constant>
+<constant digits="0" name="Generic_Output_2_PWM_Rows">65535.0</constant>
+<constant cols="1" digits="1" name="Generic_Output_2_PWM_Cal" rows="16">
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+      </constant>
+<constant digits="0" name="Generic_Output_3_Link_3_off_set">-1.0</constant>
 <constant name="Generic_Output_2_PWM_Variable">"Variable axis"</constant>
+<constant cols="1" digits="1" name="Generic_Output_3_PWM_Bins" rows="16">
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+         -1.0 
+      </constant>
+<constant name="Generic_Output_2_Link_2_on">"Not Used"</constant>
+<constant name="Generic_Output_2_PWM_Byte">"8 bit unsigned"</constant>
 <constant digits="0" name="Generic_Output_4_Link_1_PWM_hysteresis">-1.0</constant>
+<constant digits="0" name="Generic_Output_1_Link_1_PWM_integral">-1.0</constant>
+<constant name="Generic_Output_1_PWM_Variable">"Variable axis"</constant>
+<constant digits="0" name="Generic_Output_1_Link_1_PWM_hysteresis">-1.0</constant>
 <constant digits="0" name="Generic_Output_4_Link_2_off_set">-1.0</constant>
+<constant digits="0" name="Generic_Output_1_Link_1_on_set">-1.0</constant>
 </page>
 <settings Comment="These setting are only used if this msq is opened without a project.">
 <setting name="CELSIUS" value="CELSIUS"/>

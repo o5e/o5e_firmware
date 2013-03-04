@@ -276,7 +276,7 @@ void Fuel_Pump_Task(void)
     task_wait(1);
 
     Set_Pin(FUEL_PUMP_PIN, 1);  // Prime fuel system, Fuel Pump ON 
-    task_wait(10311);           // allow others tasks to run for 10 sec
+    task_wait(Fuel_Pump_Prime_Time);           // allow others tasks to run during pump prime time
 
     for (;;) {
         if (RPM == 0)
