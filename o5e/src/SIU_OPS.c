@@ -83,7 +83,7 @@ void init_SIU(void)
         SIU.PCR[122].R = B0001 | OUTPUT; 	// eTPU[8] injector 5
         SIU.PCR[123].R = B0001 | OUTPUT; 	// eTPU[9] injector 6
         SIU.PCR[124].R = B0001 | OUTPUT; 	// eTPU[10] ignition 1
-        SIU.PCR[125].R = GPIO  | OUTPUT; 	// eTPU[11] Tach - injector 12
+        SIU.PCR[125].R = B0001 | OUTPUT; 	// eTPU[11] Tach - injector 12
         SIU.PCR[126].R = B0001 | OUTPUT; 	// eTPU[12] injector 7
         SIU.PCR[127].R = GPIO  | OUTPUT; 	// eTPU[13] fuel pump  - injector 11
         SIU.PCR[128].R = B0001 | INPUT; 	// eTPU[14] injector 8
