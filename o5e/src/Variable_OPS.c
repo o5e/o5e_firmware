@@ -97,6 +97,8 @@ Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause
 extern uint32_t etpu_a_tcr1_freq;       //Implicit Defn.in eTPU_OPS.c
 extern uint32_t etpu_b_tcr1_freq;       //Implicit Defn.in eTPU_OPS.c
 
+int8_t crank_position_status;
+
 // filter a raw A/D value in ADC_RsltQ0 - done "in place"
 // strength can be 1,2,3,.. for 1/2, 1/4, 1/8, etc
 // WARNING: will not work on values in any other Q 
@@ -206,6 +208,8 @@ void Get_Slow_Op_Vars(void)
 
 void Get_Fast_Op_Vars(void)
 {
+       crank_position_status = fs_etpu_eng_pos_get_engine_position_status ();
+       // = fs_etpu_eng_pos_get_crank_error_status();
         //TS looks at "seconds" to know ift he OS is running....we're giving it msec but that will do
        seconds = systime;//(EMIOS.CH[MSEC_EMIOS_CHANNEL].CCNTR.R);
     // Code for testing
@@ -222,9 +226,12 @@ void Get_Fast_Op_Vars(void)
 
         } else {                // Test_Value = 1 allows values simulating the ADC to be input 
             V_Batt = Test_V_Batt;
+			if (crank_position_status == 0) //if status = 0 the TCR2 clock in not valid so set rpm to 0
+			    RPM = 0;
+			else
+				RPM = (int16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);   // Read RPM from eTPU
 
-            RPM = (int16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);   // Read RPM from eTPU
-
+            
             // TODO: if using a double gap wheel, divide rpm by 2
 
             V_TPS = Test_V_TPS;
@@ -239,8 +246,10 @@ void Get_Fast_Op_Vars(void)
 
         /* On fast for now, but should be medium speed ...100hz or so */
         V_Batt = (int16_t) ((V_Batt_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * VBATT_VOLTAGE_DIVIDER) * (1 << 20))) >> 10);  // V_Batt is bin 10
-
-        RPM = (int16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);       // Read RPM from eTPU
+		if(crank_position_status == 0) //if status = 0 the TCR2 clock in not valid so set rpm to 0
+			RPM = 0;
+		else
+        	RPM = (int16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);       // Read RPM from eTPU
 
         /* Fast speed stuff...1000hz or so */
         V_TPS = (int16_t) ((V_TPS_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * TPS_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);       // V_TPS is bin 12
