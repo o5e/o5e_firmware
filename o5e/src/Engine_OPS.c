@@ -308,8 +308,8 @@ void Engine10_Task(void)
         static uint8_t Engine_State_Cranking_Synced = 2;
         static uint8_t Engine_State_Running_Over_Rev = 3;
         static uint8_t Engine_State_Running_Over_Rev_Warmup = 4;
-        static uint8_t Engine_State_Running_Wheel_splip = 5;
-        static uint8_t Engine_State_Running_Wheel_splip_Warmup = 6;
+        static uint8_t Engine_State_Running_Wheel_Slip = 5;
+        static uint8_t Engine_State_Running_Wheel_Slip_Warmup = 6;
         static uint8_t Engine_State_Running_Accelerating =7;
         static uint8_t Engine_State_Running_Accelerating_Warmup = 8;
         static uint8_t Engine_State_Running_Decelerating = 9;
@@ -320,8 +320,7 @@ void Engine10_Task(void)
         static uint8_t Engine_State_Running_Idle_Warmup = 14;
         static uint8_t Engine_State_Running_Idle_Settling = 15;
         static uint8_t Engine_State_Running_Idle_Settling_Warmup = 16;
-        static uint8_t Engine_State_Running_Wheel_Slip = 17;
-        static uint8_t Engine_State_Running_Wheel_Slip_Warmup = 18;
+
         static uint16_t V_Battery_Stored;
         static uint16_t Delta_V_Battery;
         static uint16_t Wheel_Slip; //todo - this should be on the output variables and calculated in variable_ops
@@ -452,99 +451,213 @@ void Engine10_Task(void)
        case 0:// Engine_State_Unknown
   	      {
           // stuff to do
+             //prime fue; pump
+             //tack output 0
+             //check engine light ON
+             //IAC to start position - will need to know if warm of cold start, steppers will need to find position
           break;
           }
        
        case 1://Engine_State_Cranking
   	      {
           // stuff to do
+             //fuel pupm on
+             //tack output 0
+             //check engine light on
+             //IAC hold in start position - will need to know if warm of cold start
           break;
           }
        case 2://Engine_State_Cranking_Synced
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light off
+             //IAC hold in start position - will need to know if warm of cold start
+             //spark
+             //fuel
+               //warmup (currently called prime)
+             
           break;
           }
         case 3://Engine_State_Running_Over_Rev
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light flashing
+             //IAC Run position, need to know warm or cold
+             //Spark
+                //spark over rev
+             //fuel
+                //fuel over rev
           break;
           }
         case 4://Engine_State_Running_Over_Rev_Warmup
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light flashing
+             //IAC Run position, need to know warm or cold
+             //Spark
+                //spark over rev
+             //fuel
+                //warmup (currently called prime)
+                //fuel over rev             
+             
           break;
           }
          case 5://Engine_State_Running_Wheel_splip
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light flashing
+                // or slip light flashing
+             //IAC Run position, need to know warm or cold
+             //Spark
+                //spark wheel slip
+             //fuel
+                //fuel wheel slip
+             
           break;
           }
          case 6://Engine_State_Running_Wheel_splip_Warmup
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light flashing
+                // or slip light flashing
+             //IAC Run position, need to know warm or cold
+             //Spark
+                //spark wheel slip
+             //fuel
+                //fuel wheel slip
           break;
           }
          case 7://Engine_State_Running_Accelerating
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light off
+             //IAC hold in run position - will need to know if warm of cold start
+             //spark
+             //fuel
+                //accel enrich
           break;
           }
          case 8://Engine_State_Running_Accelerating_Warmup
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light off
+             //IAC hold in run position - will need to know if warm of cold start
+             //spark
+             //fuel
+                //warmup (currently called prime)
+                //accel enrich
           break;
           }
          case 9://Engine_State_Running_Decelerating
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light off
+             //IAC hold in run position - will need to know if warm of cold start
+             //spark
+             //fuel
+                //decel de-rich
           break;
           }
          case 10://Engine_State_Running_Decelerating_Warmup
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light off
+             //IAC hold in run position - will need to know if warm of cold start
+             //spark
+             //fuel
+                //warmup (currently called prime)
+                //decel de-rich
           break;
           }
          case 11://Engine_State_Running_Normal
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light off
+             //IAC hold in run position - will need to know if warm of cold start
+             //spark
+             //fuel
+                //warmup (currently called prime)
           break;
           }
          case 12://Engine_State_Running_Normal_Warmup
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light off
+             //IAC hold in run position - will need to know if warm of cold start
+             //spark
+             //fuel
+                //warmup (currently called prime)
           break;
           }
          case 13://Engine_State_Running_Idle
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light off
+             //IAC control on - will need to know if warm of cold start
+             //spark
+             //fuel
           break;
           }
          case 14://Engine_State_Running_Idle_Warmup
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light off
+             //IAC control on - will need to know if warm of cold start
+             //spark
+             //fuel
+                //warmup (currently called prime)
           break;
           }
          case 15://Engine_State_Running_Idle_Settling
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light off
+             //IAC hold in run position - will need to know if warm of cold start
+             //spark
+             //fuel
           break;
           }
          case 16://Engine_State_Running_Idle_Settling_Warmup
   	      {
           // stuff to do
+             //fuel pump on
+             //tack output on
+             //check engine light off
+             //IAC hold in run position - will need to know if warm of cold start
+             //spark
+             //fuel
+                //warmup (currently called prime)
           break;
           }
-         case 17://Engine_State_Running_Wheel_Slip
-  	      {
-          // stuff to do
-          break;
-          }
-         case 18://Engine_State_Running_Wheel_Slip_Warmup
-  	      {
-          // stuff to do
-          break;
-          }                        
+                        
          } //switch     
         
         // maintain some timers for use by enrichment
