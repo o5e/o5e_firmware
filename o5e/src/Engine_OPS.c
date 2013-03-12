@@ -293,183 +293,52 @@ void Fuel_Pump_Task(void)
 /*  Fuel and Spark task - run every 10msec 
 /**********************************************************************************/
 
-void Engine10_Task(void)
+
+enum EngineStateEnum { 
+		Engine_State_Unknown,
+        Engine_State_Cranking,
+        Engine_State_Cranking_Synced,
+        Engine_State_Running_Over_Rev,
+        Engine_State_Running_Over_Rev_Warmup,
+        Engine_State_Running_Wheel_Slip,
+        Engine_State_Running_Wheel_Slip_Warmup,
+        Engine_State_Running_Accelerating,
+        Engine_State_Running_Accelerating_Warmup,
+        Engine_State_Running_Decelerating,
+        Engine_State_Running_Decelerating_Warmup,
+        Engine_State_Running_Normal,
+        Engine_State_Running_Normal_Warmup,
+        Engine_State_Running_Idle,
+        Engine_State_Running_Idle_Warmup,
+        Engine_State_Running_Idle_Settling,
+        Engine_State_Running_Idle_Settling_Warmup
+};
+ 
+
+void Engine_State_UnknownFunc()
 {
-    task_open();
-    task_wait(1);
-    
-        static uint32_t Start_Time;     // time when start started
-        static uint32_t Start_Degrees;  // engine position when start started
-        static uint32_t Previous_Status;
-        static uint8_t status;
-        static uint8_t Current_Engine_State;
-        static uint8_t Engine_State_Unknown = 0;
-        static uint8_t Engine_State_Cranking = 1;
-        static uint8_t Engine_State_Cranking_Synced = 2;
-        static uint8_t Engine_State_Running_Over_Rev = 3;
-        static uint8_t Engine_State_Running_Over_Rev_Warmup = 4;
-        static uint8_t Engine_State_Running_Wheel_Slip = 5;
-        static uint8_t Engine_State_Running_Wheel_Slip_Warmup = 6;
-        static uint8_t Engine_State_Running_Accelerating =7;
-        static uint8_t Engine_State_Running_Accelerating_Warmup = 8;
-        static uint8_t Engine_State_Running_Decelerating = 9;
-        static uint8_t Engine_State_Running_Decelerating_Warmup = 10;
-        static uint8_t Engine_State_Running_Normal = 11;
-        static uint8_t Engine_State_Running_Normal_Warmup = 12;
-        static uint8_t Engine_State_Running_Idle = 13;
-        static uint8_t Engine_State_Running_Idle_Warmup = 14;
-        static uint8_t Engine_State_Running_Idle_Settling = 15;
-        static uint8_t Engine_State_Running_Idle_Settling_Warmup = 16;
-
-        static uint16_t V_Battery_Stored;
-        static uint16_t Delta_V_Battery;
-        static uint16_t Wheel_Slip; //todo - this should be on the output variables and calculated in variable_ops
-        
-        #define Delta_V_Crank 2 <<10 //V_Batt is bin 10
-        #define Run_Threshold 250       // RPM below this then not running
-        #define Warmup_Threshold 10000  // let warmup stuff go 10k cycles for now.  todo  - change this to end when the correction is zero
-        #define Wheel_Slip_Threshold 1000// todo user variable
-        #define Acceleration_Threshold 1000// todo real number maybe used variable
-        #define Deceleration_Threshold 1000// todo real number maybe used variable
-        #define Idle_Threshold 1000// todo real number maybe used variable
-        
-        
-        //We can't possibly know what the state is yet
-        Current_Engine_State  = Engine_State_Unknown;
-        
-        //read sensors to get basline values
-        Get_Slow_Op_Vars();
-        Get_Fast_Op_Vars();
-        
-        //store a baseline Battery Voltage
-        V_Battery_Stored = V_Batt;
-
-    for (;;) {
-
-               
-        
-
-        // Read the sensors that can change quickly like RPM, TPS, MAP, ect
-        Get_Fast_Op_Vars();
-        status = fs_etpu_eng_pos_get_engine_position_status();
-        
-       //do we know the crank position?
-       if (status == 0){
-          //crank position is not know....are we cranking?
-          Delta_V_Battery = V_Battery_Stored - V_Batt;
-          if (Delta_V_Battery > Delta_V_Crank)
-            Current_Engine_State = Engine_State_Cranking;
-          else
-          // the engine is not tyign to do anything it should be
-            Current_Engine_State = Engine_State_Unknown;
-          
-        //Crank position is known         
-       }else{//status
-          //Is the engine spinning fast enough to be running?
-          if (RPM < Run_Threshold)
-             //Too slow, it's just cranking
-             Current_Engine_State = Engine_State_Cranking_Synced;
-          //the engine is running
-          else{
-              //Is the engine Warmed up yet?
-             if (Post_Start_Cycles > Warmup_Threshold){
-                 //is it over rev'd?
-                if (RPM > Rev_Limit) 
-                   Current_Engine_State = Engine_State_Running_Over_Rev;
-                else{
-                   if(Wheel_Slip > Wheel_Slip_Threshold)
-                      Current_Engine_State = Engine_State_Running_Wheel_Slip;
-                   else{//wheels not slipping
-                      if(TPS_Dot > Acceleration_Threshold)
-                         Current_Engine_State = Engine_State_Running_Accelerating;
-                      else{ //not accelerating
-                         if(TPS_Dot < Deceleration_Threshold)
-                             Current_Engine_State = Engine_State_Running_Decelerating;
-                         else{ //not decelerating
-                            if(TPS > Idle_Threshold)
-                               Current_Engine_State = Engine_State_Running_Normal;	
-                         	else{ //must be idling
-                         	   if(RPM > Warm_Idle_RPM)	//todo this will need to be a lookup
-                         	      Current_Engine_State = Engine_State_Running_Idle_Settling;
-                         	   else
-                         	      Current_Engine_State = Engine_State_Running_Idle;
-                         		
-                         		
-                         	}//Idle_Threshold
-                         	
-                         }//Decceleration_Threshold
-                      	
-                      }//Acceleration_Threshold
-                   	
-                   }//wheel_slip
-                	
-                }//Rev_limit
-             
-             	
-             }else{// Engine not warm yet
-                  //is it over rev'd?
-                if (RPM > Rev_Limit) 
-                   Current_Engine_State = Engine_State_Running_Over_Rev_Warmup;
-                else{
-                   if(Wheel_Slip > Wheel_Slip_Threshold)
-                      Current_Engine_State = Engine_State_Running_Wheel_Slip_Warmup;
-                   else{//wheels not slipping
-                      if(TPS_Dot > Acceleration_Threshold)
-                         Current_Engine_State = Engine_State_Running_Accelerating_Warmup;
-                      else{ //not accelerating
-                         if(TPS_Dot < Deceleration_Threshold)
-                             Current_Engine_State = Engine_State_Running_Decelerating_Warmup;
-                         else{ //not decelerating
-                            if(TPS > Idle_Threshold)
-                               Current_Engine_State = Engine_State_Running_Normal;	
-                         	else{ //must be idling
-                         	   if(RPM > Warm_Idle_RPM)	//todo this will need to be a lookup
-                         	      Current_Engine_State = Engine_State_Running_Idle_Settling_Warmup;
-                         	   else
-                         	      Current_Engine_State = Engine_State_Running_Idle_Warmup;                         	
-                         	
-                         		
-                         	}//Idle_Threshold                         	
-	
-                         }//Decceleration_Threshold                     
-                      	
-                      }//Acceleration_Threshold                   
-                   	
-                   }//wheel_slip                
-                	
-                }//Rev_limit
-             
-             	
-             }//Warnup if/else
-          }//Run Threshold if/else
-
-       
-       	
-       }//Status if/else 
-       
-       switch (Current_Engine_State){
-       case 0:// Engine_State_Unknown
-  	      {
           // stuff to do
              //prime fue; pump
              //tack output 0
              //check engine light ON
              //IAC to start position - will need to know if warm of cold start, steppers will need to find position
-          break;
-          }
-       
-       case 1://Engine_State_Cranking
-  	      {
+	
+}
+
+void Engine_State_CrankingFunc()
+{
           // stuff to do
              //fuel pupm on
              //tack output 0
              //check engine light on
              //IAC hold in start position - will need to know if warm of cold start
-          break;
-          }
-       case 2://Engine_State_Cranking_Synced
-  	      {
-          // stuff to do
+	
+}
+
+
+void Engine_State_Cranking_SyncedFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light off
@@ -477,12 +346,12 @@ void Engine10_Task(void)
              //spark
              //fuel
                //warmup (currently called prime)
-             
-          break;
-          }
-        case 3://Engine_State_Running_Over_Rev
-  	      {
-          // stuff to do
+
+}
+
+void Engine_State_Running_Over_RevFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light flashing
@@ -491,11 +360,12 @@ void Engine10_Task(void)
                 //spark over rev
              //fuel
                 //fuel over rev
-          break;
-          }
-        case 4://Engine_State_Running_Over_Rev_Warmup
-  	      {
-          // stuff to do
+
+}
+
+void Engine_State_Running_Over_Rev_WarmupFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light flashing
@@ -505,12 +375,12 @@ void Engine10_Task(void)
              //fuel
                 //warmup (currently called prime)
                 //fuel over rev             
-             
-          break;
-          }
-         case 5://Engine_State_Running_Wheel_splip
-  	      {
-          // stuff to do
+
+}
+
+void Engine_State_Running_Wheel_SlipFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light flashing
@@ -520,12 +390,12 @@ void Engine10_Task(void)
                 //spark wheel slip
              //fuel
                 //fuel wheel slip
-             
-          break;
-          }
-         case 6://Engine_State_Running_Wheel_splip_Warmup
-  	      {
-          // stuff to do
+
+}
+
+void Engine_State_Running_Wheel_Slip_WarmupFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light flashing
@@ -535,11 +405,12 @@ void Engine10_Task(void)
                 //spark wheel slip
              //fuel
                 //fuel wheel slip
-          break;
-          }
-         case 7://Engine_State_Running_Accelerating
-  	      {
-          // stuff to do
+
+}
+
+void Engine_State_Running_AcceleratingFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light off
@@ -547,11 +418,12 @@ void Engine10_Task(void)
              //spark
              //fuel
                 //accel enrich
-          break;
-          }
-         case 8://Engine_State_Running_Accelerating_Warmup
-  	      {
-          // stuff to do
+
+}
+
+void Engine_State_Running_Accelerating_WarmupFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light off
@@ -560,11 +432,12 @@ void Engine10_Task(void)
              //fuel
                 //warmup (currently called prime)
                 //accel enrich
-          break;
-          }
-         case 9://Engine_State_Running_Decelerating
-  	      {
-          // stuff to do
+
+}
+
+void Engine_State_Running_DeceleratingFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light off
@@ -572,11 +445,12 @@ void Engine10_Task(void)
              //spark
              //fuel
                 //decel de-rich
-          break;
-          }
-         case 10://Engine_State_Running_Decelerating_Warmup
-  	      {
-          // stuff to do
+
+}
+
+void Engine_State_Running_Decelerating_WarmupFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light off
@@ -585,11 +459,12 @@ void Engine10_Task(void)
              //fuel
                 //warmup (currently called prime)
                 //decel de-rich
-          break;
-          }
-         case 11://Engine_State_Running_Normal
-  	      {
-          // stuff to do
+
+}
+
+void Engine_State_Running_NormalFunc() 
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light off
@@ -597,11 +472,12 @@ void Engine10_Task(void)
              //spark
              //fuel
                 //warmup (currently called prime)
-          break;
-          }
-         case 12://Engine_State_Running_Normal_Warmup
-  	      {
-          // stuff to do
+
+}
+
+void Engine_State_Running_Normal_WarmupFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light off
@@ -609,22 +485,24 @@ void Engine10_Task(void)
              //spark
              //fuel
                 //warmup (currently called prime)
-          break;
-          }
-         case 13://Engine_State_Running_Idle
-  	      {
-          // stuff to do
+
+}
+
+void Engine_State_Running_IdleFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light off
              //IAC control on - will need to know if warm of cold start
              //spark
              //fuel
-          break;
-          }
-         case 14://Engine_State_Running_Idle_Warmup
-  	      {
-          // stuff to do
+
+}
+
+void Engine_State_Running_Idle_WarmupFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light off
@@ -632,10 +510,11 @@ void Engine10_Task(void)
              //spark
              //fuel
                 //warmup (currently called prime)
-          break;
-          }
-         case 15://Engine_State_Running_Idle_Settling
-  	      {
+
+}
+
+void Engine_State_Running_Idle_SettlingFunc()
+{
           // stuff to do
              //fuel pump on
              //tack output on
@@ -643,11 +522,12 @@ void Engine10_Task(void)
              //IAC hold in run position - will need to know if warm of cold start
              //spark
              //fuel
-          break;
-          }
-         case 16://Engine_State_Running_Idle_Settling_Warmup
-  	      {
-          // stuff to do
+	
+}
+
+void Engine_State_Running_Idle_Settling_WarmupFunc()
+{
+	          // stuff to do
              //fuel pump on
              //tack output on
              //check engine light off
@@ -655,11 +535,174 @@ void Engine10_Task(void)
              //spark
              //fuel
                 //warmup (currently called prime)
-          break;
-          }
-                        
-         } //switch     
+
+}
+
+void (*Engine_State_Funcs[])(void) =
+{
+		Engine_State_UnknownFunc,
+        Engine_State_CrankingFunc,
+        Engine_State_Cranking_SyncedFunc,
+        Engine_State_Running_Over_RevFunc,
+        Engine_State_Running_Over_Rev_WarmupFunc,
+        Engine_State_Running_Wheel_SlipFunc,
+        Engine_State_Running_Wheel_Slip_WarmupFunc,
+        Engine_State_Running_AcceleratingFunc,
+        Engine_State_Running_Accelerating_WarmupFunc,
+        Engine_State_Running_DeceleratingFunc,
+        Engine_State_Running_Decelerating_WarmupFunc,
+        Engine_State_Running_NormalFunc,
+        Engine_State_Running_Normal_WarmupFunc,
+        Engine_State_Running_IdleFunc,
+        Engine_State_Running_Idle_WarmupFunc,
+        Engine_State_Running_Idle_SettlingFunc,
+        Engine_State_Running_Idle_Settling_WarmupFunc
+};
+
+
+
+#define Delta_V_Crank 2 <<10 			//V_Batt is bin 10
+#define Run_Threshold 250       		// RPM below this then not running
+#define Warmup_Threshold 10000  		// let warmup stuff go 10k cycles for now.  todo  - change this to end when the correction is zero
+#define Wheel_Slip_Threshold 1000		// todo user variable
+#define Acceleration_Threshold 1000		// todo real number maybe used variable
+#define Deceleration_Threshold 1000		// todo real number maybe used variable
+#define Idle_Threshold 1000				// todo real number maybe used variable
+#define Engine_Position_Unknown 0
+
+
+uint8_t GetEngineState(void)
+{
+       static uint16_t V_Battery_Stored;
+       static uint16_t Delta_V_Battery;
+       static uint8_t Current_Engine_State;
+       static uint16_t Wheel_Slip; 
+
+	   uint8_t EngineStateTemp = Engine_State_Unknown;
+
+       
+       //do we know the crank position?
+       if (Engine_Position_Unknown == fs_etpu_eng_pos_get_engine_position_status())
+       {
+          //crank position is not known....are we cranking?
+          Delta_V_Battery = V_Battery_Stored - V_Batt;
+          if (Delta_V_Battery > Delta_V_Crank)
+            EngineStateTemp = Engine_State_Cranking;
+          else
+          // the engine is not tyign to do anything it should be
+            EngineStateTemp = Engine_State_Unknown;
+       } 
+       else
+       {
+          //Crank position is known         
+          //Is the engine spinning fast enough to be running?
+          if (RPM < Run_Threshold)
+             //Too slow, it's just cranking
+             EngineStateTemp = Engine_State_Cranking_Synced;
+          //the engine is running
+          else
+          {
+              //Is the engine Warmed up yet?
+             if (Post_Start_Cycles > Warmup_Threshold){
+                 //is it over rev'd?
+                if (RPM > Rev_Limit) 
+                   EngineStateTemp = Engine_State_Running_Over_Rev;
+                else{
+                   if(Wheel_Slip > Wheel_Slip_Threshold)
+                      EngineStateTemp = Engine_State_Running_Wheel_Slip;
+                   else
+                   {//wheels not slipping
+                      if(TPS_Dot > Acceleration_Threshold)
+                         EngineStateTemp = Engine_State_Running_Accelerating;
+                      else
+                      { //not accelerating
+                         if(TPS_Dot < Deceleration_Threshold)
+                             EngineStateTemp = Engine_State_Running_Decelerating;
+                         else
+                         { //not decelerating
+                            if(TPS > Idle_Threshold)
+                               EngineStateTemp = Engine_State_Running_Normal;	
+                         	else
+                         	{ //must be idling
+                         	   if(RPM > Warm_Idle_RPM)	//todo this will need to be a lookup
+                         	      EngineStateTemp = Engine_State_Running_Idle_Settling;
+                         	   else
+                         	      EngineStateTemp = Engine_State_Running_Idle;
+                         	}//Idle_Threshold
+                         	
+                         }//Decceleration_Threshold
+                      	
+                      }//Acceleration_Threshold
+                   	
+                   }//wheel_slip
+                	
+                }//Rev_limit
+             }
+             else
+             {// Engine not warm yet
+                  //is it over rev'd?
+                if (RPM > Rev_Limit) 
+                   EngineStateTemp = Engine_State_Running_Over_Rev_Warmup;
+                else
+                {
+                   if(Wheel_Slip > Wheel_Slip_Threshold)
+                      EngineStateTemp = Engine_State_Running_Wheel_Slip_Warmup;
+                   else
+                   {//wheels not slipping
+                      if(TPS_Dot > Acceleration_Threshold)
+                         EngineStateTemp = Engine_State_Running_Accelerating_Warmup;
+                      else
+                      { //not accelerating
+                         if(TPS_Dot < Deceleration_Threshold)
+                             EngineStateTemp = Engine_State_Running_Decelerating_Warmup;
+                         else{ //not decelerating
+                            if(TPS > Idle_Threshold)
+                               EngineStateTemp = Engine_State_Running_Normal;	
+                         	else
+                         	{ //must be idling
+                         	   if(RPM > Warm_Idle_RPM)	//todo this will need to be a lookup
+                         	      EngineStateTemp = Engine_State_Running_Idle_Settling_Warmup;
+                         	   else
+                         	      EngineStateTemp = Engine_State_Running_Idle_Warmup;                         	
+                         	}//Idle_Threshold                         	
+                         }//Decceleration_Threshold                     
+                      }//Acceleration_Threshold                   
+                   }//wheel_slip                
+                }//Rev_limit
+             }//Warnup if/else
+          }//Run Threshold if/else
+       }
+	return EngineStateTemp;
+}
+
+
+
+void Engine10_Task(void)
+{
+    task_open();
+    task_wait(1);
+    
+	static uint32_t Start_Time;     // time when start started
+	static uint32_t Start_Degrees;  // engine position when start started
+	static uint32_t Previous_Status;
+	static uint8_t status;
+	static uint16_t V_Battery_Stored;
+
+	//read sensors to get basline values
+	Get_Slow_Op_Vars();
+	Get_Fast_Op_Vars();
         
+	//store a baseline Battery Voltage
+	V_Battery_Stored = V_Batt;
+
+    for (;;) {
+
+        // Read the sensors that can change quickly like RPM, TPS, MAP, ect
+        Get_Fast_Op_Vars();
+
+		// call Engine state function corresponding to state
+		Engine_State_Funcs[GetEngineState()]();
+
         // maintain some timers for use by enrichment
         // did we just start?
 
