@@ -294,272 +294,6 @@ void Fuel_Pump_Task(void)
 /**********************************************************************************/
 
 
-enum EngineStateEnum { 
-		Engine_State_Unknown,
-        Engine_State_Cranking,
-        Engine_State_Cranking_Synced,
-        Engine_State_Running_Over_Rev,
-        Engine_State_Running_Over_Rev_Warmup,
-        Engine_State_Running_Wheel_Slip,
-        Engine_State_Running_Wheel_Slip_Warmup,
-        Engine_State_Running_Accelerating,
-        Engine_State_Running_Accelerating_Warmup,
-        Engine_State_Running_Decelerating,
-        Engine_State_Running_Decelerating_Warmup,
-        Engine_State_Running_Normal,
-        Engine_State_Running_Normal_Warmup,
-        Engine_State_Running_Idle,
-        Engine_State_Running_Idle_Warmup,
-        Engine_State_Running_Idle_Settling,
-        Engine_State_Running_Idle_Settling_Warmup
-};
- 
-
-void Engine_State_UnknownFunc()
-{
-          // stuff to do
-             //prime fue; pump
-             //tack output 0
-             //check engine light ON
-             //IAC to start position - will need to know if warm of cold start, steppers will need to find position
-	
-}
-
-void Engine_State_CrankingFunc()
-{
-          // stuff to do
-             //fuel pupm on
-             //tack output 0
-             //check engine light on
-             //IAC hold in start position - will need to know if warm of cold start
-	
-}
-
-
-void Engine_State_Cranking_SyncedFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light off
-             //IAC hold in start position - will need to know if warm of cold start
-             //spark
-             //fuel
-               //warmup (currently called prime)
-
-}
-
-void Engine_State_Running_Over_RevFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light flashing
-             //IAC Run position, need to know warm or cold
-             //Spark
-                //spark over rev
-             //fuel
-                //fuel over rev
-
-}
-
-void Engine_State_Running_Over_Rev_WarmupFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light flashing
-             //IAC Run position, need to know warm or cold
-             //Spark
-                //spark over rev
-             //fuel
-                //warmup (currently called prime)
-                //fuel over rev             
-
-}
-
-void Engine_State_Running_Wheel_SlipFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light flashing
-                // or slip light flashing
-             //IAC Run position, need to know warm or cold
-             //Spark
-                //spark wheel slip
-             //fuel
-                //fuel wheel slip
-
-}
-
-void Engine_State_Running_Wheel_Slip_WarmupFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light flashing
-                // or slip light flashing
-             //IAC Run position, need to know warm or cold
-             //Spark
-                //spark wheel slip
-             //fuel
-                //fuel wheel slip
-
-}
-
-void Engine_State_Running_AcceleratingFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light off
-             //IAC hold in run position - will need to know if warm of cold start
-             //spark
-             //fuel
-                //accel enrich
-
-}
-
-void Engine_State_Running_Accelerating_WarmupFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light off
-             //IAC hold in run position - will need to know if warm of cold start
-             //spark
-             //fuel
-                //warmup (currently called prime)
-                //accel enrich
-
-}
-
-void Engine_State_Running_DeceleratingFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light off
-             //IAC hold in run position - will need to know if warm of cold start
-             //spark
-             //fuel
-                //decel de-rich
-
-}
-
-void Engine_State_Running_Decelerating_WarmupFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light off
-             //IAC hold in run position - will need to know if warm of cold start
-             //spark
-             //fuel
-                //warmup (currently called prime)
-                //decel de-rich
-
-}
-
-void Engine_State_Running_NormalFunc() 
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light off
-             //IAC hold in run position - will need to know if warm of cold start
-             //spark
-             //fuel
-                //warmup (currently called prime)
-
-}
-
-void Engine_State_Running_Normal_WarmupFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light off
-             //IAC hold in run position - will need to know if warm of cold start
-             //spark
-             //fuel
-                //warmup (currently called prime)
-
-}
-
-void Engine_State_Running_IdleFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light off
-             //IAC control on - will need to know if warm of cold start
-             //spark
-             //fuel
-
-}
-
-void Engine_State_Running_Idle_WarmupFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light off
-             //IAC control on - will need to know if warm of cold start
-             //spark
-             //fuel
-                //warmup (currently called prime)
-
-}
-
-void Engine_State_Running_Idle_SettlingFunc()
-{
-          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light off
-             //IAC hold in run position - will need to know if warm of cold start
-             //spark
-             //fuel
-	
-}
-
-void Engine_State_Running_Idle_Settling_WarmupFunc()
-{
-	          // stuff to do
-             //fuel pump on
-             //tack output on
-             //check engine light off
-             //IAC hold in run position - will need to know if warm of cold start
-             //spark
-             //fuel
-                //warmup (currently called prime)
-
-}
-
-void (*Engine_State_Funcs[])(void) =
-{
-		Engine_State_UnknownFunc,
-        Engine_State_CrankingFunc,
-        Engine_State_Cranking_SyncedFunc,
-        Engine_State_Running_Over_RevFunc,
-        Engine_State_Running_Over_Rev_WarmupFunc,
-        Engine_State_Running_Wheel_SlipFunc,
-        Engine_State_Running_Wheel_Slip_WarmupFunc,
-        Engine_State_Running_AcceleratingFunc,
-        Engine_State_Running_Accelerating_WarmupFunc,
-        Engine_State_Running_DeceleratingFunc,
-        Engine_State_Running_Decelerating_WarmupFunc,
-        Engine_State_Running_NormalFunc,
-        Engine_State_Running_Normal_WarmupFunc,
-        Engine_State_Running_IdleFunc,
-        Engine_State_Running_Idle_WarmupFunc,
-        Engine_State_Running_Idle_SettlingFunc,
-        Engine_State_Running_Idle_Settling_WarmupFunc
-};
-
-
 
 #define Delta_V_Crank 2 <<10 			//V_Batt is bin 10
 #define Run_Threshold 250       		// RPM below this then not running
@@ -568,113 +302,6 @@ void (*Engine_State_Funcs[])(void) =
 #define Acceleration_Threshold 1000		// todo real number maybe used variable
 #define Deceleration_Threshold 1000		// todo real number maybe used variable
 #define Idle_Threshold 1000				// todo real number maybe used variable
-#define Engine_Position_Unknown 0
-
-
-uint8_t GetEngineState(void)
-{
-       static uint16_t V_Battery_Stored;
-       static uint16_t Delta_V_Battery;
-       static uint8_t Current_Engine_State;
-       static uint16_t Wheel_Slip; 
-
-	   uint8_t EngineStateTemp = Engine_State_Unknown;
-
-       
-       //do we know the crank position?
-       if (Engine_Position_Unknown == fs_etpu_eng_pos_get_engine_position_status())
-       {
-          //crank position is not known....are we cranking?
-          Delta_V_Battery = V_Battery_Stored - V_Batt;
-          if (Delta_V_Battery > Delta_V_Crank)
-            EngineStateTemp = Engine_State_Cranking;
-          else
-          // the engine is not tyign to do anything it should be
-            EngineStateTemp = Engine_State_Unknown;
-       } 
-       else
-       {
-          //Crank position is known         
-          //Is the engine spinning fast enough to be running?
-          if (RPM < Run_Threshold)
-             //Too slow, it's just cranking
-             EngineStateTemp = Engine_State_Cranking_Synced;
-          //the engine is running
-          else
-          {
-              //Is the engine Warmed up yet?
-             if (Post_Start_Cycles > Warmup_Threshold){
-                 //is it over rev'd?
-                if (RPM > Rev_Limit) 
-                   EngineStateTemp = Engine_State_Running_Over_Rev;
-                else{
-                   if(Wheel_Slip > Wheel_Slip_Threshold)
-                      EngineStateTemp = Engine_State_Running_Wheel_Slip;
-                   else
-                   {//wheels not slipping
-                      if(TPS_Dot > Acceleration_Threshold)
-                         EngineStateTemp = Engine_State_Running_Accelerating;
-                      else
-                      { //not accelerating
-                         if(TPS_Dot < Deceleration_Threshold)
-                             EngineStateTemp = Engine_State_Running_Decelerating;
-                         else
-                         { //not decelerating
-                            if(TPS > Idle_Threshold)
-                               EngineStateTemp = Engine_State_Running_Normal;	
-                         	else
-                         	{ //must be idling
-                         	   if(RPM > Warm_Idle_RPM)	//todo this will need to be a lookup
-                         	      EngineStateTemp = Engine_State_Running_Idle_Settling;
-                         	   else
-                         	      EngineStateTemp = Engine_State_Running_Idle;
-                         	}//Idle_Threshold
-                         	
-                         }//Decceleration_Threshold
-                      	
-                      }//Acceleration_Threshold
-                   	
-                   }//wheel_slip
-                	
-                }//Rev_limit
-             }
-             else
-             {// Engine not warm yet
-                  //is it over rev'd?
-                if (RPM > Rev_Limit) 
-                   EngineStateTemp = Engine_State_Running_Over_Rev_Warmup;
-                else
-                {
-                   if(Wheel_Slip > Wheel_Slip_Threshold)
-                      EngineStateTemp = Engine_State_Running_Wheel_Slip_Warmup;
-                   else
-                   {//wheels not slipping
-                      if(TPS_Dot > Acceleration_Threshold)
-                         EngineStateTemp = Engine_State_Running_Accelerating_Warmup;
-                      else
-                      { //not accelerating
-                         if(TPS_Dot < Deceleration_Threshold)
-                             EngineStateTemp = Engine_State_Running_Decelerating_Warmup;
-                         else{ //not decelerating
-                            if(TPS > Idle_Threshold)
-                               EngineStateTemp = Engine_State_Running_Normal;	
-                         	else
-                         	{ //must be idling
-                         	   if(RPM > Warm_Idle_RPM)	//todo this will need to be a lookup
-                         	      EngineStateTemp = Engine_State_Running_Idle_Settling_Warmup;
-                         	   else
-                         	      EngineStateTemp = Engine_State_Running_Idle_Warmup;                         	
-                         	}//Idle_Threshold                         	
-                         }//Decceleration_Threshold                     
-                      }//Acceleration_Threshold                   
-                   }//wheel_slip                
-                }//Rev_limit
-             }//Warnup if/else
-          }//Run Threshold if/else
-       }
-	return EngineStateTemp;
-}
-
 
 
 void Engine10_Task(void)
@@ -697,12 +324,11 @@ void Engine10_Task(void)
 
     for (;;) {
 
+/***************************************************************************************/        
+        
         // Read the sensors that can change quickly like RPM, TPS, MAP, ect
         Get_Fast_Op_Vars();
-
-		// call Engine state function corresponding to state
-		Engine_State_Funcs[GetEngineState()]();
-
+/***************************************************************************************/
         // maintain some timers for use by enrichment
         // did we just start?
 
@@ -719,22 +345,30 @@ void Engine10_Task(void)
            Post_Start_Time = (systime - Start_Time) / 1000;
         if (Post_Start_Cycles < 10000)
             Post_Start_Cycles = (Degree_Clock - Start_Degrees) / 720;
-
+        
+/***************************************************************************************/
         // TODO  - add load sense method selection and calcs. This only works right with 1 bar MAP
         // Load = Get_Load();
         Load = (MAP[1] << 2);   // convert bin 12 to 14 and account for /100Kpa using MAP 2 until angle reading fixed
 
+/***************************************************************************************/
+
         // set spark advance and dwell based on current conditions
         Set_Spark();
 
+/***************************************************************************************/
+
         // set fuel pulse width + position based on current conditions
         Set_Fuel();
+/***************************************************************************************/
 
+        //Update_Tach(RPM)
         // Update Tach signal
         uint32_t frequency = ((RPM * Pulses_Per_Rev) * (uint32_t) ((1 << 14) / 60 ) >> 14);
-         
+           // maybe there should be 1 Update_eTPU() ???
         //Update_Tach(frequency);
 		fs_etpu_pwm_update(TACH_CHANNEL, frequency, 1000, etpu_tcr1_freq);
+/***************************************************************************************/
 		
         // consider replacing MAP window with the minimum MAP value seen
         task_wait(9);           // allow others tasks to run
@@ -749,37 +383,41 @@ static void Set_Spark()
     static uint32_t Spark_Advance_eTPU;
     static uint32_t Spark_Recalc_Angle_eTPU;
     static uint32_t Prev_Dwell=99;
+    static uint32_t Dwell_2;
+    static uint32_t Spark_Advance_eTPU_2;
     int i;
 
+/***************************************************************************************/
+ // TODO - This should go away
     // if the engine is not turning or the engine position is not known, shut off the spark
-    if (RPM == 0 || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC || Enable_Ignition == 0
-        || (RPM > Rev_Limit && (Rev_Limit_Type == 2 || Rev_Limit_Type == 4))) {
-        for (i = 0; i < N_Coils; ++i) 
-            fs_etpu_spark_set_dwell_times(Spark_Channels[i],0,0);
-        Prev_Dwell = 0;
-        Spark_Advance = 0;
-    } else {
+ //   if (RPM == 0 || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC || Enable_Ignition == 0
+ //       || (RPM > Rev_Limit && (Rev_Limit_Type == 2 || Rev_Limit_Type == 4))) {
+ //       for (i = 0; i < N_Coils; ++i) 
+ //           fs_etpu_spark_set_dwell_times(Spark_Channels[i],0,0);
+ //       Prev_Dwell = 0;
+ //       Spark_Advance = 0;
+
+    
+/***************************************************************************************/    
         // Looks up the desired spark advance in degrees before Top Dead Center (TDC)
         Spark_Advance = (int16_t) table_lookup_jz(RPM, Load, Spark_Advance_Table);        
 
         Spark_Advance_eTPU = (uint24_t) (72000 - (Spark_Advance << 2));    // bin -2 to 0 for eTPU use 
-
+        Spark_Advance_eTPU_2 = Spark_Advance_eTPU + 36000; // needed for waste spark, harmless otherwise
+          if (Spark_Advance_eTPU_2 >= 72000) // roll it over at 720 degrees
+              Spark_Advance_eTPU_2 -= 72000;
+          
+/***************************************************************************************/          
         // TODO Knock_Retard(); Issue #7
+/***************************************************************************************/ 
 
         if (Spark_Advance_eTPU < (72000 - 4000) && Spark_Advance_eTPU > 2000) {      // error checking, -40 to +20 is OK
               err_push( CODE_OLDJUNK_E3 );
               Spark_Advance_eTPU = 0;
         }
 
-        // Dwell
-        Dwell = Dwell_Set;                      // user specified value
-        if (V_Batt < (13 << 10))                // use longer dwell when battery is low (< 13V bin 10)
-           Dwell = (typeof(Dwell))((Dwell * table_lookup_jz(V_Batt, 0, Dwell_Table)) >> 13);  // dwell is in usec, bin 0
-
-        if (Dwell > 15000 || Dwell < 500) {               // error checking
-              err_push( CODE_OLDJUNK_E2 );
-              Dwell = 3000;
-        }
+/***************************************************************************************/
+      
 
         // Calculate an appropriate re-calculation angle for the current Spark_Angle so the update is as close to firing time as possible
         uint32_t Temp1 = (((RPM * Dwell) >> 14) * (uint32_t) (1.2 * (1 << 12)) >> 12);  // 1.2 is to give the processor time to do the math 
@@ -787,36 +425,45 @@ static void Set_Spark()
         uint32_t Angle_Temp = 72000 - ((Temp1 * Temp2) >> 12);
 
         Spark_Recalc_Angle_eTPU = (Spark_Advance_eTPU + Angle_Temp);
-        if (Spark_Recalc_Angle_eTPU >= 72000)
-            Spark_Recalc_Angle_eTPU -= 72000;
-
+           if (Spark_Recalc_Angle_eTPU >= 72000) // roll it over at 720 degrees
+               Spark_Recalc_Angle_eTPU -= 72000;
+          //Update re-calculation angle in eTPU
         fs_etpu_spark_set_recalc_offset_angle(Spark_Channels[0], Spark_Recalc_Angle_eTPU); // global value despite the channel param
 
-    }  // if
+/***************************************************************************************/ 
 
-    // set advance and dwell
+        // Dwell
+           Dwell = (typeof(Dwell))((Dwell_Set * table_lookup_jz(V_Batt, 0, Dwell_Table)) >> 13);  // dwell is in usec, bin 0
+             //the engine position is not known, of over rev limit, shut off the spark
+              if (Enable_Ignition == 0 //spark disabled
+                 || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC //crank position unknow
+                 || (RPM > Rev_Limit && (Rev_Limit_Type == 2 || Rev_Limit_Type == 4))) //rev limit engaged
+                    //Turn spark off
+                    Dwell = 0;
 
-    uint32_t Dwell_2;
-    uint32_t Spark_Advance_eTPU_2;      // for second pulse
 
-    if (Ignition_Type == 1) {           // wasted spark mode - fire twice, 360 degrees apart
-       Dwell_2 = Dwell;
-       Spark_Advance_eTPU_2 = Spark_Advance_eTPU + 36000;
-       if (Spark_Advance_eTPU_2 >= 72000) 
-          Spark_Advance_eTPU_2 -= 72000;
-    } else {
-       Dwell_2 = 0;                     // disable second spark
-       Spark_Advance_eTPU_2=0;  
-    } // if
+
+        if (Dwell > 15000 || Dwell < 500) {               // error checking
+              err_push( CODE_OLDJUNK_E2 );
+              Dwell = 3000;
+        }
+
+/***************************************************************************************/ 
+        // Dwell_2 - used for waste spark
+        
+           Dwell_2 = Dwell * Ignition_Type; //used for waste spark, set to zero otherwise
+
+
+        
+/***************************************************************************************/  
 
     // send values to eTPU
     for (i = 0; i < N_Coils; ++i) {
         fs_etpu_spark_set_end_angles(Spark_Channels[i], Spark_Advance_eTPU, Spark_Advance_eTPU_2);
-        if (Dwell != Prev_Dwell) 
-           fs_etpu_spark_set_dwell_times(Spark_Channels[i], Dwell, Dwell_2);
+        
+        fs_etpu_spark_set_dwell_times(Spark_Channels[i], Dwell, Dwell_2);
     }                           // for
 
-    Prev_Dwell = Dwell;         // used to avoid unnecessary updates
 
 } // Set_Spark()
 
