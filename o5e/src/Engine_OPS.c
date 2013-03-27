@@ -733,6 +733,13 @@ static void Set_Fuel(void)
 
             error_code = 1;
             while (error_code != 0)     // This tries until the channel is actually updated
+     //look up tirm values
+         //need to make table use the "j" value before it will work
+            //Corr = table_lookup_jz(RPM, Load, Cyl_Trim_1_Table);
+            //Cyl_Pulse_Width=  (Pulse_Width * Corr) >> 14;
+            
+                //error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Cyl_Pulse_Width);
+                //this goes away once cyl trim is working
                 error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Pulse_Width);
 
         }                       // for
