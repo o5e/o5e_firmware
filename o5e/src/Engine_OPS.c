@@ -500,29 +500,9 @@ static void Set_Fuel(void)
     static int32_t TPS_Dot_Temp;
 
     // if the engine is not turning, the engine position is not known, or over reving, shut off the fuel channels
-    if (RPM == 0 
-        || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC 
-        || Enable_Inj == 0
-        || (RPM > Rev_Limit && (Rev_Limit_Type == 1 || Rev_Limit_Type == 3))) {
 
-        int i;
-        for (i = 0; i < N_Cyl; ++i) {
-            fs_etpu_fuel_switch_off(Fuel_Channels[i]);
-            Injection_Time = 0;
 
-        } // for
 
-        // set the accel/deccel variables to current conditions
-        TPS_Last = TPS;
-        TPS_Dot_Limit = 1 << 14;
-        TPS_Dot_Corr = 0;
-        TPS_Dot = 0;
-        TPS_Dot_Last = 0;
-        TPS_Dot_Sign = 0;
-
-        Degree_Clock_Last = Degree_Clock;
-
-    } else {
 
         // calc fuel pulse width
 
@@ -558,6 +538,8 @@ static void Set_Fuel(void)
         Corr = table_lookup_jz(CLT, 0, Fuel_Temp_Corr_Table);
         Pulse_Width = (Pulse_Width * Corr) >> 13;
 
+/***************************************************************************************/ 
+//Prime()
         // check if enrichment cals shold be done - this might want to be a % of redline
         // maintain some timers for use by enrichment
         // did we just start?
@@ -586,6 +568,9 @@ static void Set_Fuel(void)
                 // Reduce the Prime correction by the decay rate and add to pulse_width            
                 Pulse_Width = (Pulse_Width + Prime_Corr);
             }
+            
+/***************************************************************************************/             
+//Accel_Decel_Ops()            
             /**********************************************************************************/
             /*                           accel/decel enrichment                               */
             /* This working by looking at the rate the throttle is moving  and  calculating   */
@@ -621,6 +606,21 @@ static void Set_Fuel(void)
             /* being remover from the port and manifold walls due to pressure drop            */
             /*                                                                                */
             /**********************************************************************************/
+
+          if (fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC){	
+              // set the accel/deccel variables to current conditions
+            TPS_Last = TPS;
+            TPS_Dot_Limit = 1 << 14;
+            TPS_Dot_Corr = 0;
+            TPS_Dot = 0;
+            TPS_Dot_Last = 0;
+            TPS_Dot_Sign = 0;
+
+            Degree_Clock_Last = Degree_Clock;
+		  }//if
+
+
+
 
             //get a TPS change         
             TPS_Dot_Temp = (TPS_Last - TPS);
@@ -671,27 +671,34 @@ static void Set_Fuel(void)
             }
 
         }
+        
+/***************************************************************************************/         
         // TODO adjust based on O2 sensor data Issue #8
         // Corr = O2_Fuel();
         // Pulse_Width = (Pulse_Width * Corr) >> 14;
+/***************************************************************************************/         
 
         // Assume fuel pressure is constant
 
         // fuel dead time - extra pulse needed to open the injector
         // take user value and adjust based on battery voltage
         Dead_Time = (Dead_Time_Set * table_lookup_jz(V_Batt, 0, Inj_Dead_Time_Table)) >> 13;
-         
+
+/***************************************************************************************/          
          //this give the tuner the current pulse width
         Injection_Time = Pulse_Width + Dead_Time;
         
-
-        // TODO - add code for semi-seq fuel 
+/***************************************************************************************/ 
+        // TODO - add code for semi-seq fuel
+/***************************************************************************************/          
         // Sanity check - greater than 99% duty cycle?
         if (Injection_Time > ((990000 * 60 * 2) / RPM)) {
             err_push( CODE_OLDJUNK_E1 );
         }
 
         // Fuel pulse width calc is done
+        
+ /***************************************************************************************/        
 
         // where should pulse end (injection timing)?
         uint32_t Inj_End_Angle_eTPU = (table_lookup_jz(RPM, Load, Inj_End_Angle_Table)) << 2;   // Bin shift tuner angles from -2 to 0 for eTPU use 
@@ -708,9 +715,16 @@ static void Set_Fuel(void)
         uint32_t Fuel_Recalc_Angle_eTPU = (Inj_End_Angle_eTPU + Angle_Temp);
         if (Fuel_Recalc_Angle_eTPU > 72000)
             Fuel_Recalc_Angle_eTPU -= 72000;
+        
+/***************************************************************************************/ 
 
         // TODO - Cylinder Trim math and updates.  Issue #9
+        
+/***************************************************************************************/         
+        
         // TODO - Staged injection math and updates Issue #10
+        
+/***************************************************************************************/         
 
         // tell eTPU to use new fuel injection pulse values (same for all cylinders)
         uint32_t j;
@@ -727,8 +741,21 @@ static void Set_Fuel(void)
         fs_etpu_fuel_set_compensation_time(Fuel_Channels[0], Dead_Time);
         fs_etpu_fuel_set_normal_end_angle(Fuel_Channels[0], Inj_End_Angle_eTPU);        // degrees * 100
         fs_etpu_fuel_set_recalc_offset_angle(Fuel_Channels[0], Fuel_Recalc_Angle_eTPU); // degrees * 100
-    }                           // else
+    
+/***************************************************************************************/    
+        if (fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC 
+           || Enable_Inj == 0
+           || (RPM > Rev_Limit && (Rev_Limit_Type == 1 || Rev_Limit_Type == 3))) {
+
+           int i;
+           for (i = 0; i < N_Cyl; ++i) {
+             fs_etpu_fuel_switch_off(Fuel_Channels[i]);
+             Injection_Time = 0;
+           } // for
+         }//if
 }                               // Set_Fuel()
+
+/***************************************************************************************/ 
 
 // read status - returns can be viewed in the debugger or sent to the tuner
 // see etpu_crank_auto.h and AN3769
