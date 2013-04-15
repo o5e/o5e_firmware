@@ -59,7 +59,9 @@ static void Set_Fuel(void);
 /**********************************************************************************/
 /*          Done while power on                                                   */
 /**********************************************************************************/
-
+//
+//MOVE THIS
+//
 // Engine stuff that don't change very fast ~100 msec
 
 void Slow_Vars_Task(void)
@@ -79,7 +81,9 @@ void Slow_Vars_Task(void)
 // Note: this implies batch fuel which is done by tying pins together - each pin only fires once per 720 degree cycle
 // The calibration must position an extra wide cam window (because the timing isn't exact)
 // This code could use the eTPU Synchronized Pulse-Width Modulation Function instead.
-
+//
+//MOVE THIS
+//
 void Cam_Pulse_Task(void)
     {
         task_open();                // standard OS entry
@@ -151,7 +155,9 @@ void Cam_Pulse_Task(void)
 // It isused to simulate jitter in the crank signal by altering the test rpm, which alters the tooth period
 // The tooth width is a % of tooth period, so this will cause the tooth size to alternate 
 // small/big/......., while keeping the average rpm constant
-
+//
+//MOVE THIS
+//
 void Test_RPM_Task(void)// test routine, only run ifdef SIMULATOR (see main.c)
 
 {
@@ -223,7 +229,9 @@ void Test_RPM_Task(void)// test routine, only run ifdef SIMULATOR (see main.c)
 // Debug
 // Blink based on engine position status - for testing
 // A sec blink means all is well, Fast blink or no blink means something's wrong
-
+//
+//MOVE THIS
+//
 void Eng_Pos_Status_BLINK_Task(void)
 {
     task_open();                // standard OS entry - NOTE: no non-static local variables! 
@@ -269,7 +277,9 @@ void Eng_Pos_Status_BLINK_Task(void)
 }                               /* end of RPM_BLINK_task() */
 
 // Decide if fuel pump should be on or off
-
+//
+//MOVE THIS
+//
 void Fuel_Pump_Task(void)
 {
     task_open();                // standard OS entry - NOTE: no non-static local variables! 
@@ -361,7 +371,9 @@ void Engine10_Task(void)
         // set fuel pulse width + position based on current conditions
         Set_Fuel();
 /***************************************************************************************/
-
+//
+//MOVE THIS
+//
         //Update_Tach(RPM)
         // Update Tach signal
         uint32_t frequency = ((RPM * Pulses_Per_Rev) * (uint32_t) ((1 << 14) / 60 ) >> 14);
@@ -377,7 +389,9 @@ void Engine10_Task(void)
 }                               // Engine10_Task()
 
 // All spark calcs go here
-
+//
+//MOVE THIS
+//
 static void Set_Spark()
 {
     static uint32_t Spark_Advance_eTPU;
@@ -456,7 +470,9 @@ static void Set_Spark()
 
         
 /***************************************************************************************/  
-
+//
+//THIS PART SHOULD STAY
+//
     // send values to eTPU
     for (i = 0; i < N_Coils; ++i) {
         fs_etpu_spark_set_end_angles(Spark_Channels[i], Spark_Advance_eTPU, Spark_Advance_eTPU_2);
@@ -475,7 +491,9 @@ static void Set_Spark()
 #define TPS_Dot_Dead 2000
 
 // Primary purpose is to set the fuel pulse width/injection time
-
+//
+//MOVE THIS
+//
 static void Set_Fuel(void)
 {
     static int16_t Corr;
@@ -539,6 +557,9 @@ static void Set_Fuel(void)
         Pulse_Width = (Pulse_Width * Corr) >> 13;
 
 /***************************************************************************************/ 
+//
+//MOVE THIS
+//
 //Prime()
         // check if enrichment cals shold be done - this might want to be a % of redline
         // maintain some timers for use by enrichment
@@ -570,6 +591,9 @@ static void Set_Fuel(void)
             }
             
 /***************************************************************************************/             
+//
+//MOVE THIS
+//
 //Accel_Decel_Ops()            
             /**********************************************************************************/
             /*                           accel/decel enrichment                               */
@@ -699,7 +723,10 @@ static void Set_Fuel(void)
         // Fuel pulse width calc is done
         
  /***************************************************************************************/        
-
+//
+//MOVE THIS
+//
+//Injection_angle()
         // where should pulse end (injection timing)?
         uint32_t Inj_End_Angle_eTPU = (table_lookup_jz(RPM, Load, Inj_End_Angle_Table)) << 2;   // Bin shift tuner angles from -2 to 0 for eTPU use 
 
@@ -725,7 +752,9 @@ static void Set_Fuel(void)
         // TODO - Staged injection math and updates Issue #10
         
 /***************************************************************************************/         
-
+//
+//THIS PART SHOULD STAY
+//
         // tell eTPU to use new fuel injection pulse values (same for all cylinders)
         uint32_t j;
         for (j = 0; j < N_Injectors; ++j) {
@@ -733,7 +762,7 @@ static void Set_Fuel(void)
 
             error_code = 1;
             while (error_code != 0)     // This tries until the channel is actually updated
-     //look up tirm values
+     //look up trim values
          //need to make table use the "j" value before it will work
             //Corr = table_lookup_jz(RPM, Load, Cyl_Trim_1_Table);
             //Cyl_Pulse_Width=  (Pulse_Width * Corr) >> 14;
@@ -749,7 +778,7 @@ static void Set_Fuel(void)
         fs_etpu_fuel_set_normal_end_angle(Fuel_Channels[0], Inj_End_Angle_eTPU);        // degrees * 100
         fs_etpu_fuel_set_recalc_offset_angle(Fuel_Channels[0], Fuel_Recalc_Angle_eTPU); // degrees * 100
     
-/***************************************************************************************/    
+   
         if (fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC 
            || Enable_Inj == 0
            || (RPM > Rev_Limit && (Rev_Limit_Type == 1 || Rev_Limit_Type == 3))) {
@@ -766,7 +795,9 @@ static void Set_Fuel(void)
 
 // read status - returns can be viewed in the debugger or sent to the tuner
 // see etpu_crank_auto.h and AN3769
-
+//
+//MOVE THIS
+//
 static void Check_Engine(void)
 {
     int8_t s4;
