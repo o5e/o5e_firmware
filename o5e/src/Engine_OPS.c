@@ -22,6 +22,7 @@
 #include "variables.h"
 #include "typedefs.h"
 #include "Engine_OPS.h"
+#include "Enrichment_OPS.h"
 #include "Variable_OPS.h"
 #include "cocoos.h"
 #include "Table_Lookup_JZ.h"
@@ -35,7 +36,6 @@
 #include "bsp.h"   /**< pickup systime      */
 #include "main.h"  /**< pickup Degree_Clock */
 
-#include "etpu_toothgen.h"
 
 uint32_t *fs_free_param;
 static uint32_t Pulse_Width;
@@ -44,9 +44,6 @@ static void Check_Engine(void);
 static void Set_Spark(void);
 static void Set_Fuel(void);
 
-// how to turn a pin on/off
-#define Set_Pin(pin,value)  SIU.GPDO[pin].R = value
-#define Read_Pin(pin,value)  (SIU.GPDI[pin].R & 1)
 
 #if __CWCC__
 #pragma push
@@ -130,13 +127,10 @@ void Engine10_Task(void)
 	//store a baseline Battery Voltage
 	V_Battery_Stored = V_Batt;
 
-    for (;;) {
-
-/***************************************************************************************/        
-        
+    for (;;) {    
         // Read the sensors that can change quickly like RPM, TPS, MAP, ect
         Get_Fast_Op_Vars();
-/***************************************************************************************/
+
         // maintain some timers for use by enrichment
         // did we just start?
 
@@ -154,21 +148,17 @@ void Engine10_Task(void)
         if (Post_Start_Cycles < 10000)
             Post_Start_Cycles = (Degree_Clock - Start_Degrees) / 720;
         
-/***************************************************************************************/
         // TODO  - add load sense method selection and calcs. This only works right with 1 bar MAP
         // Load = Get_Load();
         Load = (MAP[1] << 2);   // convert bin 12 to 14 and account for /100Kpa using MAP 2 until angle reading fixed
 
-/***************************************************************************************/
 
         // set spark advance and dwell based on current conditions
         Set_Spark();
 
-/***************************************************************************************/
-
         // set fuel pulse width + position based on current conditions
         Set_Fuel();
-/***************************************************************************************/
+
 //
 //MOVE THIS
 //
@@ -286,7 +276,7 @@ static void Set_Spark()
 //#define Run_Threshold 250       // RPM below this then not running
 #define Enrich_Threshold 6000
 #define Prime_Cycles_Threshold 100
-#define TPS_Dot_Dead 2000
+
 
 // Primary purpose is to set the fuel pulse width/injection time
 //
@@ -302,18 +292,7 @@ static void Set_Fuel(void)
     static uint32_t Prime_Decay = (1 << 14);
     static uint32_t Prime_Decay_Last = (1 << 14);
     static uint32_t Prime_Corr;
-    static uint32_t TPS_Last = 0;       // bin 14
-    static uint32_t Degree_Clock_Last = 0;      // bin 0 
-    static uint32_t TPS_Dot_Decay_Last = (1 << 14);     // bin 14
-    static uint32_t TPS_Dot_Degree = 0;
-    static uint32_t TPS_Dot_Decay_Rate = (1 << 14);
     static uint32_t Load_Ref_AFR;
-    static int32_t TPS_Dot_Last = 0;    // bin 14
-    static int32_t TPS_Dot_Limit;       // bin 14
-    static int32_t TPS_Dot_Decay;       // bin 14
-    static int32_t TPS_Dot_Corr;
-    static int32_t TPS_Dot_Sign = 0;
-    static int32_t TPS_Dot_Temp;
 
     // if the engine is not turning, the engine position is not known, or over reving, shut off the fuel channels
 
@@ -387,112 +366,11 @@ static void Set_Fuel(void)
                 // Reduce the Prime correction by the decay rate and add to pulse_width            
                 Pulse_Width = (Pulse_Width + Prime_Corr);
             }
-            
-/***************************************************************************************/             
-//
-//MOVE THIS
-//
-//Accel_Decel_Ops()            
-            /**********************************************************************************/
-            /*                           accel/decel enrichment                               */
-            /* This working by looking at the rate the throttle is moving  and  calculating   */
-            /* an enrichment or a derichment to compensate for fuel that  condenses on the    */
-            /* manifold wall due to the pressure increase when the throttle opens. This is    */
-            /* done by watching the throttle change rate since throttle is the first variable */
-            /* to change.                                                                     */
-            /*                                                                                */
-            /* The accel/decel variables are set to base values above at the start of the     */
-            /* fuel routine so they get current sensor values to work with.                   */
-            /*                                                                                */
-            /* Get the TPS change. This simply compares the throttle position each pass       */
-            /* through.  It probbly should be an actual rate by dividing by  the change in    */
-            /* crank position but that added too much noise to the  calculation when I tried  */
-            /*                                                                                */
-            /* The throttle change rate is compared to a dead band.  The deadband helps       */
-            /* clean up noise but more importantly no throttle enrichment is required for     */
-            /* slow throttle change rates.                                                    */
-            /*                                                                                */
-            /* When TPS_Dot is above the deadband, the sensativity value is used to calculate */
-            /* howw much enrichment is required.  The faster the throttle is moving the more  */
-            /* enrifchment should be added.                                                   */
-            /*                                                                                */
-            /* When the TPS_Dot stops increasing a decay is applied which deceases the        */
-            /* enrichment by the specified % each engine cycle.  It's done by cycle because   */
-            /* each cylinder has it's own manifold runner and port so each cylinder require   */
-            /* the enrichment.                                                                */
-            /*                                                                                */
-            /* If TPS_Dot goes negative, ie the throttle is closing, accel enrichment ends    */
-            /* imediately and a calculation is done to determine if decel derichment is       */
-            /* required.  Decel derichment works exactly the same a acel enrichment, only     */
-            /* using negative TPS_Dot rates an dpusle width reductions to compensate for fuel */
-            /* being remover from the port and manifold walls due to pressure drop            */
-            /*                                                                                */
-            /**********************************************************************************/
-
-          if (fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC){	
-              // set the accel/deccel variables to current conditions
-            TPS_Last = TPS;
-            TPS_Dot_Limit = 1 << 14;
-            TPS_Dot_Corr = 0;
-            TPS_Dot = 0;
-            TPS_Dot_Last = 0;
-            TPS_Dot_Sign = 0;
-
-            Degree_Clock_Last = Degree_Clock;
-		  }//if
-
-
-
-
-            //get a TPS change         
-            TPS_Dot_Temp = (TPS_Last - TPS);
-            TPS_Last = (3 * TPS_Last + TPS) >> 2;
-            //get           
-            TPS_Dot = TPS_Dot_Temp << 3;
-            TPS_Dot_Degree = (Degree_Clock - Degree_Clock_Last);
-            // check if acceleration enrich required
-            if (TPS_Dot >= TPS_Dot_Dead && TPS_Dot > TPS_Dot_Last) {
-                TPS_Dot_Limit = table_lookup_jz(RPM, 0, Accel_Limit_Table);
-                TPS_Dot_Corr = table_lookup_jz(RPM, 0, Accel_Sensativity_Table);
-                TPS_Dot_Decay_Rate = table_lookup_jz(RPM, 0, Accel_Decay_Table);
-                TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot - TPS_Dot_Dead)) >> 14;
-
-                // update the last clock
-                Degree_Clock_Last = Degree_Clock;
-                TPS_Dot_Degree = 0;
-                TPS_Dot_Decay_Last = 1 << 14;
-                TPS_Dot_Sign = 1;
-                // decel required 
-            } else if (TPS_Dot <= (-TPS_Dot_Dead) && TPS_Dot < TPS_Dot_Last) {
-                TPS_Dot_Limit = table_lookup_jz(RPM, 0, Decel_Limit_Table);
-                TPS_Dot_Corr = table_lookup_jz(RPM, 0, Decel_Sensativity_Table);
-                TPS_Dot_Decay_Rate = table_lookup_jz(RPM, 0, Decel_Decay_Table);
-                TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot_Dead - TPS_Dot)) >> 14;
-                // update the last clock
-                Degree_Clock_Last = Degree_Clock;
-                TPS_Dot_Degree = 0;
-                TPS_Dot_Decay_Last = 1 << 14;
-                TPS_Dot_Sign = -1;
-            }
-            TPS_Dot_Last = TPS_Dot;
-            // calculate the required decay
-            if (TPS_Dot_Degree >= 720) {
-                Degree_Clock_Last = Degree_Clock_Last + 720;
-                TPS_Dot_Decay = (TPS_Dot_Decay_Last * TPS_Dot_Decay_Rate) >> 14;
-                TPS_Dot_Decay_Last = TPS_Dot_Decay;
-                TPS_Dot_Corr = (TPS_Dot_Corr * TPS_Dot_Decay) >> 14;
-            }
-            if (TPS_Dot_Corr > TPS_Dot_Limit)
-                TPS_Dot_Corr = TPS_Dot_Limit;
-            if (TPS_Dot_Sign > -1) {
-                Pulse_Width = (Pulse_Width + ((Pulse_Width * TPS_Dot_Corr) >> 14));
-            } else {
-                Pulse_Width = (Pulse_Width - ((Pulse_Width * TPS_Dot_Corr) >> 14));
-                if (Pulse_Width < 0)
-                    Pulse_Width = 0;
-            }
-
         }
+            
+        Get_Accel_Decel_Corr();
+        
+        Pulse_Width = (Pulse_Width + ((Pulse_Width * Accel_Decel_Corr) >> 14));
         
 /***************************************************************************************/         
         // TODO adjust based on O2 sensor data Issue #8

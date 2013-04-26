@@ -12,18 +12,14 @@
 /* 1.0     P. Schlein      12/Sep/11     Initial version with Placeholders        */
 /*================================================================================*/
 
-//#include <stdint.h>
-//#include "config.h"
-//#include "Engine_OPS.h"
+#include <stdint.h>
+#include "config.h"
 #include "Enrichment_OPS.h"
-//#include "variables.h"
-//#include "Table_Lookup_JZ.h"
-//#include "etpu_util.h"
-//#include "cocoos.h"
+#include "variables.h"
+#include "Table_Lookup_JZ.h"
+#include "main.h"  /**< pickup Degree_Clock */
 
-//static int16_t Accel_Corr;
-//static uint8_t CLT_Corr;
-//static uint8_t Post_Start_Corr;
+
 
 /**********************************************************************************/
 /* FUNCTION     : Acceleration/Deceleration Correction                            */
@@ -41,94 +37,127 @@
 /* the engine requirements must be mapped and the infomation stored in lookup     */
 /* tables.                                                                        */
 /**********************************************************************************/
+   uint32_t TPS_Last = 0;       // bin 14
+   uint32_t TPS_Dot_Decay_Last = (1 << 14);     // bin 14
+   uint32_t TPS_Dot_Degree = 0;
+   uint32_t TPS_Dot_Decay_Rate = (1 << 14);
+   uint32_t Load_Ref_AFR;
+   int32_t TPS_Dot_Last = 0;    // bin 14
+   int32_t TPS_Dot_Limit;       // bin 14
+   int32_t TPS_Dot_Decay;       // bin 14
+   int32_t TPS_Dot_Corr;
+   int32_t TPS_Dot_Sign = 0;
+   int32_t TPS_Dot_Temp;
+   uint32_t Degree_Clock_Last = 0;
+   
+   #define TPS_Dot_Dead 2000
 
-void Enrichment_Task()
-{
-#if 0
-    //int16_t Max;                // bin 7
-    //int16_t Step;               // bin 7
-    //int16_t Accel_Temp;         // bin 12
-    //static int16_t Current_Wetting = 0; // bin 12, set to zero on start-up
-    //int16_t Wetting_Temp_Corr;
-    //int16_t Manifold_Wetting;
-    //static int16_t Current_Wetting = 0; // bin 12, set to zero on start-up
-    int16_t CLT_Fuel_Corr; //bin 12
-    int16_t Prime_Corr; //bin 12
-    
-
-    task_open();
-    task_wait(1);
-
-    for (;;) {
-       //Coolant temp correction
-//        CLT_Fuel_Corr = (int16_t) table_lookup_jz(CLT, 0, Fuel_Temp_Corr_Table);
-
-       //Prime pulse require
-//       Prime_Corr = (int16_t) table_lookup_jz(CLT, 0, Wetting_Temp_Corr_Table);
-       
-
-
-
-
-        Wetting_Temp_Corr = (int16_t) table_lookup_jz(CLT, Post_Start_Time, Wetting_Temp_Corr_Table);
-        Manifold_Wetting = (int16_t) table_lookup_jz(RPM, Load, Manifold_Wetting_Table); 
-
-        // Determine is enrichment or derichment is required. The assumption is that 1 or the other can always 
-        // be applied and that the "Current_Wetting" tracking will reduce to the correction to effectively    
-        // zero when no correction is actually required                                                       
-        //                                                                                                    
-        // Test - The first thing to happen is the required Manifold_Wetting for the current load and rpm     
-        // is multiplied be Wetting_Temp_Corr to corrected for temperature and Post_Stat_Time wich accouts    
-        // for changes in required wetting due to air velocity, air pressure, air temp, manifold surface temp 
-        // (which is assumed follow but lag coolant temp). The corrected wetting value is compared to         
-        // Cureent_Wetting (which is a running total of the stored fuel) to determing if fuel must be added   
-        // or subtracted to account for what is going into or coming of of storage in the manifold.           
-        //                                                                                                    
-        // Note - On system start-up Current_Wetting is set to zero.  This is done so the ECU will know the    
-        // system is dry and the entire required wetting must be added.  This is effectively a system "Prime" 
-        // but is handled without any additonal code being require.                                           
-
-        if (((Manifold_Wetting * Wetting_Temp_Corr) >> 12) - Current_Wetting <= 0) {    // Is Accel correction required?
-            Max = (int16_t) table_lookup_jz(RPM, Load, Max_Enrich_Table);
-            Step = (int16_t) table_lookup_jz(RPM, Load, Accel_Step_Table);
-        } else {                // Decel correction is required
-            Max = (int16_t) table_lookup_jz(RPM, Load, Max_Derich_Table);
-            Step = (int16_t) table_lookup_jz(RPM, Load, Decel_Step_Table);
-        }                       // if
-
-        // Once the correct values have been looked up the correction is calculated.                           
-        // Step = the distance to go from current wetting to the required wetting in 1 cylce.  The entire     
-        // amount required can not be added/subtracted in 1 shot because most of the fuel spays into   
-        // the engine like it's supposed and over-doing the speed on the storage terms will bugger the 
-        // the mixure you're trying to stabalize.  The closer you are to the wetting target the        
-        // smaller the correction that can be made and this is accounted for automatically because     
-        // "Step" is the % to move from where you are to where to are going  so when you are close you 
-        // get a small correction and when you are far you get a big correction.                       
-        //                                                                                                    
-        // Step is a "per cycle" value but to apply the enrichment/derichment factor in a timely       
-        // manner the enrichment routine may be called multiple times per cylce.  To account for this  
-        // Step is multiplied by "Inv_Update_Count" which is 1/(the number of updates per cycle).      
-
-        // Step = (Step * Inv_Update_Count) >> 12;
-        Accel_Corr = ((((Manifold_Wetting * Wetting_Temp_Corr) >> 12) - Current_Wetting) * Step) >> 7;
-        Accel_Temp = (Pulse_Width * Max) >> 7;
-
-        // Test if the calculation correction is larger than the max permitted correciton and if so clamp the  
-        // clamp the correction to the max permited value.                                                    
-
-        if (Accel_Corr > Accel_Temp)
-            Accel_Corr = Accel_Temp;
-
-        // Accel_Corr is global and used by the fuel calculations
-
-        Current_Wetting += Accel_Corr;  // 
-
-        task_wait(2);  // TODO
-    }                           // for
-
-    task_close();
+#if __CWCC__
+#pragma push
+#pragma warn_unusedvar    off
+#pragma warn_implicitconv off
 #endif
 
-}                               // Enrichment_Task() 
 
+void Get_Accel_Decel_Corr(void)
+{
+
+
+//Accel_Decel_Ops()            
+            /**********************************************************************************/
+            /*                           accel/decel enrichment                               */
+            /* This working by looking at the rate the throttle is moving  and  calculating   */
+            /* an enrichment or a derichment to compensate for fuel that  condenses on the    */
+            /* manifold wall due to the pressure increase when the throttle opens. This is    */
+            /* done by watching the throttle change rate since throttle is the first variable */
+            /* to change.                                                                     */
+            /*                                                                                */
+            /* The accel/decel variables are set to base values above at the start of the     */
+            /* fuel routine so they get current sensor values to work with.                   */
+            /*                                                                                */
+            /* Get the TPS change. This simply compares the throttle position each pass       */
+            /* through.  It probbly should be an actual rate by dividing by  the change in    */
+            /* crank position but that added too much noise to the  calculation when I tried  */
+            /*                                                                                */
+            /* The throttle change rate is compared to a dead band.  The deadband helps       */
+            /* clean up noise but more importantly no throttle enrichment is required for     */
+            /* slow throttle change rates.                                                    */
+            /*                                                                                */
+            /* When TPS_Dot is above the deadband, the sensativity value is used to calculate */
+            /* howw much enrichment is required.  The faster the throttle is moving the more  */
+            /* enrifchment should be added.                                                   */
+            /*                                                                                */
+            /* When the TPS_Dot stops increasing a decay is applied which deceases the        */
+            /* enrichment by the specified % each engine cycle.  It's done by cycle because   */
+            /* each cylinder has it's own manifold runner and port so each cylinder require   */
+            /* the enrichment.                                                                */
+            /*                                                                                */
+            /* If TPS_Dot goes negative, ie the throttle is closing, accel enrichment ends    */
+            /* imediately and a calculation is done to determine if decel derichment is       */
+            /* required.  Decel derichment works exactly the same a acel enrichment, only     */
+            /* using negative TPS_Dot rates an dpusle width reductions to compensate for fuel */
+            /* being remover from the port and manifold walls due to pressure drop            */
+            /*                                                                                */
+            /**********************************************************************************/
+
+          if (RPM == 0) {	
+              // set the accel/deccel variables to current conditions
+            TPS_Last = TPS;
+            TPS_Dot_Limit = 1 << 14;
+            TPS_Dot_Corr = 0;
+            TPS_Dot = 0;
+            TPS_Dot_Last = 0;
+            TPS_Dot_Sign = 0;
+
+            Degree_Clock_Last = Degree_Clock;
+		  }//if
+            //get a TPS change         
+            TPS_Dot_Temp = (TPS_Last - TPS);
+            TPS_Last = (3 * TPS_Last + TPS) >> 2;
+            //get           
+            TPS_Dot = TPS_Dot_Temp << 3;
+            TPS_Dot_Degree = (Degree_Clock - Degree_Clock_Last);
+            // check if acceleration enrich required
+            if (TPS_Dot >= TPS_Dot_Dead && TPS_Dot > TPS_Dot_Last) {
+                TPS_Dot_Limit = table_lookup_jz(RPM, 0, Accel_Limit_Table);
+                TPS_Dot_Corr = table_lookup_jz(RPM, 0, Accel_Sensativity_Table);
+                TPS_Dot_Decay_Rate = table_lookup_jz(RPM, 0, Accel_Decay_Table);
+                TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot - TPS_Dot_Dead)) >> 14;
+
+                // update the last clock
+                Degree_Clock_Last = Degree_Clock;
+                TPS_Dot_Degree = 0;
+                TPS_Dot_Decay_Last = 1 << 14;
+                TPS_Dot_Sign = 1;
+                // decel required 
+            } else if (TPS_Dot <= (-TPS_Dot_Dead) && TPS_Dot < TPS_Dot_Last) {
+                TPS_Dot_Limit = table_lookup_jz(RPM, 0, Decel_Limit_Table);
+                TPS_Dot_Corr = table_lookup_jz(RPM, 0, Decel_Sensativity_Table);
+                TPS_Dot_Decay_Rate = table_lookup_jz(RPM, 0, Decel_Decay_Table);
+                TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot_Dead - TPS_Dot)) >> 14;
+                // update the last clock
+                Degree_Clock_Last = Degree_Clock;
+                TPS_Dot_Degree = 0;
+                TPS_Dot_Decay_Last = 1 << 14;
+                TPS_Dot_Sign = -1;
+            }
+            TPS_Dot_Last = TPS_Dot;
+            // calculate the required decay
+            if (TPS_Dot_Degree >= 720) {
+                Degree_Clock_Last = Degree_Clock_Last + 720;
+                TPS_Dot_Decay = (TPS_Dot_Decay_Last * TPS_Dot_Decay_Rate) >> 14;
+                TPS_Dot_Decay_Last = TPS_Dot_Decay;
+                TPS_Dot_Corr = (TPS_Dot_Corr * TPS_Dot_Decay) >> 14;
+            }
+            if (TPS_Dot_Corr > TPS_Dot_Limit)
+                TPS_Dot_Corr = TPS_Dot_Limit;
+            if (TPS_Dot_Sign < 0) 
+                TPS_Dot_Corr = TPS_Dot_Corr * (-1);
+            
+
+        }
+
+#if __CWCC__
+#pragma pop
+#endif
 
