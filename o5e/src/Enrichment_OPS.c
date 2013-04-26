@@ -1,42 +1,24 @@
-/**********************************************************************************/
-/* FILE NAME: Enrichment_OPS.c                                                    */
-/*                                                                                */
-/* DESCRIPTION:                                                                   */
-/* This file contains functions for "Enriching" or "Deriching the base            */
-/* Pulse_Width during acceleration or deceleration                                */
-/*================================================================================*/
-/* ORIGINAL AUTHOR:  Paul Schlein                                                 */
-/* REV      AUTHOR          DATE          DESCRIPTION OF CHANGE                   */
-/* ---     -----------     ----------    ---------------------                    */
-/* 2.0     M. Eberhardt    23/Dec/11     Rewrote to remove placeholders           */
-/* 1.0     P. Schlein      12/Sep/11     Initial version with Placeholders        */
-/*================================================================================*/
+/*********************************************************************************
+
+    @file      Enrichment_OPS.c                                                              
+    @date      December, 2011
+    @brief     Open5xxxECU - this file contains functions for fuel enrichnemt (or derichment) 
+    @note      www.Open5xxxECU.org
+    @version   2.1
+    @copyright 2011, 2012 - P. Schlein, M. Eberhardt, J. Zeeff
+
+**********************************************************************************/
 
 #include <stdint.h>
 #include "config.h"
 #include "Enrichment_OPS.h"
+#include "Engine_OPS.h"
 #include "variables.h"
 #include "Table_Lookup_JZ.h"
 #include "main.h"  /**< pickup Degree_Clock */
 
 
-
-/**********************************************************************************/
-/* FUNCTION     : Acceleration/Deceleration Correction                            */
-/* PURPOSE      :                                                                 */
-/* INPUT NOTES  : None                                                            */
-/* RETURN NOTES : None                                                            */
-/* WARNING      : None                                                            */
-/*                                                                                */
-/*                    Descriprtion                                                */
-/* This funciton works on the theroy that enrichment or derichment during         */
-/* acceleration and deceleration respectively is require because fuel is being    */
-/* "stored" in the intake track.  This routine tracks the amount of fuel that is  */
-/* stored at any time and provides an appropiate correction for the injection     */
-/* pulse time to maintian a constant air/fuel ratio.  To allow this to work the   */
-/* the engine requirements must be mapped and the infomation stored in lookup     */
-/* tables.                                                                        */
-/**********************************************************************************/
+   //Accel/decel variables
    uint32_t TPS_Last = 0;       // bin 14
    uint32_t TPS_Dot_Decay_Last = (1 << 14);     // bin 14
    uint32_t TPS_Dot_Degree = 0;
@@ -49,8 +31,18 @@
    int32_t TPS_Dot_Sign = 0;
    int32_t TPS_Dot_Temp;
    uint32_t Degree_Clock_Last = 0;
+   int32_t Accel_Decel_Corr;
    
    #define TPS_Dot_Dead 2000
+   
+   //prime variables
+   uint32_t Prime_Post_Start_Last = 1;
+   uint32_t Prime_Decay = (1 << 14);
+   uint32_t Prime_Decay_Last = (1 << 14);
+   uint32_t Prime_Corr;
+   
+   #define Enrich_Threshold 6000
+   #define Prime_Cycles_Threshold 100
 
 #if __CWCC__
 #pragma push
@@ -99,6 +91,11 @@ void Get_Accel_Decel_Corr(void)
             /* being remover from the port and manifold walls due to pressure drop            */
             /*                                                                                */
             /**********************************************************************************/
+     //is Accel/decel enabled?  If no the correction is 0
+    if (Enable_Accel_Decel == 0)
+       Accel_Decel_Corr = 0;
+    else{
+    	
 
           if (RPM == 0) {	
               // set the accel/deccel variables to current conditions
@@ -152,10 +149,47 @@ void Get_Accel_Decel_Corr(void)
             if (TPS_Dot_Corr > TPS_Dot_Limit)
                 TPS_Dot_Corr = TPS_Dot_Limit;
             if (TPS_Dot_Sign < 0) 
-                TPS_Dot_Corr = TPS_Dot_Corr * (-1);
-            
+                Accel_Decel_Corr = TPS_Dot_Corr * (-1);
+            else
+                Accel_Decel_Corr = TPS_Dot_Corr;
+    }            
 
+}// Get_Accel_Decel_Corr
+        
+void Get_Prime_Corr(void)    
+{
+	
+                // check if enrichment cals shold be done - this might want to be a % of redline
+        // maintain some timers for use by enrichment
+        // did we just start?
+        if ((RPM < Enrich_Threshold) && (Enable_Accel_Decel == 1)) {
+            // Prime pulse - extra fuel to wet the manifold on start-up   
+            // check if in prime needed conditions   
+            if (Post_Start_Cycles < Prime_Cycles_Threshold) {
+
+                Prime_Corr = table_lookup_jz(CLT, 0, Dummy_Corr_Table);
+                // scale the correction to the pusle width
+                Prime_Corr = (((Pulse_Width * Prime_Corr) >> 13) - Pulse_Width);
+
+                // Update Prime decay each cycle - this is a log decay of the prime pulse
+                if (Post_Start_Cycles > Prime_Post_Start_Last) {
+                    // reset cycle number
+                    Prime_Post_Start_Last = Post_Start_Cycles;
+                    // Get the decay rate for current conditions
+                    Prime_Decay = table_lookup_jz(RPM, 0, Prime_Decay_Table);
+                    // decrease decay by the new value
+                    Prime_Decay = (Prime_Decay_Last * Prime_Decay) >> 14;
+                    // reset last
+                    Prime_Decay_Last = Prime_Decay;
+                }
+                // apply the decay
+                Prime_Corr = (Prime_Corr * Prime_Decay) >> 14;
+                // Reduce the Prime correction by the decay rate and add to pulse_width            
+            }
         }
+        else
+           Prime_Corr = 0;
+}//Get_Prime_Corr
 
 #if __CWCC__
 #pragma pop

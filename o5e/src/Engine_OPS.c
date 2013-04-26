@@ -5,13 +5,13 @@
     @brief     Open5xxxECU - this file contains functions for fuel pulse width 
                as well as spark timing 
     @note      www.Open5xxxECU.org
-    @version   2.1
-    @copyright 2011, 2012 - P. Schlein, M. Eberhardt, J. Zeeff
+    @version   2.2
+    @copyright 2011, 2012, 2013 - P. Schlein, M. Eberhardt, J. Zeeff
 
 **********************************************************************************/
 
-// Portions Copyright 2011 P. Schlein - MIT License
-// Portions Copyright 2011 M. Eberhardt - MIT License
+// Portions Copyright 2011 P. Schlein - BSD 3 clause License
+// Portions Copyright 2011,2012, 2013 M. Eberhardt - BSD 3 clause License
 // Portions Copyright 2011, 2012  Jon Zeeff - All rights reserved
 
 #include <stdint.h>
@@ -38,7 +38,7 @@
 
 
 uint32_t *fs_free_param;
-static uint32_t Pulse_Width;
+uint32_t Pulse_Width;
 static void Check_Engine(void);
 
 static void Set_Spark(void);
@@ -274,8 +274,7 @@ static void Set_Spark()
 //TODO - add to ini for setting in TS.  Issue #11
 #define CRANK_VOLTAGE 11
 //#define Run_Threshold 250       // RPM below this then not running
-#define Enrich_Threshold 6000
-#define Prime_Cycles_Threshold 100
+
 
 
 // Primary purpose is to set the fuel pulse width/injection time
@@ -288,10 +287,7 @@ static void Set_Fuel(void)
     static uint32_t error_code;
     static uint32_t Dead_Time;
     static uint32_t Dead_Time_Corr;
-    static uint32_t Prime_Post_Start_Last = 1;
-    static uint32_t Prime_Decay = (1 << 14);
-    static uint32_t Prime_Decay_Last = (1 << 14);
-    static uint32_t Prime_Corr;
+
     static uint32_t Load_Ref_AFR;
 
     // if the engine is not turning, the engine position is not known, or over reving, shut off the fuel channels
@@ -333,41 +329,12 @@ static void Set_Fuel(void)
         Corr = table_lookup_jz(CLT, 0, Fuel_Temp_Corr_Table);
         Pulse_Width = (Pulse_Width * Corr) >> 13;
 
-/***************************************************************************************/ 
-//
-//MOVE THIS
-//
-//Prime()
-        // check if enrichment cals shold be done - this might want to be a % of redline
-        // maintain some timers for use by enrichment
-        // did we just start?
-        if ((RPM < Enrich_Threshold) && (Enable_Accel_Decel == 1)) {
-            // Prime pulse - extra fuel to wet the manifold on start-up   
-            // check if in prime needed conditions   
-            if (Post_Start_Cycles < Prime_Cycles_Threshold) {
 
-                Prime_Corr = table_lookup_jz(CLT, 0, Dummy_Corr_Table);
-                // scale the correction to the pusle width
-                Prime_Corr = (((Pulse_Width * Prime_Corr) >> 13) - Pulse_Width);
-
-                // Update Prime decay each cycle - this is a log decay of the prime pulse
-                if (Post_Start_Cycles > Prime_Post_Start_Last) {
-                    // reset cycle number
-                    Prime_Post_Start_Last = Post_Start_Cycles;
-                    // Get the decay rate for current conditions
-                    Prime_Decay = table_lookup_jz(RPM, 0, Prime_Decay_Table);
-                    // decrease decay by the new value
-                    Prime_Decay = (Prime_Decay_Last * Prime_Decay) >> 14;
-                    // reset last
-                    Prime_Decay_Last = Prime_Decay;
-                }
-                // apply the decay
-                Prime_Corr = (Prime_Corr * Prime_Decay) >> 14;
-                // Reduce the Prime correction by the decay rate and add to pulse_width            
-                Pulse_Width = (Pulse_Width + Prime_Corr);
-            }
-        }
+        // Prime/warmup correction
+        Get_Prime_Corr();
+        Pulse_Width = (Pulse_Width + Prime_Corr);
             
+        // Acel/decel correction
         Get_Accel_Decel_Corr();
         
         Pulse_Width = (Pulse_Width + ((Pulse_Width * Accel_Decel_Corr) >> 14));
