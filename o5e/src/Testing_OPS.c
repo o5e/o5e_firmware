@@ -27,15 +27,7 @@
 #include "bsp.h"   /**< pickup systime      */
 #include "main.h"  /**< pickup Degree_Clock */
 #include "Testing_OPS.h"
-
 #include "etpu_toothgen.h"
-
-static void Check_Engine(void);
-
-
-// how to turn a pin on/off
-#define Set_Pin(pin,value)  SIU.GPDO[pin].R = value
-#define Read_Pin(pin,value)  (SIU.GPDI[pin].R & 1)
 
 #if __CWCC__
 #pragma push
@@ -45,9 +37,6 @@ static void Check_Engine(void);
 /* the above is inserted until I can figure out how this code works
    and fix it properly */
 
-/**********************************************************************************/
-/*          Done while power on                                                   */
-/**********************************************************************************/
 
 // This code is for testing only
 // It isused to simulate jitter in the crank signal by altering the test rpm, which alters the tooth period
