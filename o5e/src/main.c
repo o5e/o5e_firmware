@@ -29,6 +29,7 @@ Copyright (c) 2012 Sean Stasiak <sstasiak at gmail dot com>
 #include "etpu_struct.h"
 #include "etpu_util.h"
 #include "Testing_OPS.h"
+#include "Fake_Cam_Signal.h"
 
 
 
