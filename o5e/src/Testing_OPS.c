@@ -14,21 +14,14 @@
 // Portions Copyright 2011, 2012  Jon Zeeff - All rights reserved
 
 #include <stdint.h>
-#include "mpc563xm.h"
 #include "config.h"
-#include "err.h"
 #include "led.h"
 #include "variables.h"
 #include "typedefs.h"
 #include "Engine_OPS.h"
 #include "Variable_OPS.h"
 #include "cocoos.h"
-#include "Table_Lookup_JZ.h"
 #include "etpu_util.h"
-#include "etpu_spark.h"
-#include "etpu_fuel.h"
-#include "etpu_pwm.h"
-#include "etpu_fpm.h"
 #include "etpu_app_eng_pos.h"
 #include "eTPU_OPS.h"
 #include "bsp.h"   /**< pickup systime      */
