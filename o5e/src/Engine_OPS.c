@@ -114,10 +114,7 @@ void Engine10_Task(void)
     task_open();
     task_wait(1);
     
-	static uint32_t Start_Time;     // time when start started
-	static uint32_t Start_Degrees;  // engine position when start started
-	static uint32_t Previous_Status;
-	static uint8_t status;
+
 	static uint16_t V_Battery_Stored;
 
 	//read sensors to get basline values
@@ -131,22 +128,7 @@ void Engine10_Task(void)
         // Read the sensors that can change quickly like RPM, TPS, MAP, ect
         Get_Fast_Op_Vars();
 
-        // maintain some timers for use by enrichment
-        // did we just start?
 
-        if (Previous_Status != status && status == FS_ETPU_ENG_POS_FULL_SYNC) {        // position known so fuel and spark have started
-            Start_Time = systime;
-            Start_Degrees = Degree_Clock;
-            Post_Start_Time = 0;
-            Post_Start_Cycles = 0;
-        }
-        Previous_Status = status;
-
-         //update + make sure the timers don't overflow  - TODO eliminate divides
-        if (Post_Start_Time < 10000)
-           Post_Start_Time = (systime - Start_Time) / 1000;
-        if (Post_Start_Cycles < 10000)
-            Post_Start_Cycles = (Degree_Clock - Start_Degrees) / 720;
         
         // TODO  - add load sense method selection and calcs. This only works right with 1 bar MAP
         // Load = Get_Load();
