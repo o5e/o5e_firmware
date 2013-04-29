@@ -18,7 +18,6 @@
 #include "mpc563xm.h"
 #include "config.h"
 #include "err.h"
-#include "led.h"
 #include "variables.h"
 #include "typedefs.h"
 #include "Engine_OPS.h"
@@ -33,8 +32,8 @@
 #include "etpu_fpm.h"
 #include "etpu_app_eng_pos.h"
 #include "eTPU_OPS.h"
-#include "bsp.h"   /**< pickup systime      */
-#include "main.h"  /**< pickup Degree_Clock */
+#include "Load_OPS.h"
+
 
 
 uint32_t *fs_free_param;
@@ -72,9 +71,7 @@ void Slow_Vars_Task(void)
 
 
 // Decide if fuel pump should be on or off
-//
-//MOVE THIS
-//
+
 void Fuel_Pump_Task(void)
 {
     task_open();                // standard OS entry - NOTE: no non-static local variables! 
@@ -127,13 +124,9 @@ void Engine10_Task(void)
     for (;;) {    
         // Read the sensors that can change quickly like RPM, TPS, MAP, ect
         Get_Fast_Op_Vars();
-
-
         
         // TODO  - add load sense method selection and calcs. This only works right with 1 bar MAP
-        // Load = Get_Load();
-        Load = (MAP[1] << 2);   // convert bin 12 to 14 and account for /100Kpa using MAP 2 until angle reading fixed
-
+        Get_Load();
 
         // set spark advance and dwell based on current conditions
         Set_Spark();
