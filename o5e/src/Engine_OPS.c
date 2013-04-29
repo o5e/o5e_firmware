@@ -117,6 +117,7 @@ void Engine10_Task(void)
 	//read sensors to get basline values
 	Get_Slow_Op_Vars();
 	Get_Fast_Op_Vars();
+	
         
 	//store a baseline Battery Voltage
 	V_Battery_Stored = V_Batt;

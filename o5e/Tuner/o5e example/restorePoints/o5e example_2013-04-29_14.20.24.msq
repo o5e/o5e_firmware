@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Mon Apr 29 14:45:39 EDT 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Mon Apr 29 14:20:24 EDT 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="226">
 <constant cols="1" digits="0" name="Version" rows="20">
@@ -29,7 +29,7 @@
 <constant digits="0" name="N_Teeth">34.0</constant>
 <constant name="Missing_Teeth">"2"</constant>
 <constant digits="1" name="Cam_Lobe_Pos">180.0</constant>
-<constant name="Load_Sense">"MAP - 1 atm"</constant>
+<constant name="Load_Sense">"MAF"</constant>
 <constant digits="1" name="Cyl_Offset_1">0.12</constant>
 <constant digits="1" name="Cyl_Offset_2">120.0</constant>
 <constant digits="1" name="Cyl_Offset_3">240.0</constant>
@@ -1241,29 +1241,29 @@
       </constant>
 <constant cols="1" digits="1" name="Inj_Time_Corr_y_Bins" rows="24" units="%">
          0.0 
-         5.00487 
-         10.00974 
-         14.990196 
-         19.995066 
+         4.9987665 
+         9.997533 
+         15.002403 
+         20.0011695 
          24.999936 
-         30.004806 
-         35.009676 
-         39.990132 
-         44.995002 
+         29.9987025 
+         34.997469 
+         40.002339 
+         45.0011055 
          49.999872 
-         55.004742 
-         60.009612 
-         64.990068 
-         69.994938 
+         54.9986385 
+         59.997405 
+         65.002275 
+         70.0010415 
          74.999808 
-         80.004678 
-         85.009548 
-         90.014418 
-         94.994874 
+         79.9985745 
+         84.997341 
+         90.002211 
+         95.0009775 
          99.999744 
-         105.004614 
-         110.009484 
-         119.99481 
+         104.9985105 
+         109.997277 
+         120.0009135 
       </constant>
 <constant name="Inj_Time_Corr_Variable">"Variable axis"</constant>
 <constant name="Inj_Time_Corr_Byte">"16 bit signed"</constant>

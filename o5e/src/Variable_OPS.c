@@ -53,6 +53,8 @@ Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause
 #   define V_MAP_2_AD    ADC_RsltQ0 [18]	/* TODO */
 #   define MAP_3_VOLTAGE_DIVIDER 1.0
 #   define V_MAP_3_AD    ADC_RsltQ0 [23]
+#   define MAF_1_VOLTAGE_DIVIDER 1.0
+#   define V_MAF_1_AD    ADC_RsltQ0 [35]
 #   define P1_VOLTAGE_DIVIDER 1.0
 #   define V_P1_AD    ADC_RsltQ0 [17]
 #   define P2_VOLTAGE_DIVIDER 1.0
@@ -143,7 +145,6 @@ void Get_Slow_Op_Vars(void)
         if (Test_Value == 0) {
             CLT = Test_CLT;
             IAT = Test_IAT;
-            MAP[0] = MAP[1] = Test_MAP_2;
 
         } else {
 
@@ -154,8 +155,6 @@ void Get_Slow_Op_Vars(void)
             V_IAT = Test_V_IAT;
             IAT = (int16_t) table_lookup_jz(V_IAT, 0, IAT_Table);
 
-            V_MAP[0] = V_MAP[1] = Test_V_MAP_2;
-            MAP[0] = MAP[1] = (int16_t) table_lookup_jz(V_MAP[1], 0, MAP_2_Table);
 
         } // if
 
@@ -183,14 +182,9 @@ void Get_Slow_Op_Vars(void)
         IAT = (int16_t) table_lookup_jz(V_IAT, 0, IAT_Table);
 
         // manifold absolute pressure - TODO - Mark, make it clear what the 3 are
-        V_MAP[0] = (int16_t) ((V_MAP_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_1 is bin 12
-        MAP[0] = (int16_t) table_lookup_jz(V_MAP[0], 0, MAP_1_Table);
 
-        V_MAP[1] = (int16_t) ((V_MAP_2_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_2_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_2 is bin 12
-        MAP[1] = (int16_t) table_lookup_jz(V_MAP[1], 0, MAP_2_Table);
-
-        V_MAP[2] = (int16_t) ((V_MAP_3_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_3_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_3 is bin 12
-        MAP[2] = (int16_t) table_lookup_jz(V_MAP[2], 0, MAP_3_Table);
+        //V_MAP[2] = (int16_t) ((V_MAP_3_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_3_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_3 is bin 12
+        //MAP[2] = (int16_t) table_lookup_jz(V_MAP[2], 0, MAP_3_Table);
 
         // O2 sensors - only for pass through to tuner
         V_O2_UA[0] = (int16_t) ((V_O2_1_UA_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_1_UA_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);     // V_O2 is bin 12
@@ -223,6 +217,8 @@ void Get_Fast_Op_Vars(void)
             RPM = Test_RPM_1;
             TPS = Test_TPS;
             MAP[0] = Test_MAP_1;
+            MAP[1] = Test_MAP_2;
+            MAF[0] = Test_MAF_1;
 
         } else {                // Test_Value = 1 allows values simulating the ADC to be input 
             V_Batt = Test_V_Batt;
@@ -235,8 +231,11 @@ void Get_Fast_Op_Vars(void)
             // TODO: if using a double gap wheel, divide rpm by 2
 
             V_TPS = Test_V_TPS;
-            V_TPS = (int16_t) ((V_TPS_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * TPS_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);       // V_TPS is bin 12
             TPS = (int16_t) table_lookup_jz(V_TPS, 0, TPS_Table);
+            V_MAP[1] = Test_V_MAP_2;
+            MAP[1] = (int16_t) table_lookup_jz(V_MAP[1], 0, MAP_2_Table);
+            V_MAF[0] = Test_V_MAF_1;
+            MAF[0] = (int16_t) table_lookup_jz(V_MAF[0], 0, MAF_1_Table);
             /* Angle based stuff */
             V_MAP[0] = Test_V_MAP_1;
             MAP[0] = (int16_t) table_lookup_jz(V_MAP[0], 0, MAP_1_Table);
@@ -255,9 +254,17 @@ void Get_Fast_Op_Vars(void)
         V_TPS = (int16_t) ((V_TPS_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * TPS_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);       // V_TPS is bin 12
         TPS = (int16_t) table_lookup_jz(V_TPS, 0, TPS_Table);
 
+        V_MAP[1] = (int16_t) ((V_MAP_2_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_2_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_2 is bin 12
+        MAP[1] = (int16_t) table_lookup_jz(V_MAP[1], 0, MAP_2_Table);
+        
+        V_MAF[0] = (int16_t) ((V_MAF_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAF_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_2 is bin 12
+        MAF[0] = (int16_t) table_lookup_jz(V_MAF[0], 0, MAF_1_Table);
+
         /* Angle based stuff */
         V_MAP[0] = (int16_t) ((V_MAP_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP is bin 12
         MAP[0] = (int16_t) table_lookup_jz(V_MAP[0], 0, MAP_1_Table);
+        
+        
         /* convert P1*/
         Pot_RPM = (int16_t) ((V_P1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P1_VOLTAGE_DIVIDER ) * (1 << 20))) >> 8);       // V_P1_AD is bin 12
         Pot_RPM=  (3000* Pot_RPM) >>12;

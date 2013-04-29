@@ -135,7 +135,7 @@ void init_SIU(void)
          SIU.PCR[216].R = ALT2 | OUTPUT; 	//AN13    
          SIU.PCR[217].R = ALT2 | OUTPUT; 	//AN14   
          SIU.PCR[218].R = ALT2 | OUTPUT; 	//AN15                
-        //AN16 - V_TPS
+        //AN16 - 
         //AN17 - POT on dev board
         //AN18 - 
         //AN21 - V_P1
@@ -146,11 +146,11 @@ void init_SIU(void)
         //AN27 - MAP_1
         //AN28 - V_O2_2_UA 
         //AN30 - V_O2_2_UR
-        //AN31 - 
+        //AN31 - V_TPS
         //AN32 - V_P3
         //AN33 - V_P4
         //AN34 - V_P5
-        //AN35 - V_P6
+        //AN35 - V_MAF
         //AN36 - no pin on 144 verison
         //AN37 - no pin on 144 verison
         //AN38 - V_IAT
