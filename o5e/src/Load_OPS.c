@@ -45,9 +45,10 @@ void Get_Load(void)
 if (Load_Sense <= 3)
     Load = (MAP[1] << 2);// convert bin 12 to 14 and account for /100Kpa using MAP 2 until angle reading fixed
 else if (Load_Sense == 4)
-    Load = TPS;
-else //(Load_Sense == 5) 
-   Load = (1 << 14);	//set  to 100% until I decide how to handle this.	    		 
+    Load = ((TPS * MAP[1]) >> 12);
+else //(Load_Sense == 5) - MAF 
+   Load = (1 << 14);	//set  to 100% until I decide how to handle this.
+   //MAF[0] = (int16_t) table_lookup_jz(V_MAF[0], 0, MAF_1_Table);	    		 
 }
 
 #if __CWCC__
