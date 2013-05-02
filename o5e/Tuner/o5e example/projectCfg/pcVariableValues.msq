@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." writeDate="Thu May 02 14:11:41 EDT 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." writeDate="Thu May 02 15:15:41 EDT 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" signature="MShift 2.111       "/>
 <page number="-1">
 <constant name="tsCanId">"0"</constant>
 <constant name="log_RPM">"log"</constant>
 <constant name="log_RPM_Dot">"off"</constant>
-<constant name="log_Load">"off"</constant>
-<constant name="log_Load_Dot">"off"</constant>
+<constant name="log_Reference_VE">"off"</constant>
+<constant name="log_Reference_VE_Dot">"off"</constant>
 <constant name="log_V_MAP_1">"off"</constant>
 <constant name="log_V_MAP_2">"off"</constant>
 <constant name="log_V_MAP_3">"off"</constant>

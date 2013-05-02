@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Thu May 02 14:11:41 EDT 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Thu May 02 15:15:41 EDT 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="234">
 <constant cols="1" digits="0" name="Version" rows="20">
@@ -278,7 +278,7 @@
          -18.005325 
       </constant>
 <constant digits="3" name="Dwell_Set" units="msec">3.0</constant>
-<constant digits="3" name="Dead_Time_Set" units="msec">1.0</constant>
+<constant digits="3" name="Dead_Time_Set" units="msec">0.0</constant>
 <constant digits="0" name="Rev_Limit" units="rpm">8000.0</constant>
 <constant digits="0" name="Soft_Rev_Limit" units="rpm">7700.0</constant>
 <constant name="Rev_Limit_Type">"hard fuel cut"</constant>
@@ -364,8 +364,8 @@
          97.997796 
       </constant>
 <constant name="Staged_Inj">"off"</constant>
-<constant digits="0" name="Stage_Load" units="%">29.6875</constant>
-<constant digits="0" name="staged_Load_Dead" units="%">4.6875</constant>
+<constant digits="0" name="Stage_Reference_VE" units="%">29.6875</constant>
+<constant digits="0" name="staged_Reference_VE_Dead" units="%">4.6875</constant>
 <constant digits="0" name="Stage_RPM" units="rpm">5000.0</constant>
 <constant digits="0" name="Staged_RPM_Dead" units="rpm">500.0</constant>
 <constant name="Enable_Accel_Decel">"off"</constant>

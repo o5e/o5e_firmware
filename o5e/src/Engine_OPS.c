@@ -39,7 +39,7 @@
 
 uint32_t *fs_free_param;
 uint32_t Pulse_Width;
-uint16_t Injector_gram_Flow;
+uint32_t Base_Pulse_Width;
 static void Check_Engine(void);
 
 static void Set_Spark(void);
@@ -126,29 +126,27 @@ void Engine10_Task(void)
 	
 	//Injector_gram_Flow = sqrt((Rating_Fuel_Presure <<4)/ Fuel_Presure ) ;
     //Injector_gram_Flow = (Injector_gram_Flow * Injector_Size);
-    
+    //Injector_gram_Flow = Injector_Size;
 	
- 	Injector_gram_Flow = Injector_Size;
+ 	
 	
     // base (max) pulse width
-     Pulse_Width = (Displacement / N_Cyl);
+     Base_Pulse_Width = (Displacement / N_Cyl);
 
-     Pulse_Width = ((Pulse_Width * gram_STP_Air_Per_cc) >> 10); //convert displacement in cc to g and convert bin 24 to bin 14
-     Pulse_Width = (Pulse_Width * Base_Air_Fuel_Ratio) >>12; // get g/min and convert bin14 to  bin 0 
-     Pulse_Width = (Pulse_Width * Gasoline_SG) >>8; //get volumetric fuel required and convert bin 12 to bin 4
-     Pulse_Width = (Pulse_Width / Injector_Size); //convert to min and convert bin 10 to bin 2
+     Base_Pulse_Width = ((Base_Pulse_Width * gram_STP_Air_Per_cc) >> 10); //convert displacement in cc to g and convert bin 24 to bin 14
+     Base_Pulse_Width = (Base_Pulse_Width * Base_Air_Fuel_Ratio) >>12; // get g/min and convert bin14 to  bin 0 
+     Base_Pulse_Width = (Base_Pulse_Width * Gasoline_SG) >>8; //get volumetric fuel required and convert bin 12 to bin 4
+     Base_Pulse_Width = (Base_Pulse_Width / Injector_Size); //convert to min and convert bin 10 to bin 2
      //Max_Inj_Time
-     Pulse_Width = (Pulse_Width* ((1000000 >>8) * 60)) >>12; //convert to usec and convert bin 2 to bin 0
-   Injection_Time = Pulse_Width;       
+     Base_Pulse_Width = (Base_Pulse_Width* ((1000000 >>8) * 60)) >>12; //convert to usec and convert bin 2 to bin 0       
 	//store a baseline Battery Voltage
 	V_Battery_Stored = V_Batt;
 
     for (;;) {    
         // Read the sensors that can change quickly like RPM, TPS, MAP, ect
         Get_Fast_Op_Vars();
-        
-        // TODO  - add load sense method selection and calcs. This only works right with 1 bar MAP
-        Get_Load();
+        // go calculate the %Reference VE that should be used for current conditions
+        Get_Reference_VE();
 
         // set spark advance and dwell based on current conditions
         Set_Spark();
@@ -199,7 +197,7 @@ static void Set_Spark()
     
 /***************************************************************************************/    
         // Looks up the desired spark advance in degrees before Top Dead Center (TDC)
-        Spark_Advance = (int16_t) table_lookup_jz(RPM, Load, Spark_Advance_Table);        
+        Spark_Advance = (int16_t) table_lookup_jz(RPM, Reference_VE, Spark_Advance_Table);        
 
         Spark_Advance_eTPU = (uint24_t) (72000 - (Spark_Advance << 2));    // bin -2 to 0 for eTPU use 
         Spark_Advance_eTPU_2 = Spark_Advance_eTPU + 36000; // needed for waste spark, harmless otherwise
@@ -293,27 +291,17 @@ static void Set_Fuel(void)
 
 
         // calc fuel pulse width
+        //Max_Inj_Time
+        Pulse_Width = Base_Pulse_Width;
 
         // apply various multiplier adjustments
 
-        // RPM correction based on engine model - this is the primary tuning
-        if (Model_Tuning_Enable) {       
-            Corr = table_lookup_jz(RPM, 0, Eng_Model_Table);
-            Pulse_Width = (Pulse_Width * Corr) >> 14;
-            // Adjust according to load
-            //This is where the user tells the ecu what to do mixture wise at different loads
-            // Normally low power is run leaner than high power.
-            // this corrention is set up so it does NOT alter full power mixture, that point is the reference condition 
-            Load_Ref_AFR = table_lookup_jz((1 << 14), 0, Load_Model_Table);     //get the 100% load AFR
-            Corr = table_lookup_jz(Load, 0, Load_Model_Table);
-            Corr = (Load_Ref_AFR << 10) / Corr;
-            Pulse_Width = (Pulse_Width * Corr) >> 10;
-        }
-        // Load correction - assumes fuel required is roughly proportional to load
-        Pulse_Width = (Pulse_Width * Load) >> 14;
+
+        // Reference_VE correction - assumes fuel required is roughly proportional to Reference_VE
+        Pulse_Width = (Pulse_Width * Reference_VE) >> 12;
 
         // Main fuel table correction - this is used to adjust for RPM effects
-        Corr = table_lookup_jz(RPM, Load, Inj_Time_Corr_Table);
+        Corr = table_lookup_jz(RPM, Reference_VE, Inj_Time_Corr_Table);
         Pulse_Width = (Pulse_Width * Corr) >> 14;
 
 
@@ -345,7 +333,7 @@ static void Set_Fuel(void)
 
 /***************************************************************************************/          
          //this give the tuner the current pulse width
-        //Injection_Time = Pulse_Width + Dead_Time;
+        Injection_Time = Pulse_Width + Dead_Time;
         
 /***************************************************************************************/ 
         // TODO - add code for semi-seq fuel
@@ -363,7 +351,7 @@ static void Set_Fuel(void)
 //
 //Injection_angle()
         // where should pulse end (injection timing)?
-        uint32_t Inj_End_Angle_eTPU = (table_lookup_jz(RPM, Load, Inj_End_Angle_Table)) << 2;   // Bin shift tuner angles from -2 to 0 for eTPU use 
+        uint32_t Inj_End_Angle_eTPU = (table_lookup_jz(RPM, Reference_VE, Inj_End_Angle_Table)) << 2;   // Bin shift tuner angles from -2 to 0 for eTPU use 
 
         if (Inj_End_Angle_eTPU >= Drop_Dead_Angle << 2)            // clip to 1 degree before Drop_Dead
             Inj_End_Angle_eTPU = (Drop_Dead_Angle << 2) - (1 * 100);
@@ -399,7 +387,7 @@ static void Set_Fuel(void)
             while (error_code != 0)     // This tries until the channel is actually updated
      //look up trim values
          //need to make table use the "j" value before it will work
-            //Corr = table_lookup_jz(RPM, Load, Cyl_Trim_1_Table);
+            //Corr = table_lookup_jz(RPM, Reference_VE, Cyl_Trim_1_Table);
             //Cyl_Pulse_Width=  (Pulse_Width * Corr) >> 14;
             
                 //error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Cyl_Pulse_Width);
@@ -421,7 +409,7 @@ static void Set_Fuel(void)
            int i;
            for (i = 0; i < N_Cyl; ++i) {
              fs_etpu_fuel_switch_off(Fuel_Channels[i]);
-//             Injection_Time = 0;
+             Injection_Time = 0;
            } // for
          }//if
 }                               // Set_Fuel()

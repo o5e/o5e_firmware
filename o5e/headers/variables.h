@@ -65,8 +65,8 @@ struct Outputs {
 
 uint16_t RPM;
 int16_t RPM_Dot;
-uint16_t Load;
-int16_t Load_Dot;
+uint16_t Reference_VE;
+int16_t Reference_VE_Dot;
 int16_t V_MAP[4];
 int16_t V_Batt;
 int16_t V_CLT;
@@ -110,8 +110,8 @@ uint8_t Spares[24];
 // these are for convenience and more readable code - must match above
 #define RPM Output_Channels.RPM
 #define RPM_Dot Output_Channels.RPM_Dot
-#define Load Output_Channels.Load
-#define Load_Dot Output_Channels.Load_Dot
+#define Reference_VE Output_Channels.Reference_VE
+#define Reference_VE_Dot Output_Channels.Reference_VE_Dot
 #define V_MAP Output_Channels.V_MAP
 #define V_Batt Output_Channels.V_Batt
 #define V_CLT Output_Channels.V_CLT
