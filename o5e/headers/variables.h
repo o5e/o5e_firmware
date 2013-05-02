@@ -297,6 +297,10 @@ extern struct Outputs Output_Channels;
 #define Test_RPM_Dwell_3  (*(CONST S16 * )(&Page_Ptr[0][220]))
 #define Test_RPM_Dwell_4  (*(CONST S16 * )(&Page_Ptr[0][222]))
 #define Test_RPM_Type (*(CONST U08 * )(&Page_Ptr[0][224]) & ((2<<1)-1))
+#define Displacement  (*(CONST U16 * )(&Page_Ptr[0][226])) 
+#define Injector_Size (*(CONST U16 * )(&Page_Ptr[0][228]))
+#define Rating_Fuel_Presure  (*(CONST U16 * )(&Page_Ptr[0][230]))
+#define Fuel_Presure   (*(CONST U16 * )(&Page_Ptr[0][232])) 
 
 
 // Page 2
