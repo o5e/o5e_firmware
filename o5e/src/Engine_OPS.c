@@ -15,6 +15,7 @@
 // Portions Copyright 2011, 2012  Jon Zeeff - All rights reserved
 
 #include <stdint.h>
+//#include <math.h>
 #include "mpc563xm.h"
 #include "config.h"
 #include "err.h"
@@ -38,6 +39,7 @@
 
 uint32_t *fs_free_param;
 uint32_t Pulse_Width;
+uint16_t Injector_gram_Flow;
 static void Check_Engine(void);
 
 static void Set_Spark(void);
@@ -100,10 +102,10 @@ void Fuel_Pump_Task(void)
 #define Delta_V_Crank 2 <<10 			//V_Batt is bin 10
 #define Run_Threshold 250       		// RPM below this then not running
 #define Warmup_Threshold 10000  		// let warmup stuff go 10k cycles for now.  todo  - change this to end when the correction is zero
-#define Wheel_Slip_Threshold 1000		// todo user variable
-#define Acceleration_Threshold 1000		// todo real number maybe used variable
-#define Deceleration_Threshold 1000		// todo real number maybe used variable
-#define Idle_Threshold 1000				// todo real number maybe used variable
+#define Base_Air_Fuel_Ratio 1115       // using 1/14.7 bin 14
+#define Gasoline_SG   5642              // cc/g bin 12
+
+				// todo real number maybe used variable
 
 
 void Engine10_Task(void)
@@ -113,12 +115,31 @@ void Engine10_Task(void)
     
 
 	static uint16_t V_Battery_Stored;
+	
+	
 
 	//read sensors to get basline values
 	Get_Slow_Op_Vars();
 	Get_Fast_Op_Vars();
 	
-        
+	//correct injector flow rate for actual fuel pressure
+	
+	//Injector_gram_Flow = sqrt((Rating_Fuel_Presure <<4)/ Fuel_Presure ) ;
+    //Injector_gram_Flow = (Injector_gram_Flow * Injector_Size);
+    
+	
+ 	Injector_gram_Flow = Injector_Size;
+	
+    // base (max) pulse width
+     Pulse_Width = (Displacement / N_Cyl);
+
+     Pulse_Width = ((Pulse_Width * gram_STP_Air_Per_cc) >> 10); //convert displacement in cc to g and convert bin 24 to bin 14
+     Pulse_Width = (Pulse_Width * Base_Air_Fuel_Ratio) >>12; // get g/min and convert bin14 to  bin 0 
+     Pulse_Width = (Pulse_Width * Gasoline_SG) >>8; //get volumetric fuel required and convert bin 12 to bin 4
+     Pulse_Width = (Pulse_Width / Injector_Size); //convert to min and convert bin 10 to bin 2
+     //Max_Inj_Time
+     Pulse_Width = (Pulse_Width* ((1000000 >>8) * 60)) >>12; //convert to usec and convert bin 2 to bin 0
+   Injection_Time = Pulse_Width;       
 	//store a baseline Battery Voltage
 	V_Battery_Stored = V_Batt;
 
@@ -144,14 +165,14 @@ void Engine10_Task(void)
            // maybe there should be 1 Update_eTPU() ???
         //Update_Tach(frequency);
 		fs_etpu_pwm_update(TACH_CHANNEL, frequency, 1000, etpu_tcr1_freq);
-/***************************************************************************************/
+
 		
         // consider replacing MAP window with the minimum MAP value seen
         task_wait(9);           // allow others tasks to run
     }                           // for      
     task_close();
 }                               // Engine10_Task()
-
+/***************************************************************************************/
 // All spark calcs go here
 //
 //MOVE THIS
@@ -273,9 +294,6 @@ static void Set_Fuel(void)
 
         // calc fuel pulse width
 
-        // base (max) pulse width
-        Pulse_Width = Max_Inj_Time;     // base value in microseconds bin 0
-
         // apply various multiplier adjustments
 
         // RPM correction based on engine model - this is the primary tuning
@@ -327,7 +345,7 @@ static void Set_Fuel(void)
 
 /***************************************************************************************/          
          //this give the tuner the current pulse width
-        Injection_Time = MAF[0];//Pulse_Width + Dead_Time;
+        //Injection_Time = Pulse_Width + Dead_Time;
         
 /***************************************************************************************/ 
         // TODO - add code for semi-seq fuel
@@ -403,7 +421,7 @@ static void Set_Fuel(void)
            int i;
            for (i = 0; i < N_Cyl; ++i) {
              fs_etpu_fuel_switch_off(Fuel_Channels[i]);
-             Injection_Time = 0;
+//             Injection_Time = 0;
            } // for
          }//if
 }                               // Set_Fuel()
