@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Thu May 02 08:36:53 EDT 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Tue Apr 30 14:27:14 EDT 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="226">
 <constant cols="1" digits="0" name="Version" rows="20">
@@ -98,12 +98,12 @@
 <constant digits="1" name="Test_CLT" units="C">0.0</constant>
 <constant digits="1" name="Test_IAT" units="C">39.9956482</constant>
 <constant digits="2" name="Test_V_MAP_1" units="V">4.6000859</constant>
-<constant digits="2" name="Test_V_MAP_2" units="V">4.6669802</constant>
+<constant digits="2" name="Test_V_MAP_2" units="V">4.6000859</constant>
 <constant digits="2" name="Test_V_Batt" units="V">11.9999693</constant>
-<constant digits="2" name="Test_V_CLT" units="V">4.7499878</constant>
-<constant digits="2" name="Test_V_IAT" units="V">4.7499878</constant>
-<constant digits="2" name="Test_V_TPS" units="V">4.9999872</constant>
-<constant digits="2" name="Test_V_MAF_1" units="V">2.6899345</constant>
+<constant digits="2" name="Test_V_CLT" units="V">2.4999936</constant>
+<constant digits="2" name="Test_V_IAT" units="V">2.4999936</constant>
+<constant digits="2" name="Test_V_TPS" units="V">2.4999936</constant>
+<constant digits="2" name="Test_V_MAF_1" units="V">2.4999936</constant>
 <constant digits="2" name="Test_V_MAF_2" units="V">2.4999936</constant>
 <constant digits="2" name="Test_V_O2_UA_1" units="V">-2.441E-4</constant>
 <constant digits="2" name="Test_V_O2_UA_2" units="V">-2.441E-4</constant>
@@ -131,7 +131,7 @@
 <constant digits="0" name="RPM_Change_Rate_2">500.0</constant>
 <constant digits="0" name="RPM_Change_Rate_3">10.0</constant>
 <constant digits="0" name="RPM_Change_Rate_4">100.0</constant>
-<constant digits="0" name="Test_RPM_1" units="rpm">100.0</constant>
+<constant digits="0" name="Test_RPM_1" units="rpm">10000.0</constant>
 <constant digits="0" name="Test_RPM_2" units="rpm">4000.0</constant>
 <constant digits="0" name="Test_RPM_3" units="rpm">5000.0</constant>
 <constant digits="0" name="Test_RPM_4" units="rpm">6000.0</constant>
@@ -983,23 +983,23 @@
       </constant>
 <constant name="MAF_1_Variable">"Variable axis"</constant>
 <constant name="MAF_1_Byte">"16 bit signed"</constant>
-<constant cols="1" digits="4" name="MAF_1_Cal" rows="16" units="g/s">
+<constant cols="1" digits="4" name="MAF_1_Cal" rows="16" units="kg/s">
          0.0 
-         3.3203125 
-         6.6679688 
-         10.0 
-         13.3203125 
-         16.640625 
-         20.0 
-         23.3203125 
-         26.6796875 
-         30.0 
-         33.3203125 
-         36.6796875 
-         40.0 
-         43.3203125 
-         46.6796875 
-         50.0 
+         0.3320313 
+         0.6679688 
+         1.0 
+         1.3320313 
+         1.6679688 
+         2.0 
+         2.3320313 
+         2.6679688 
+         3.0 
+         3.3320313 
+         3.6679688 
+         4.0 
+         4.3320313 
+         4.6679688 
+         5.0 
       </constant>
 <constant digits="0" name="MAF_2_Rows">1.0</constant>
 <constant digits="0" name="MAF_2_Cols">16.0</constant>
@@ -1023,7 +1023,7 @@
       </constant>
 <constant name="MAF_2_Variable">"Variable axis"</constant>
 <constant name="MAF_2_Byte">"16 bit signed"</constant>
-<constant cols="1" digits="4" name="MAF_2_Cal" rows="16" units="g/s">
+<constant cols="1" digits="4" name="MAF_2_Cal" rows="16" units="kg/s">
          0.0 
          0.0 
          0.0 

@@ -298,8 +298,6 @@ static void Set_Fuel(void)
         Corr = table_lookup_jz(RPM, Load, Inj_Time_Corr_Table);
         Pulse_Width = (Pulse_Width * Corr) >> 14;
 
-        // Air temperature correction....I can't figure out how to not make this a divide at the moment
-        Pulse_Width = (Pulse_Width << 14) / IAT;
 
         // Coolant temp correction from enrichment_ops
         Corr = table_lookup_jz(CLT, 0, Fuel_Temp_Corr_Table);
@@ -329,7 +327,7 @@ static void Set_Fuel(void)
 
 /***************************************************************************************/          
          //this give the tuner the current pulse width
-        Injection_Time = Pulse_Width + Dead_Time;
+        Injection_Time = MAF[0];//Pulse_Width + Dead_Time;
         
 /***************************************************************************************/ 
         // TODO - add code for semi-seq fuel

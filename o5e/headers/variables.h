@@ -63,9 +63,9 @@ extern uint16_t const pageSize[NPAGES];
 //[Output_Channels]
 struct Outputs {
 
-int16_t RPM;
+uint16_t RPM;
 int16_t RPM_Dot;
-int16_t Load;
+uint16_t Load;
 int16_t Load_Dot;
 int16_t V_MAP[4];
 int16_t V_Batt;
@@ -286,11 +286,11 @@ extern struct Outputs Output_Channels;
 #define RPM_Change_Rate_2  (*(CONST U32 * )(&Page_Ptr[0][196]))
 #define RPM_Change_Rate_3  (*(CONST U32 * )(&Page_Ptr[0][200]))
 #define RPM_Change_Rate_4  (*(CONST U32 * )(&Page_Ptr[0][204]))
-#define Test_RPM_1  (*(CONST S16 * )(&Page_Ptr[0][208]))
-#define Test_RPM_Array  (*(CONST S16 * )(&Page_Ptr[0][208]))
-#define Test_RPM_2  (*(CONST S16 * )(&Page_Ptr[0][210]))
-#define Test_RPM_3  (*(CONST S16 * )(&Page_Ptr[0][212]))
-#define Test_RPM_4  (*(CONST S16 * )(&Page_Ptr[0][214]))
+#define Test_RPM_1  (*(CONST U16 * )(&Page_Ptr[0][208]))
+#define Test_RPM_Array  (*(CONST U16 * )(&Page_Ptr[0][208]))
+#define Test_RPM_2  (*(CONST U16 * )(&Page_Ptr[0][210]))
+#define Test_RPM_3  (*(CONST U16 * )(&Page_Ptr[0][212]))
+#define Test_RPM_4  (*(CONST U16 * )(&Page_Ptr[0][214]))
 #define Test_RPM_Dwell_1  (*(CONST S16 * )(&Page_Ptr[0][216]))
 #define Test_RPM_Dwell_Array  (*(CONST S16 * )(&Page_Ptr[0][216]))
 #define Test_RPM_Dwell_2  (*(CONST S16 * )(&Page_Ptr[0][218]))

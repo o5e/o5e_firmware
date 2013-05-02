@@ -225,7 +225,7 @@ void Get_Fast_Op_Vars(void)
 			if (crank_position_status == 0) //if status = 0 the TCR2 clock in not valid so set rpm to 0
 			    RPM = 0;
 			else
-				RPM = (int16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);   // Read RPM from eTPU
+				RPM = (uint16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);   // Read RPM from eTPU
 
             
             // TODO: if using a double gap wheel, divide rpm by 2
@@ -248,7 +248,7 @@ void Get_Fast_Op_Vars(void)
 		if(crank_position_status == 0) //if status = 0 the TCR2 clock in not valid so set rpm to 0
 			RPM = 0;
 		else
-        	RPM = (int16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);       // Read RPM from eTPU
+        	RPM = (uint16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);       // Read RPM from eTPU
 
         /* Fast speed stuff...1000hz or so */
         V_TPS = (int16_t) ((V_TPS_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * TPS_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);       // V_TPS is bin 12
@@ -257,7 +257,7 @@ void Get_Fast_Op_Vars(void)
         V_MAP[1] = (int16_t) ((V_MAP_2_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_2_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_2 is bin 12
         MAP[1] = (int16_t) table_lookup_jz(V_MAP[1], 0, MAP_2_Table);
         
-        V_MAF[0] = (int16_t) ((V_MAF_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAF_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_2 is bin 12
+        V_MAF[0] = (int16_t) ((V_MAF_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAF_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAF_1 is bin 12
         MAF[0] = (int16_t) table_lookup_jz(V_MAF[0], 0, MAF_1_Table);
 
         /* Angle based stuff */

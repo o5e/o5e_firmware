@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Thu May 02 08:36:53 EDT 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Thu May 02 08:36:53 EDT 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="226">
 <constant cols="1" digits="0" name="Version" rows="20">
