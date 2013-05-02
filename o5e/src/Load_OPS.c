@@ -17,9 +17,8 @@
 #include "err.h"
 #include "variables.h"
 #include "typedefs.h"
-#include "Variable_OPS.h"
-#include "Table_Lookup_JZ.h"
 #include "Load_OPS.h"
+#include "Base_Values_OPS.h"
 
 uint32_t gram_flow;
   
