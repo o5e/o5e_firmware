@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Thu May 02 15:15:41 EDT 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Fri May 03 14:17:25 EDT 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="234">
 <constant cols="1" digits="0" name="Version" rows="20">
@@ -436,47 +436,75 @@
       </constant>
 <constant digits="1" name="Dwell_Min" units="%">89.84375</constant>
 <constant digits="1" name="Dwell_Max" units="%">89.84375</constant>
-<constant digits="0" name="Load_Model_Rows">1.0</constant>
-<constant digits="0" name="Load_Model_Cols">16.0</constant>
-<constant cols="1" digits="0" name="Load_Model_Bins" rows="16" units="%">
-         0.0 
-         10.0 
-         20.0 
-         30.0 
-         40.0 
-         50.0 
-         60.0 
-         70.0 
-         75.0 
-         80.0 
-         85.0 
-         90.0 
-         95.0 
-         100.0 
-         105.0 
-         110.0 
+<constant digits="0" name="sqrt_Rows">1.0</constant>
+<constant digits="0" name="sqrt_Cols">30.0</constant>
+<constant cols="1" digits="4" name="sqrt_Bins" rows="30">
+         0.0332031 
+         0.069336 
+         0.1074219 
+         0.1484376 
+         0.1923829 
+         0.2402345 
+         0.2919923 
+         0.3476564 
+         0.4091799 
+         0.4765627 
+         0.549805 
+         0.6318363 
+         0.7226566 
+         0.8232426 
+         0.9375005 
+         1.0664068 
+         1.2138678 
+         1.3847663 
+         1.5830086 
+         1.8183603 
+         2.0996104 
+         2.4443372 
+         2.8750015 
+         3.4287127 
+         4.1669943 
+         5.200198 
+         6.7500035 
+         9.3330126 
+         14.5000074 
+         30.0000154 
       </constant>
-<constant name="Load_Model_Variable">"Variable axis"</constant>
-<constant name="Load_Model_Byte">"16 bit signed"</constant>
+<constant name="sqrt_Variable">"Variable axis"</constant>
+<constant name="sqrt_Byte">"16 bit signed"</constant>
+<constant cols="1" digits="4" name="sqrt_Cal" rows="30">
+         0.1826173 
+         0.2626954 
+         0.3271486 
+         0.3847658 
+         0.4384768 
+         0.4902346 
+         0.5400393 
+         0.5898441 
+         0.6396488 
+         0.69043 
+         0.7412113 
+         0.7949223 
+         0.8496098 
+         0.907227 
+         0.9677739 
+         1.0332037 
+         1.1015631 
+         1.1767584 
+         1.2578131 
+         1.3486335 
+         1.4492195 
+         1.5634774 
+         1.6953134 
+         1.8515634 
+         2.0410167 
+         2.2802746 
+         2.5976576 
+         3.0546891 
+         3.8076191 
+         5.4775419 
+      </constant>
 <constant digits="0" name="Password">-1.0</constant>
-<constant cols="1" digits="2" name="Load_Model_Cal" rows="16" units="AFR">
-         14.7002028 
-         14.7002028 
-         14.7002028 
-         14.7002028 
-         14.7002028 
-         14.7002028 
-         14.7002028 
-         14.7002028 
-         14.7002028 
-         14.5996169 
-         14.4502027 
-         14.2002026 
-         13.9003977 
-         13.5996163 
-         13.2998115 
-         13.0000067 
-      </constant>
 <constant name="Model_Tuning_Enable">"on"</constant>
 <constant digits="0" name="Spare9">255.0</constant>
 <constant digits="0" name="Spare10">65535.0</constant>

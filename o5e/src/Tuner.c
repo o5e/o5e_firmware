@@ -110,7 +110,6 @@ static uint8_t tmp_buf[SERIAL_BUFFER_SIZE];  // this buffer is used to receive a
 void Tuner_Task(void)
 {
     static uint8_t password_received = 0;     // have we received a valid password to allow flash reading
-    static uint32_t Password;                 // move to flash
     static int16_t count;  // number of bytes received
     static uint16_t i;
     static uint16_t page;
