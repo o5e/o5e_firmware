@@ -19,6 +19,7 @@
 #include "typedefs.h"
 #include "Load_OPS.h"
 #include "Base_Values_OPS.h"
+#include "Table_Lookup_JZ.h"
 
 uint32_t gram_flow;
   
@@ -31,7 +32,11 @@ void Get_Reference_VE(void)
       Reference_VE = (Reference_VE << 14) / (uint16_t)IAT;	
   }else if (Load_Sense == 4){
       Reference_VE = (uint16_t)((TPS * MAP[1]) >> 14);
-      // Air temperature correction....I can't figure out how to not make this a divide at the moment
+      //correct for TPS flow if used.
+      if (TPS_Flow_Cal_On == 1){
+	  Reference_VE = ((Reference_VE  * (uint16_t)(table_lookup_jz(RPM, TPS, TPS_Flow_Table))) >>14);
+      }//if
+      //Air temperature correction....I can't figure out how to not make this a divide at the moment
       Reference_VE = (Reference_VE << 14) / (uint16_t)IAT;	
   }else{	//(Load_Sense == 5, use MAF 
       gram_flow = ((gram_STP_Air_Per_cc *(uint32_t) Displacement)  >> 12); //convert displacement in cc to g and convert bin 24 to bin 12

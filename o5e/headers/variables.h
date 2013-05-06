@@ -380,14 +380,14 @@ extern struct Outputs Output_Channels;
 #define Prime_Decay_Table ((CONST struct table_jz * )(&Page_Ptr[2][1080]))
 #define Man_Crank_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[2][1232]))
 #define Prime_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[2][1374]))
+#define TPS_Flow_Cal_On (*(CONST U08 * )(&Page_Ptr[2][1544]) & ((2<<0)-1))
+#define TPS_Flow_Table ((CONST struct table_jz * )(&Page_Ptr[2][1546]))
 // Page 4
 #define CLT_Table ((CONST struct table_jz * )(&Page_Ptr[3][0]))
 #define CLT_Cal_Array ((CONST S16 * )(&Page_Ptr[3][136]))
 #define IAT_Table ((CONST struct table_jz * )(&Page_Ptr[3][168]))
 #define IAT_Cal_Array ((CONST S16 * )(&Page_Ptr[3][304]))
 #define TPS_Table ((CONST struct table_jz * )(&Page_Ptr[3][336]))
-#define TPS_Flow_Cal_On (*(CONST U08 * )(&Page_Ptr[3][476]) & ((2<<0)-1))
-#define TPS_Flow_Table ((CONST struct table_jz * )(&Page_Ptr[3][478]))
 #define AFR_1_Table ((CONST struct table_jz * )(&Page_Ptr[3][646]))
 #define AFR_2_Table ((CONST struct table_jz * )(&Page_Ptr[3][814]))
 #define MAF_1_Table ((CONST struct table_jz * )(&Page_Ptr[3][982]))
@@ -557,6 +557,7 @@ extern struct Outputs Output_Channels;
 #define Generic_Output_4_Link_1_PWM_integral (*(CONST S16 * )(&Page_Ptr[14][850]))
 #define Generic_Output_4_Link_1_PWM_differential (*(CONST S16 * )(&Page_Ptr[14][852])) 
 #define Generic_Output_4_Link_1_PWM_hysteresis (*(CONST S16 * )(&Page_Ptr[14][854]))
+
 // ---------------------------------------------------
 // Below here does not come from the .ini file
 
