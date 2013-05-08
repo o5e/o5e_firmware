@@ -189,10 +189,10 @@ void Get_Slow_Op_Vars(void)
         // O2 sensors - only for pass through to tuner
         V_O2_UA[0] = (int16_t) ((V_O2_1_UA_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_1_UA_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);     // V_O2 is bin 12
         V_O2_UR[0] = (int16_t) ((V_O2_1_UR_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_1_UR_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);     // V_O2 is bin 12
-        AFR[0] = (int16_t) table_lookup_jz (V_O2_UA[0],0, AFR_1_Table); 	// convert volts to AFR
+        Lambda[0] = (int16_t) table_lookup_jz (V_O2_UA[0],0, Lambda_1_Table); 	// convert volts to lambda
         V_O2_UA[1] = (int16_t) ((V_O2_2_UA_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_2_UA_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);     // V_O2 is bin 12
         V_O2_UR[1] = (int16_t) ((V_O2_2_UR_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_2_UR_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);     // V_O2 is bin 12
-        AFR[1] = (int16_t) table_lookup_jz (V_O2_UA[0],0, AFR_2_Table); 	// convert volts to AFR
+        Lambda[1] = (int16_t) table_lookup_jz (V_O2_UA[0],0, Lambda_2_Table); 	// convert volts to lambda
 
     }  // if normal run mode
 

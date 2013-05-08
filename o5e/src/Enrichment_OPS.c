@@ -31,7 +31,6 @@
    int32_t TPS_Dot_Sign = 0;
    int32_t TPS_Dot_Temp;
    uint32_t Degree_Clock_Last = 0;
-   int32_t Accel_Decel_Corr;
    
    #define TPS_Dot_Dead 2000
    
@@ -39,7 +38,7 @@
    uint32_t Prime_Post_Start_Last = 1;
    uint32_t Prime_Decay = (1 << 14);
    uint32_t Prime_Decay_Last = (1 << 14);
-   uint32_t Prime_Corr;
+   
    
    #define Enrich_Threshold 6000
    #define Prime_Cycles_Threshold 100

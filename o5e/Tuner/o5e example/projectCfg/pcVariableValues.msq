@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." writeDate="Mon May 06 15:49:25 EDT 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." writeDate="Wed May 08 15:08:31 EDT 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" signature="MShift 2.111       "/>
 <page number="-1">
 <constant name="tsCanId">"0"</constant>
@@ -37,8 +37,8 @@
 <constant name="log_V_P13">"off"</constant>
 <constant name="log_V_P14">"off"</constant>
 <constant name="log_TPS">"log"</constant>
-<constant name="log_AFR_1">"off"</constant>
-<constant name="log_AFR_2">"off"</constant>
+<constant name="log_Lambda_1">"off"</constant>
+<constant name="log_Lambda_2">"off"</constant>
 <constant name="log_MAP_1">"off"</constant>
 <constant name="log_MAP_2">"off"</constant>
 <constant name="log_MAP_3">"off"</constant>
@@ -66,14 +66,11 @@
 <constant name="log_Sync_Status">"off"</constant>
 <constant name="log_Cam_Errors">"off"</constant>
 <constant name="log_Crank_Errors">"off"</constant>
-<constant name="log_Spare1">"off"</constant>
+<constant name="log_Lambda_Correction">"off"</constant>
 <constant name="log_Last_Error_Time">"off"</constant>
 <constant name="log_seconds">"off"</constant>
+<constant name="log_Spare1">"off"</constant>
 <constant name="log_Spare2">"off"</constant>
 <constant name="log_Spare3">"off"</constant>
-<constant name="log_Spare4">"off"</constant>
-<constant name="log_Spare5">"off"</constant>
-<constant name="log_Spare6">"off"</constant>
-<constant name="log_Spare7">"off"</constant>
 </page>
 </msq>
