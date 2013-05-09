@@ -19,6 +19,7 @@
 
 
    //Accel/decel variables
+   uint8_t Accel_Decel_Flag = 0;
    uint32_t TPS_Last = 0;       // bin 14
    uint32_t TPS_Dot_Decay_Last = (1 << 14);     // bin 14
    uint32_t TPS_Dot_Degree = 0;
@@ -31,6 +32,7 @@
    int32_t TPS_Dot_Sign = 0;
    int32_t TPS_Dot_Temp;
    uint32_t Degree_Clock_Last = 0;
+   
    
    #define TPS_Dot_Dead 2000
    
@@ -93,10 +95,12 @@ void Get_Accel_Decel_Corr(void)
      //is Accel/decel enabled?  If no the correction is 0
     if (Enable_Accel_Decel == 0)
        Accel_Decel_Corr = 0;
+        // set the accel/deccel variables to current conditions
+	
     else{
     	
 
-          if (RPM == 0) {	
+          if ((RPM == 0) ||(Accel_Decel_Flag == 0)) {	
               // set the accel/deccel variables to current conditions
             TPS_Last = TPS;
             TPS_Dot_Limit = 1 << 14;
@@ -104,53 +108,54 @@ void Get_Accel_Decel_Corr(void)
             TPS_Dot = 0;
             TPS_Dot_Last = 0;
             TPS_Dot_Sign = 0;
-
+            Accel_Decel_Flag = 1;
             Degree_Clock_Last = Degree_Clock;
 		  }//if
             //get a TPS change         
-            TPS_Dot_Temp = (TPS_Last - TPS);
-            TPS_Last = (3 * TPS_Last + TPS) >> 2;
+          TPS_Dot_Temp = (TPS_Last - TPS);
+          //smooth by 4
+          TPS_Last = (3 * TPS_Last + TPS) >> 2;
             //get           
-            TPS_Dot = TPS_Dot_Temp << 3;
-            TPS_Dot_Degree = (Degree_Clock - Degree_Clock_Last);
+          TPS_Dot = TPS_Dot_Temp << 3;
+          TPS_Dot_Degree = (Degree_Clock - Degree_Clock_Last);
             // check if acceleration enrich required
-            if (TPS_Dot >= TPS_Dot_Dead && TPS_Dot > TPS_Dot_Last) {
-                TPS_Dot_Limit = table_lookup_jz(RPM, 0, Accel_Limit_Table);
-                TPS_Dot_Corr = table_lookup_jz(RPM, 0, Accel_Sensativity_Table);
-                TPS_Dot_Decay_Rate = table_lookup_jz(RPM, 0, Accel_Decay_Table);
-                TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot - TPS_Dot_Dead)) >> 14;
+          if (TPS_Dot >= TPS_Dot_Dead && TPS_Dot > TPS_Dot_Last) {
+              TPS_Dot_Limit = table_lookup_jz(RPM, 0, Accel_Limit_Table);
+              TPS_Dot_Corr = table_lookup_jz(RPM, 0, Accel_Sensativity_Table);
+              TPS_Dot_Decay_Rate = table_lookup_jz(RPM, 0, Accel_Decay_Table);
+              TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot - TPS_Dot_Dead)) >> 14;
 
-                // update the last clock
-                Degree_Clock_Last = Degree_Clock;
-                TPS_Dot_Degree = 0;
-                TPS_Dot_Decay_Last = 1 << 14;
-                TPS_Dot_Sign = 1;
+              // update the last clock
+              Degree_Clock_Last = Degree_Clock;
+              TPS_Dot_Degree = 0;
+              TPS_Dot_Decay_Last = 1 << 14;
+              TPS_Dot_Sign = 1;
                 // decel required 
-            } else if (TPS_Dot <= (-TPS_Dot_Dead) && TPS_Dot < TPS_Dot_Last) {
-                TPS_Dot_Limit = table_lookup_jz(RPM, 0, Decel_Limit_Table);
-                TPS_Dot_Corr = table_lookup_jz(RPM, 0, Decel_Sensativity_Table);
-                TPS_Dot_Decay_Rate = table_lookup_jz(RPM, 0, Decel_Decay_Table);
-                TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot_Dead - TPS_Dot)) >> 14;
-                // update the last clock
-                Degree_Clock_Last = Degree_Clock;
-                TPS_Dot_Degree = 0;
-                TPS_Dot_Decay_Last = 1 << 14;
-                TPS_Dot_Sign = -1;
-            }
-            TPS_Dot_Last = TPS_Dot;
-            // calculate the required decay
-            if (TPS_Dot_Degree >= 720) {
-                Degree_Clock_Last = Degree_Clock_Last + 720;
-                TPS_Dot_Decay = (TPS_Dot_Decay_Last * TPS_Dot_Decay_Rate) >> 14;
-                TPS_Dot_Decay_Last = TPS_Dot_Decay;
-                TPS_Dot_Corr = (TPS_Dot_Corr * TPS_Dot_Decay) >> 14;
-            }
-            if (TPS_Dot_Corr > TPS_Dot_Limit)
-                TPS_Dot_Corr = TPS_Dot_Limit;
-            if (TPS_Dot_Sign < 0) 
-                Accel_Decel_Corr = TPS_Dot_Corr * (-1);
-            else
-                Accel_Decel_Corr = TPS_Dot_Corr;
+          } else if (TPS_Dot <= (-TPS_Dot_Dead) && TPS_Dot < TPS_Dot_Last) {
+              TPS_Dot_Limit = table_lookup_jz(RPM, 0, Decel_Limit_Table);
+              TPS_Dot_Corr = table_lookup_jz(RPM, 0, Decel_Sensativity_Table);
+              TPS_Dot_Decay_Rate = table_lookup_jz(RPM, 0, Decel_Decay_Table);
+              TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot_Dead - TPS_Dot)) >> 14;
+              // update the last clock
+              Degree_Clock_Last = Degree_Clock;
+              TPS_Dot_Degree = 0;
+              TPS_Dot_Decay_Last = 1 << 14;
+              TPS_Dot_Sign = -1;
+          }
+          TPS_Dot_Last = TPS_Dot;
+          // calculate the required decay
+          if (TPS_Dot_Degree >= 720) {
+              Degree_Clock_Last = Degree_Clock_Last + 720;
+              TPS_Dot_Decay = (TPS_Dot_Decay_Last * TPS_Dot_Decay_Rate) >> 14;
+              TPS_Dot_Decay_Last = TPS_Dot_Decay;
+              TPS_Dot_Corr = (TPS_Dot_Corr * TPS_Dot_Decay) >> 14;
+          }
+          if (TPS_Dot_Corr > TPS_Dot_Limit)
+              TPS_Dot_Corr = TPS_Dot_Limit;
+          if (TPS_Dot_Sign < 0) 
+              Accel_Decel_Corr = -TPS_Dot_Corr ;
+          else
+              Accel_Decel_Corr = TPS_Dot_Corr;
     }            
 
 }// Get_Accel_Decel_Corr

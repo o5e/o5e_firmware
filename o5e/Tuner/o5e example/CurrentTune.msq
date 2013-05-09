@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Wed May 08 15:08:31 EDT 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Thu May 09 15:53:17 EDT 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="234">
 <constant cols="1" digits="0" name="Version" rows="20">
@@ -29,7 +29,7 @@
 <constant digits="0" name="N_Teeth">34.0</constant>
 <constant name="Missing_Teeth">"2"</constant>
 <constant digits="1" name="Cam_Lobe_Pos">180.0</constant>
-<constant name="Load_Sense">"TPS"</constant>
+<constant name="Load_Sense">"MAP - 1 atm"</constant>
 <constant digits="1" name="Cyl_Offset_1">0.12</constant>
 <constant digits="1" name="Cyl_Offset_2">120.0</constant>
 <constant digits="1" name="Cyl_Offset_3">240.0</constant>
@@ -131,7 +131,7 @@
 <constant digits="0" name="RPM_Change_Rate_2">500.0</constant>
 <constant digits="0" name="RPM_Change_Rate_3">10.0</constant>
 <constant digits="0" name="RPM_Change_Rate_4">100.0</constant>
-<constant digits="0" name="Test_RPM_1" units="rpm">1250.0</constant>
+<constant digits="0" name="Test_RPM_1" units="rpm">500.0</constant>
 <constant digits="0" name="Test_RPM_2" units="rpm">4000.0</constant>
 <constant digits="0" name="Test_RPM_3" units="rpm">5000.0</constant>
 <constant digits="0" name="Test_RPM_4" units="rpm">6000.0</constant>
@@ -139,7 +139,7 @@
 <constant digits="0" name="Test_RPM_Dwell_2" units="msec">5000.0</constant>
 <constant digits="0" name="Test_RPM_Dwell_3" units="msec">3000.0</constant>
 <constant digits="0" name="Test_RPM_Dwell_4" units="msec">5000.0</constant>
-<constant name="Test_RPM_Type">"Pot controlled"</constant>
+<constant name="Test_RPM_Type">"Fixed "</constant>
 <constant digits="0" name="Displacement" units="cc">2000.0</constant>
 <constant digits="0" name="Injector_Size" units="cc/min">400.0</constant>
 <constant digits="0" name="Rating_Fuel_Presure" units="kpa">300.0</constant>
@@ -368,7 +368,7 @@
 <constant digits="0" name="staged_Reference_VE_Dead" units="%">4.6875</constant>
 <constant digits="0" name="Stage_RPM" units="rpm">5000.0</constant>
 <constant digits="0" name="Staged_RPM_Dead" units="rpm">500.0</constant>
-<constant name="Enable_Accel_Decel">"off"</constant>
+<constant name="Enable_Accel_Decel">"On"</constant>
 <constant name="IAC_Enable">"2 PWM (bosch type)"</constant>
 <constant digits="0" name="Warm_Idle_RPM" units="rpm">800.0</constant>
 <constant digits="0" name="Cold_Idle_RPM" units="rpm">1200.0</constant>
@@ -543,20 +543,20 @@
          16.003377 
          11.999481 
          6.994611 
-         5.00487 
-         5.00487 
-         5.00487 
-         5.00487 
-         5.00487 
-         5.00487 
-         5.00487 
+         2.001948 
+         0.0 
+         0.0 
+         0.0 
+         0.0 
+         0.0 
+         0.0 
          5.00487 
       </constant>
 <constant digits="0" name="Accel_Limit_Rows">1.0</constant>
 <constant digits="0" name="Accel_Limit_Cols">8.0</constant>
 <constant cols="1" digits="0" name="Accel_Limit_Bins" rows="8" units="rpm">
          0.0 
-         100.0 
+         500.0 
          1000.0 
          1500.0 
          2000.0 
@@ -568,7 +568,7 @@
 <constant name="Accel_Limit_Byte">"16 bit signed"</constant>
 <constant cols="1" digits="0" name="Accel_Limit_Cal" rows="8" units="%">
          0.0 
-         49.999872 
+         49.7496285 
          0.0 
          0.0 
          0.0 
@@ -580,7 +580,7 @@
 <constant digits="0" name="Accel_Decay_Cols">8.0</constant>
 <constant cols="1" digits="0" name="Accel_Decay_Bins" rows="8" units="rpm">
          0.0 
-         100.0 
+         500.0 
          1000.0 
          1500.0 
          2000.0 
@@ -604,7 +604,7 @@
 <constant digits="0" name="Accel_Sensativity_Cols">8.0</constant>
 <constant cols="1" digits="0" name="Accel_Sensativity_Bins" rows="8" units="rpm">
          0.0 
-         100.0 
+         500.0 
          1000.0 
          1500.0 
          2000.0 
@@ -628,7 +628,7 @@
 <constant digits="0" name="Decel_Limit_Cols">8.0</constant>
 <constant cols="1" digits="0" name="Decel_Limit_Bins" rows="8" units="rpm">
          0.0 
-         100.0 
+         500.0 
          1000.0 
          1500.0 
          2000.0 
@@ -676,7 +676,7 @@
 <constant digits="0" name="Decel_Sensativity_Cols">8.0</constant>
 <constant cols="1" digits="0" name="Decel_Sensativity_Bins" rows="8" units="rpm">
          0.0 
-         100.0 
+         500.0 
          1000.0 
          1500.0 
          2000.0 

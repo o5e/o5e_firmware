@@ -50,7 +50,7 @@ Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause
 #   define MAP_1_VOLTAGE_DIVIDER 1.0
 #   define V_MAP_1_AD    ADC_RsltQ5 [0]       
 #   define MAP_2_VOLTAGE_DIVIDER 1.0
-#   define V_MAP_2_AD    ADC_RsltQ0 [18]	/* TODO */
+#   define V_MAP_2_AD    ADC_RsltQ0 [23]	/* TODO */
 #   define MAP_3_VOLTAGE_DIVIDER 1.0
 #   define V_MAP_3_AD    ADC_RsltQ0 [23]
 #   define MAF_1_VOLTAGE_DIVIDER 1.0
@@ -234,8 +234,6 @@ void Get_Fast_Op_Vars(void)
             TPS = (int16_t) table_lookup_jz(V_TPS, 0, TPS_Table);
             V_MAP[1] = Test_V_MAP_2;
             MAP[1] = (int16_t) table_lookup_jz(V_MAP[1], 0, MAP_2_Table);
-            V_MAF[0] = Test_V_MAF_1;
-            MAF[0] = (int16_t) table_lookup_jz(V_MAF[0], 0, MAF_1_Table);
             /* Angle based stuff */
             V_MAP[0] = Test_V_MAP_1;
             MAP[0] = (int16_t) table_lookup_jz(V_MAP[0], 0, MAP_1_Table);
@@ -244,6 +242,7 @@ void Get_Fast_Op_Vars(void)
     } else {                    //Run Mode, normal operation
 
         /* On fast for now, but should be medium speed ...100hz or so */
+        Filter_AD(&V_Batt_AD,3);  // smooth by 8
         V_Batt = (int16_t) ((V_Batt_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * VBATT_VOLTAGE_DIVIDER) * (1 << 20))) >> 10);  // V_Batt is bin 10
 		if(crank_position_status == 0) //if status = 0 the TCR2 clock in not valid so set rpm to 0
 			RPM = 0;
@@ -251,21 +250,26 @@ void Get_Fast_Op_Vars(void)
         	RPM = (uint16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);       // Read RPM from eTPU
 
         /* Fast speed stuff...1000hz or so */
+        Filter_AD(&V_TPS_AD,3);  // smooth by 8
         V_TPS = (int16_t) ((V_TPS_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * TPS_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);       // V_TPS is bin 12
         TPS = (int16_t) table_lookup_jz(V_TPS, 0, TPS_Table);
-
+        
+        Filter_AD(&V_MAP_2_AD,3);  // smooth by 8
         V_MAP[1] = (int16_t) ((V_MAP_2_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_2_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_2 is bin 12
         MAP[1] = (int16_t) table_lookup_jz(V_MAP[1], 0, MAP_2_Table);
         
+        Filter_AD(&V_MAF_1_AD,3);  // smooth by 8
         V_MAF[0] = (int16_t) ((V_MAF_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAF_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAF_1 is bin 12
         MAF[0] = (int16_t) table_lookup_jz(V_MAF[0], 0, MAF_1_Table);
 
         /* Angle based stuff */
+        Filter_AD(&V_MAP_1_AD,3);  // smooth by 8
         V_MAP[0] = (int16_t) ((V_MAP_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP is bin 12
         MAP[0] = (int16_t) table_lookup_jz(V_MAP[0], 0, MAP_1_Table);
         
         
         /* convert P1*/
+        Filter_AD(&V_P1_AD,3);  // smooth by 8
         Pot_RPM = (int16_t) ((V_P1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P1_VOLTAGE_DIVIDER ) * (1 << 20))) >> 8);       // V_P1_AD is bin 12
         Pot_RPM=  (3000* Pot_RPM) >>12;
         
