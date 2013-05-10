@@ -375,7 +375,10 @@ extern struct Outputs Output_Channels;
 #define Spare9 (*(CONST U08 * )(&Page_Ptr[1][1813]) & ((2<<0)-1))
 #define Spare10 (*(CONST S16 * )(&Page_Ptr[1][1814]))
 #define Fuel_Pump_Prime_Time (*(CONST S32 * )(&Page_Ptr[1][1816])) 
-#define Spare12 (*(CONST S32 * )(&Page_Ptr[1][1820]))
+#define Enable_Prime (*(CONST U08 * )(&Page_Ptr[1][1820]) & ((2<<0)-1))
+#define Enable_Coolant_Temp_Corr (*(CONST U08 * )(&Page_Ptr[1][1821]) & ((2<<0)-1))
+#define Enable_Air_Temp_Corr (*(CONST U08 * )(&Page_Ptr[1][1822]) & ((2<<0)-1))
+#define Spare12 (*(CONST U08 * )(&Page_Ptr[1][1823]) & ((2<<0)-1))
 
 // Page 3
 #define Dummy_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[2][0]))

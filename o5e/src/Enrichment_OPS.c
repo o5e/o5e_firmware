@@ -166,7 +166,7 @@ void Get_Prime_Corr(void)
                 // check if enrichment cals shold be done - this might want to be a % of redline
         // maintain some timers for use by enrichment
         // did we just start?
-        if ((RPM < Enrich_Threshold) && (Enable_Accel_Decel == 1)) {
+        if ((RPM < Enrich_Threshold) && (Enable_Prime == 1)) {
             // Prime pulse - extra fuel to wet the manifold on start-up   
             // check if in prime needed conditions   
             if (Post_Start_Cycles < Prime_Cycles_Threshold) {

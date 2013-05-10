@@ -275,9 +275,17 @@ static void Set_Fuel(void)
 
 
         // Coolant temp correction from enrichment_ops
-        Fuel_Temp_Corr = table_lookup_jz(CLT, 0, Fuel_Temp_Corr_Table);
-        Pulse_Width = (Pulse_Width * Fuel_Temp_Corr) >> 13;
-
+        if (Enable_Coolant_Temp_Corr == 1){
+           Fuel_Temp_Corr = table_lookup_jz(CLT, 0, Fuel_Temp_Corr_Table);
+           Pulse_Width = (Pulse_Width * Fuel_Temp_Corr) >> 13;
+        }
+                // Coolant temp correction from enrichment_ops
+        if (Enable_Air_Temp_Corr == 1){
+           Fuel_Temp_Corr = table_lookup_jz(IAT, 0, IAT_Fuel_Corr_Table);
+           Pulse_Width = (Pulse_Width * Fuel_Temp_Corr) >> 13;
+        }
+        
+        
 
         // Prime/warmup correction
         Get_Prime_Corr();

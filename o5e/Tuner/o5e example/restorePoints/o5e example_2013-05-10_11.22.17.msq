@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Thu May 09 14:14:33 EDT 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.1.22 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;    &lt;br&gt;&#13;    &#13;&#13;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;      &lt;br&gt;&#13;      &lt;br&gt;&#13;      &#13;    &lt;/p&gt;&#13;    &lt;br&gt;&#13;  " writeDate="Fri May 10 11:22:17 EDT 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="234">
 <constant cols="1" digits="0" name="Version" rows="20">
@@ -368,7 +368,7 @@
 <constant digits="0" name="staged_Reference_VE_Dead" units="%">4.6875</constant>
 <constant digits="0" name="Stage_RPM" units="rpm">5000.0</constant>
 <constant digits="0" name="Staged_RPM_Dead" units="rpm">500.0</constant>
-<constant name="Enable_Accel_Decel">"On"</constant>
+<constant name="Enable_Accel_Decel">"off"</constant>
 <constant name="IAC_Enable">"2 PWM (bosch type)"</constant>
 <constant digits="0" name="Warm_Idle_RPM" units="rpm">800.0</constant>
 <constant digits="0" name="Cold_Idle_RPM" units="rpm">1200.0</constant>
@@ -509,7 +509,10 @@
 <constant digits="0" name="Spare9">255.0</constant>
 <constant digits="0" name="Spare10">65535.0</constant>
 <constant digits="0" name="Fuel_Pump_Prime_Time">10.0</constant>
-<constant digits="0" name="Spare12">-1.0</constant>
+<constant name="Enable_Prime">"off"</constant>
+<constant name="Enable_Coolant_Temp_Corr">"off"</constant>
+<constant name="Enable_Air_Temp_Corr">"off"</constant>
+<constant digits="0" name="Spare12">255.0</constant>
 </page>
 <page number="2" size="1810">
 <constant digits="0" name="Dummy_Corr_Rows">1.0</constant>
