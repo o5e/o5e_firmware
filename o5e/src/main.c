@@ -28,7 +28,10 @@ Copyright (c) 2012 Sean Stasiak <sstasiak at gmail dot com>
 #include "led.h"
 #include "etpu_struct.h"
 #include "etpu_util.h"
-
+#include "etpu_app_eng_pos.h"
+#include "eTPU_OPS.h"
+#include "Testing_OPS.h"
+#include "Fake_Cam_Signal.h"
 
 
 
@@ -79,19 +82,34 @@ static void Angle_Clock_Task(void)
     static uint32_t prev_angle; // previous cam position in ticks
     static uint32_t i;   
     register uint64_t j =0;
-    static uint8_t status;
+    static int8_t status;
+    static int8_t Previous_Status;
+    static uint32_t Start_Time;     // time when start started
+	static uint32_t Start_Degrees;  // engine position when start started
+
     
 #define ANGLE_TICKS_PER_DEGREE ((Ticks_Per_Tooth * (N_Teeth + Missing_Teeth)) / 360)
     task_open();                // NOTE: must be first line
 
-    Degree_Clock = 0;
-    prev_angle = angle_clock(); // previous cam position in ticks
+
+// previous cam position in ticks
 
     for (;;) {
 
-      	
+        status = fs_etpu_eng_pos_get_engine_position_status ();
+      	if  (Previous_Status != status || status != FS_ETPU_ENG_POS_FULL_SYNC){  //position known so fuel and spark have started
+            Degree_Clock = 0;;
+            prev_angle = angle_clock();
+            Start_Time = systime;
+            Start_Degrees = Degree_Clock;
+            Post_Start_Time = 0;
+            Post_Start_Cycles = 0;
+            Previous_Status = status;
+        }
+
+        
         // update crank shaft degree/angle clock (free running, not synced to an absolute engine position)
-//Match the degrees per tic to teh eTPU settings
+//Match the degrees per tic to the eTPU settings
         i = (angle_clock() - prev_angle) & 0xffffff;    // 24 bit hw counter 
         j = i * (((uint64_t)1 << 32) / ANGLE_TICKS_PER_DEGREE);        // avoid a run time divide
         i = (uint32_t) (j >> 32);       // convert back to bin 0
@@ -99,7 +117,13 @@ static void Angle_Clock_Task(void)
             Degree_Clock += i;
             prev_angle = (prev_angle + i * ANGLE_TICKS_PER_DEGREE) & 0xffffff;
             os_task_tick(1, (uint16_t) i);      // increment os angle clock value
-        }        
+        } 
+                      // maintain some timers for use by enrichment
+         //update + make sure the timers don't overflow  - TODO eliminate divides
+        if (Post_Start_Time < 10000)
+           Post_Start_Time = (uint16_t)(systime - Start_Time) / 1000;
+        if (Post_Start_Cycles < 10000)
+            Post_Start_Cycles = (uint16_t)(Degree_Clock - Start_Degrees) / 720;
         event_signal(event);    // dummy to cause task change - all higher priority tasks will be run
 
         

@@ -44,4 +44,8 @@
 // used by thr eTPU angle clock
 #define Ticks_Per_Tooth  120        // Max 200
 
+// how to turn a pin on/off
+#define Set_Pin(pin,value)  SIU.GPDO[pin].R = value
+#define Read_Pin(pin,value)  (SIU.GPDI[pin].R & 1)
+
 #endif

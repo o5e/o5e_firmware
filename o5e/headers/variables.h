@@ -63,10 +63,10 @@ extern uint16_t const pageSize[NPAGES];
 //[Output_Channels]
 struct Outputs {
 
-int16_t RPM;
+uint16_t RPM;
 int16_t RPM_Dot;
-int16_t Load;
-int16_t Load_Dot;
+uint16_t Reference_VE;
+int16_t Reference_VE_Dot;
 int16_t V_MAP[4];
 int16_t V_Batt;
 int16_t V_CLT;
@@ -77,7 +77,7 @@ int16_t V_O2_UA[2];
 int16_t V_O2_UR[2];
 int16_t V_P[14];
 int16_t TPS;
-int16_t AFR[2];
+int16_t Lambda[2];
 int16_t MAP[4];
 int16_t MAP_Dot[4];
 int16_t MAF[2];
@@ -97,10 +97,14 @@ int16_t TPS_Dot;
 int16_t Sync_Status;            // see Freescale code for values 
 int16_t Cam_Errors;             // count of errors seen
 int16_t Crank_Errors;           // count of errors seen
-int16_t Pot_RPM;
+uint16_t Lambda_Correction;
 uint32_t Last_Error_Time;       // time that Last_Error or Crank or Cam error occured
 uint32_t  seconds ;
-uint8_t Spares[24];
+int32_t Accel_Decel_Corr;
+uint32_t Prime_Corr;
+uint32_t Fuel_Temp_Corr;
+int16_t Pot_RPM;
+uint8_t Spares[10];
 };
 
 // this must match the offsets in the .ini file AND must be a multiple of 4
@@ -110,8 +114,8 @@ uint8_t Spares[24];
 // these are for convenience and more readable code - must match above
 #define RPM Output_Channels.RPM
 #define RPM_Dot Output_Channels.RPM_Dot
-#define Load Output_Channels.Load
-#define Load_Dot Output_Channels.Load_Dot
+#define Reference_VE Output_Channels.Reference_VE
+#define Reference_VE_Dot Output_Channels.Reference_VE_Dot
 #define V_MAP Output_Channels.V_MAP
 #define V_Batt Output_Channels.V_Batt
 #define V_CLT Output_Channels.V_CLT
@@ -122,7 +126,7 @@ uint8_t Spares[24];
 #define V_O2_UR Output_Channels.V_O2_UR
 #define V_P Output_Channels.V_P
 #define TPS Output_Channels.TPS
-#define AFR Output_Channels.AFR
+#define Lambda Output_Channels.Lambda
 #define MAP Output_Channels.MAP
 #define MAP_Dot Output_Channels.MAP_Dot
 #define MAF Output_Channels.MAF
@@ -141,10 +145,14 @@ uint8_t Spares[24];
 #define TPS_Dot Output_Channels.TPS_Dot
 #define Sync_Status Output_Channels.Sync_Status
 #define Cam_Errors Output_Channels.Cam_Errors
-#define Pot_RPM Output_Channels.Pot_RPM
+#define Lambda_Correction; Output_Channels.Lambda_Correction
 #define Crank_Errors Output_Channels.Crank_Errors
 #define Last_Error_Time Output_Channels.Last_Error_Time
 #define seconds Output_Channels.seconds
+#define Accel_Decel_Corr Output_Channels.Accel_Decel_Corr
+#define Prime_Corr Output_Channels.Prime_Corr
+#define Fuel_Temp_Corr Output_Channels.Fuel_Temp_Corr
+#define Pot_RPM Output_Channels.Pot_RPM
 
 //*******************************************************
 // initialized to all zeros
@@ -236,9 +244,9 @@ extern struct Outputs Output_Channels;
 #define Test_Value (*(CONST U08 * )(&Page_Ptr[0][106]) & ((2<<0)-1))
 #define Test_RPM (*(CONST S16 * )(&Page_Ptr[0][108]))
 #define Test_TPS (*(CONST S16 * )(&Page_Ptr[0][110]))
-#define Test_AFR_1 (*(CONST S16 * )(&Page_Ptr[0][112]))
-#define Test_AFR_Array ((CONST S16 * )(&Page_Ptr[0][112]))
-#define Test_AFR_2 (*(CONST S16 * )(&Page_Ptr[0][114]))
+#define Test_Lambda_1 (*(CONST S16 * )(&Page_Ptr[0][112]))
+#define Test_Lambda_Array ((CONST S16 * )(&Page_Ptr[0][112]))
+#define Test_Lambda_2 (*(CONST S16 * )(&Page_Ptr[0][114]))
 #define Test_MAP_1 (*(CONST S16 * )(&Page_Ptr[0][116]))
 #define Test_MAP_Array ((CONST S16 * )(&Page_Ptr[0][116]))
 #define Test_MAP_2 (*(CONST S16 * )(&Page_Ptr[0][118]))
@@ -286,17 +294,21 @@ extern struct Outputs Output_Channels;
 #define RPM_Change_Rate_2  (*(CONST U32 * )(&Page_Ptr[0][196]))
 #define RPM_Change_Rate_3  (*(CONST U32 * )(&Page_Ptr[0][200]))
 #define RPM_Change_Rate_4  (*(CONST U32 * )(&Page_Ptr[0][204]))
-#define Test_RPM_1  (*(CONST S16 * )(&Page_Ptr[0][208]))
-#define Test_RPM_Array  (*(CONST S16 * )(&Page_Ptr[0][208]))
-#define Test_RPM_2  (*(CONST S16 * )(&Page_Ptr[0][210]))
-#define Test_RPM_3  (*(CONST S16 * )(&Page_Ptr[0][212]))
-#define Test_RPM_4  (*(CONST S16 * )(&Page_Ptr[0][214]))
+#define Test_RPM_1  (*(CONST U16 * )(&Page_Ptr[0][208]))
+#define Test_RPM_Array  (*(CONST U16 * )(&Page_Ptr[0][208]))
+#define Test_RPM_2  (*(CONST U16 * )(&Page_Ptr[0][210]))
+#define Test_RPM_3  (*(CONST U16 * )(&Page_Ptr[0][212]))
+#define Test_RPM_4  (*(CONST U16 * )(&Page_Ptr[0][214]))
 #define Test_RPM_Dwell_1  (*(CONST S16 * )(&Page_Ptr[0][216]))
 #define Test_RPM_Dwell_Array  (*(CONST S16 * )(&Page_Ptr[0][216]))
 #define Test_RPM_Dwell_2  (*(CONST S16 * )(&Page_Ptr[0][218]))
 #define Test_RPM_Dwell_3  (*(CONST S16 * )(&Page_Ptr[0][220]))
 #define Test_RPM_Dwell_4  (*(CONST S16 * )(&Page_Ptr[0][222]))
 #define Test_RPM_Type (*(CONST U08 * )(&Page_Ptr[0][224]) & ((2<<1)-1))
+#define Displacement  (*(CONST U16 * )(&Page_Ptr[0][226])) 
+#define Injector_Size (*(CONST U16 * )(&Page_Ptr[0][228]))
+#define Rating_Fuel_Presure  (*(CONST U16 * )(&Page_Ptr[0][230]))
+#define Fuel_Presure   (*(CONST U16 * )(&Page_Ptr[0][232])) 
 
 
 // Page 2
@@ -357,12 +369,16 @@ extern struct Outputs Output_Channels;
 #define MAP_Angle_Table ((CONST struct table_jz * )(&Page_Ptr[1][1406]))
 #define Dwell_Min (*(CONST U08 * )(&Page_Ptr[1][1606]))
 #define Dwell_Max (*(CONST U08 * )(&Page_Ptr[1][1607]))
-#define Load_Model_Table ((CONST struct table_jz * )(&Page_Ptr[1][1608]))
-#define Model_Tuning_Enable (*(CONST U08 * )(&Page_Ptr[1][1808]) & ((2<<0)-1))
+#define sqrt_Table ((CONST struct table_jz * )(&Page_Ptr[1][1608]))
+#define Password (*(CONST U32 * )(&Page_Ptr[1][1808]))
+#define Model_Tuning_Enable (*(CONST U08 * )(&Page_Ptr[1][1812]) & ((2<<0)-1))
 #define Spare9 (*(CONST U08 * )(&Page_Ptr[1][1813]) & ((2<<0)-1))
 #define Spare10 (*(CONST S16 * )(&Page_Ptr[1][1814]))
 #define Fuel_Pump_Prime_Time (*(CONST S32 * )(&Page_Ptr[1][1816])) 
-#define Spare12 (*(CONST S32 * )(&Page_Ptr[1][1820]))
+#define Enable_Prime (*(CONST U08 * )(&Page_Ptr[1][1820]) & ((2<<0)-1))
+#define Enable_Coolant_Temp_Corr (*(CONST U08 * )(&Page_Ptr[1][1821]) & ((2<<0)-1))
+#define Enable_Air_Temp_Corr (*(CONST U08 * )(&Page_Ptr[1][1822]) & ((2<<0)-1))
+#define Spare12 (*(CONST U08 * )(&Page_Ptr[1][1823]) & ((2<<0)-1))
 
 // Page 3
 #define Dummy_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[2][0]))
@@ -375,16 +391,16 @@ extern struct Outputs Output_Channels;
 #define Prime_Decay_Table ((CONST struct table_jz * )(&Page_Ptr[2][1080]))
 #define Man_Crank_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[2][1232]))
 #define Prime_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[2][1374]))
+#define TPS_Flow_Cal_On (*(CONST U08 * )(&Page_Ptr[2][1544]) & ((2<<0)-1))
+#define TPS_Flow_Table ((CONST struct table_jz * )(&Page_Ptr[2][1546]))
 // Page 4
 #define CLT_Table ((CONST struct table_jz * )(&Page_Ptr[3][0]))
 #define CLT_Cal_Array ((CONST S16 * )(&Page_Ptr[3][136]))
 #define IAT_Table ((CONST struct table_jz * )(&Page_Ptr[3][168]))
 #define IAT_Cal_Array ((CONST S16 * )(&Page_Ptr[3][304]))
 #define TPS_Table ((CONST struct table_jz * )(&Page_Ptr[3][336]))
-#define TPS_Flow_Cal_On (*(CONST U08 * )(&Page_Ptr[3][476]) & ((2<<0)-1))
-#define TPS_Flow_Table ((CONST struct table_jz * )(&Page_Ptr[3][478]))
-#define AFR_1_Table ((CONST struct table_jz * )(&Page_Ptr[3][646]))
-#define AFR_2_Table ((CONST struct table_jz * )(&Page_Ptr[3][814]))
+#define Lambda_1_Table ((CONST struct table_jz * )(&Page_Ptr[3][646]))
+#define Lambda_2_Table ((CONST struct table_jz * )(&Page_Ptr[3][814]))
 #define MAF_1_Table ((CONST struct table_jz * )(&Page_Ptr[3][982]))
 #define MAF_1_Cal_Array ((CONST S16 * )(&Page_Ptr[3][1118]))
 #define MAF_2_Table ((CONST struct table_jz * )(&Page_Ptr[3][1150]))
@@ -404,7 +420,7 @@ extern struct Outputs Output_Channels;
 // Page 7
 #define Spark_Advance_Table ((CONST struct table_jz * )(&Page_Ptr[6][0]))
 // Page 8
-#define AFR_Set_Point_Table ((CONST struct table_jz * )(&Page_Ptr[7][0]))
+#define Lambda_Set_Point_Table ((CONST struct table_jz * )(&Page_Ptr[7][0]))
 // Page 9
 #define Cyl_Trim_1_Table ((CONST struct table_jz * )(&Page_Ptr[8][0]))
 #define Cyl_Trim_2_Table ((CONST struct table_jz * )(&Page_Ptr[8][488]))
@@ -552,6 +568,7 @@ extern struct Outputs Output_Channels;
 #define Generic_Output_4_Link_1_PWM_integral (*(CONST S16 * )(&Page_Ptr[14][850]))
 #define Generic_Output_4_Link_1_PWM_differential (*(CONST S16 * )(&Page_Ptr[14][852])) 
 #define Generic_Output_4_Link_1_PWM_hysteresis (*(CONST S16 * )(&Page_Ptr[14][854]))
+
 // ---------------------------------------------------
 // Below here does not come from the .ini file
 

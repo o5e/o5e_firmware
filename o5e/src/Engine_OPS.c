@@ -5,23 +5,24 @@
     @brief     Open5xxxECU - this file contains functions for fuel pulse width 
                as well as spark timing 
     @note      www.Open5xxxECU.org
-    @version   2.1
-    @copyright 2011, 2012 - P. Schlein, M. Eberhardt, J. Zeeff
+    @version   2.2
+    @copyright 2011, 2012, 2013 - P. Schlein, M. Eberhardt, J. Zeeff
 
 **********************************************************************************/
 
-// Portions Copyright 2011 P. Schlein - MIT License
-// Portions Copyright 2011 M. Eberhardt - MIT License
+// Portions Copyright 2011 P. Schlein - BSD 3 clause License
+// Portions Copyright 2011,2012, 2013 M. Eberhardt - BSD 3 clause License
 // Portions Copyright 2011, 2012  Jon Zeeff - All rights reserved
 
 #include <stdint.h>
+//#include <math.h>
 #include "mpc563xm.h"
 #include "config.h"
 #include "err.h"
-#include "led.h"
 #include "variables.h"
 #include "typedefs.h"
 #include "Engine_OPS.h"
+#include "Enrichment_OPS.h"
 #include "Variable_OPS.h"
 #include "cocoos.h"
 #include "Table_Lookup_JZ.h"
@@ -32,21 +33,19 @@
 #include "etpu_fpm.h"
 #include "etpu_app_eng_pos.h"
 #include "eTPU_OPS.h"
-#include "bsp.h"   /**< pickup systime      */
-#include "main.h"  /**< pickup Degree_Clock */
+#include "Load_OPS.h"
+#include "Base_Values_OPS.h"
 
-#include "etpu_toothgen.h"
+
 
 uint32_t *fs_free_param;
-static uint32_t Pulse_Width;
+uint32_t Pulse_Width;
+//uint32_t Injector_Flow;
 static void Check_Engine(void);
 
 static void Set_Spark(void);
 static void Set_Fuel(void);
 
-// how to turn a pin on/off
-#define Set_Pin(pin,value)  SIU.GPDO[pin].R = value
-#define Read_Pin(pin,value)  (SIU.GPDI[pin].R & 1)
 
 #if __CWCC__
 #pragma push
@@ -56,10 +55,8 @@ static void Set_Fuel(void);
 /* the above is inserted until I can figure out how this code works
    and fix it properly */
 
-/**********************************************************************************/
-/*          Done while power on                                                   */
-/**********************************************************************************/
 
+//
 // Engine stuff that don't change very fast ~100 msec
 
 void Slow_Vars_Task(void)
@@ -74,199 +71,7 @@ void Slow_Vars_Task(void)
     task_close();
 }                               /* end of slow_vars_task() */
 
-// Generate a cam pulse every other rev for engines that don't have a cam signal
-// Doesn't have to be very accurate - cam is not used for timing
-// Note: this implies batch fuel which is done by tying pins together - each pin only fires once per 720 degree cycle
-// The calibration must position an extra wide cam window (because the timing isn't exact)
-// This code could use the eTPU Synchronized Pulse-Width Modulation Function instead.
 
-void Cam_Pulse_Task(void)
-    {
-        task_open();                // standard OS entry
-        task_wait(1);
-
-        static uint_fast8_t tooth;
-        static uint8_t start_tooth;
-        static uint_fast8_t prev_tooth = 255;
-        static uint_fast8_t alternate = 1;
-        static uint_fast8_t sync_flag = 1;//normally zero when odd fire stuff is running
-        static uint_fast8_t TDC_Tooth;
-        static uint_fast8_t TDC_Minus_Position;
-        static uint_fast8_t TDC_Plus_Position;
-        static uint32_t TDC_Minus_Position_RPM = 0;
-        static uint32_t Last_TDC_Minus_Position_RPM = 0;
-        
-        start_tooth = (typeof(start_tooth))Start_Tooth;     // position is based on user setting of cam position
-        //position =  Total_Teeth / 2;    // doesn't matter where, but this is a good spot
-        //these are needed for syncing a crank only odd fire engine
-        TDC_Tooth = ((Engine_Position << 2) / Degrees_Per_Tooth_x100) % Total_Teeth; //adjust from bin-2 to bin 0
-        //find teeth to compare rpm to test if compression stroke
-        TDC_Minus_Position = (Total_Teeth  + TDC_Tooth - ((Odd_Fire_Sync_Angle <<2) / Degrees_Per_Tooth_x100)) % Total_Teeth;
-
-        for (;;) {
-
-                // output pulse once per 2 crank revs
-
-                tooth = fs_etpu_eng_pos_get_tooth_number();     // runs number of teeth
-         /* not safe to use with the cam window opened up much past 120 degrees.....currently setto 720               
-                 //find cylinder #1 on odd fire engines
-                // this works by comparing the rpm before #1TDC to rpm after #1TDC
-                // if the RPM after is great than the minus rpm plus a sync_theshold #1TDC position is known
-
-           if (Engine_Type_Select && Sync_Mode_Select == 0 && sync_flag == 0){
-                   Get_Fast_Op_Vars(); // Read current RPM from eTPU
-                   if (tooth == TDC_Minus_Position )
-                       TDC_Minus_Position_RPM = RPM;
-                   
-                   if (TDC_Minus_Position_RPM > Odd_Fire_Sync_Threshold && Last_TDC_Minus_Position_RPM > Odd_Fire_Sync_Threshold && TDC_Minus_Position_RPM < (Last_TDC_Minus_Position_RPM - Odd_Fire_Sync_Threshold))
-                       sync_flag = 1;
-                   
-                   if (tooth < prev_tooth) //detect missing tooth
-                   Last_TDC_Minus_Position_RPM = TDC_Minus_Position_RPM;
-                   
-           }else{ 
-           
-                sync_flag = 1;  
-           }*/
-        
-                // after odd fire home found or any time on even fire engines
-           if (sync_flag == 1 && prev_tooth < start_tooth && tooth >= start_tooth  && (alternate ^= 1)){
-              	Set_Pin(FAKE_CAM_PIN, 1);           // create rising edge 
-                task_wait(1);                       // always 1 msec wide
-                Set_Pin(FAKE_CAM_PIN, 0);           // falling edge 
-                task_wait (3);                       // TODO-angle would be better
-           } else
-				task_wait(1);
-                   
-            prev_tooth = tooth;
-            
-        } // for
-
-    task_close();     
-
-} // Cam_Pulse_Task()
-
-
-// This code is for testing only
-// It isused to simulate jitter in the crank signal by altering the test rpm, which alters the tooth period
-// The tooth width is a % of tooth period, so this will cause the tooth size to alternate 
-// small/big/......., while keeping the average rpm constant
-
-void Test_RPM_Task(void)// test routine, only run ifdef SIMULATOR (see main.c)
-
-{
-    task_open();                // standard OS entry
-    task_wait(1);
-
-    static int8_t tooth;                 // current position
-    static int32_t degrees_to_wait;
-    static int24_t jitter_rpm;
-    static int24_t jitter_previous;
-    static int24_t set_RPM;
-    
-
-    
-
-    // do these once for speed
-    //degrees_to_wait = 360 /(N_Teeth + Missing_Teeth); degree based wait not working
-    
-    
-    for (;;) {
-    
-  	if (Test_RPM_Type == 0){	// simply set the RPM
-            fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM_1, etpu_tcr1_freq); //set a base RPM to get started
-            task_wait (11);                           	 
-    		}
-
-
-	else if(Test_RPM_Type == 1){ //use constant rpm with jitter
-    
-        if(jitter_previous != Jitter){
-           jitter_rpm = Test_RPM_1 * Jitter / 100;
-           jitter_previous = Jitter; 
-        }
-         set_RPM = Test_RPM_1 + jitter_rpm;
-         fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);
-         task_wait (1); //TODO this should be angle based
-          
-         set_RPM = Test_RPM_1 - jitter_rpm;
-         fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);
-         task_wait (1); //TODO this should be angle based               
-        }//else if
-      else if (Test_RPM_Type == 2){ //Run RPM cycle
-
-    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_1, Test_RPM_1, etpu_tcr1_freq); //set a base RPM to get started 
-    	task_wait (Test_RPM_Dwell_1);
-    			 
-    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_2, Test_RPM_2, etpu_tcr1_freq); //set a base RPM to get started 
-    	task_wait (Test_RPM_Dwell_2);
-    	
-    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_3, Test_RPM_3, etpu_tcr1_freq); //set a base RPM to get started 
-    	task_wait (Test_RPM_Dwell_3);
-    	
-    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_4, Test_RPM_4, etpu_tcr1_freq); //set a base RPM to get started 
-    	task_wait (Test_RPM_Dwell_4);
-      }//else if
-      
-      else{// use signal from POT to set RPM
-              // Read the Pot
-        Get_Fast_Op_Vars();
-      
-      fs_etpu_toothgen_adj(TOOTHGEN_PIN1,0xFFFFFF,Pot_RPM , etpu_tcr1_freq); //set a base RPM to get started
-            task_wait (11);   	
-      }
-        
-    }                           // for
-    task_close();
-}//Test_RPM_Task()
-
-// Debug
-// Blink based on engine position status - for testing
-// A sec blink means all is well, Fast blink or no blink means something's wrong
-
-void Eng_Pos_Status_BLINK_Task(void)
-{
-    task_open();                // standard OS entry - NOTE: no non-static local variables! 
-    task_wait(1);
-
-    for (;;) {
-        static int8_t status;
- 
-        // reads the etpu crank position function status
-
-        status = fs_etpu_eng_pos_get_engine_position_status();
-
-        if (status == FS_ETPU_ENG_POS_FULL_SYNC) {        // position known, so all is well slow blink
-            led_on( LED2 );
-            task_wait(903);     // allow others tasks to run          
-            led_off( LED2 );
-            task_wait(903);   // allow others tasks to run          
-        } else if (status == FS_ETPU_ENG_POS_HALF_SYNC) {   
-            // fast and slow blink
-            led_on( LED2 );
-            task_wait(133);     // allow others tasks to run          
-            led_off( LED2 );
-            task_wait(133);     // allow others tasks to run          
-            led_on( LED2 );
-            task_wait(903);     // allow others tasks to run          
-            led_off( LED2 );
-            task_wait(903);     // allow others tasks to run          
-        } else {
-            // if you are here the crank position is not known so fast blink
-            led_on( LED2 );
-            task_wait(133);     // allow others tasks to run          
-            led_off( LED2 );
-            task_wait(133);     // allow others tasks to run          
-        }
-
-
-
-        Sync_Status = (int16_t)status;   // send to tuner
-        Check_Engine();         // get status of eTPU routines for debugger and tuner
-
-    }                           // for
-    task_close();
-}                               /* end of RPM_BLINK_task() */
 
 // Decide if fuel pump should be on or off
 
@@ -293,40 +98,40 @@ void Fuel_Pump_Task(void)
 /*  Fuel and Spark task - run every 10msec 
 /**********************************************************************************/
 
+
+
+#define Delta_V_Crank 2 <<10 			//V_Batt is bin 10
+#define Run_Threshold 250       		// RPM below this then not running
+#define Warmup_Threshold 10000  		// let warmup stuff go 10k cycles for now.  todo  - change this to end when the correction is zero
+
+
+				// todo real number maybe used variable
+
+
 void Engine10_Task(void)
 {
     task_open();
     task_wait(1);
+    
 
-    for (;;) {
-        static uint32_t Start_Time;     // time when start started
-        static uint32_t Start_Degrees;  // engine position when start started
-        static uint32_t Previous_Status;
-        static uint8_t status;
+	static uint16_t V_Battery_Stored;
+	
+	
 
+	//read sensors to get basline values
+	Get_Slow_Op_Vars();
+	Get_Fast_Op_Vars();
+	Get_Base_Pulse_Width();
+	
+
+	//store a baseline Battery Voltage
+	V_Battery_Stored = V_Batt;
+
+    for (;;) {    
         // Read the sensors that can change quickly like RPM, TPS, MAP, ect
         Get_Fast_Op_Vars();
-        status = fs_etpu_eng_pos_get_engine_position_status();
-        // maintain some timers for use by enrichment
-        // did we just start?
-
-        if (Previous_Status != status && status == FS_ETPU_ENG_POS_FULL_SYNC) {        // position known so fuel and spark have started
-            Start_Time = systime;
-            Start_Degrees = Degree_Clock;
-            Post_Start_Time = 0;
-            Post_Start_Cycles = 0;
-        }
-        Previous_Status = status;
-
-         //update + make sure the timers don't overflow  - TODO eliminate divides
-        if (Post_Start_Time < 10000)
-           Post_Start_Time = (systime - Start_Time) / 1000;
-        if (Post_Start_Cycles < 10000)
-            Post_Start_Cycles = (Degree_Clock - Start_Degrees) / 720;
-
-        // TODO  - add load sense method selection and calcs. This only works right with 1 bar MAP
-        // Load = Get_Load();
-        Load = (MAP[1] << 2);   // convert bin 12 to 14 and account for /100Kpa using MAP 2 until angle reading fixed
+        // go calculate the %Reference VE that should be used for current conditions
+        Get_Reference_VE();
 
         // set spark advance and dwell based on current conditions
         Set_Spark();
@@ -334,18 +139,23 @@ void Engine10_Task(void)
         // set fuel pulse width + position based on current conditions
         Set_Fuel();
 
+//
+//MOVE THIS
+//
+        //Update_Tach(RPM)
         // Update Tach signal
-        uint32_t frequency = ((RPM * Pulses_Per_Rev) * (uint32_t) ((1 << 14) / 60.) >> 14);
-         
+        uint32_t frequency = ((RPM * Pulses_Per_Rev) * (uint32_t) ((1 << 14) / 60 ) >> 14);
+           // maybe there should be 1 Update_eTPU() ???
         //Update_Tach(frequency);
 		fs_etpu_pwm_update(TACH_CHANNEL, frequency, 1000, etpu_tcr1_freq);
+
 		
         // consider replacing MAP window with the minimum MAP value seen
         task_wait(9);           // allow others tasks to run
     }                           // for      
     task_close();
 }                               // Engine10_Task()
-
+/***************************************************************************************/
 // All spark calcs go here
 
 static void Set_Spark()
@@ -353,83 +163,85 @@ static void Set_Spark()
     static uint32_t Spark_Advance_eTPU;
     static uint32_t Spark_Recalc_Angle_eTPU;
     static uint32_t Prev_Dwell=99;
+    static uint32_t Dwell_2;
+    static uint32_t Spark_Advance_eTPU_2;
     int i;
 
+
+ // TODO - This should go away
     // if the engine is not turning or the engine position is not known, shut off the spark
-    if (RPM == 0 || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC || Enable_Ignition == 0
-        || (RPM > Rev_Limit && (Rev_Limit_Type == 2 || Rev_Limit_Type == 4))) {
-        for (i = 0; i < N_Coils; ++i) 
-            fs_etpu_spark_set_dwell_times(Spark_Channels[i],0,0);
-        Prev_Dwell = 0;
-        Spark_Advance = 0;
-    } else {
+ //   if (RPM == 0 || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC || Enable_Ignition == 0
+ //       || (RPM > Rev_Limit && (Rev_Limit_Type == 2 || Rev_Limit_Type == 4))) {
+ //       for (i = 0; i < N_Coils; ++i) 
+ //           fs_etpu_spark_set_dwell_times(Spark_Channels[i],0,0);
+ //       Prev_Dwell = 0;
+ //       Spark_Advance = 0;
+
+       
         // Looks up the desired spark advance in degrees before Top Dead Center (TDC)
-        Spark_Advance = (int16_t) table_lookup_jz(RPM, Load, Spark_Advance_Table);        
+        Spark_Advance = (int16_t) table_lookup_jz(RPM, Reference_VE, Spark_Advance_Table);        
 
         Spark_Advance_eTPU = (uint24_t) (72000 - (Spark_Advance << 2));    // bin -2 to 0 for eTPU use 
-
+        Spark_Advance_eTPU_2 = Spark_Advance_eTPU + 36000; // needed for waste spark, harmless otherwise
+          if (Spark_Advance_eTPU_2 >= 72000) // roll it over at 720 degrees
+              Spark_Advance_eTPU_2 -= 72000;
+          
+          
         // TODO Knock_Retard(); Issue #7
+ 
 
         if (Spark_Advance_eTPU < (72000 - 4000) && Spark_Advance_eTPU > 2000) {      // error checking, -40 to +20 is OK
               err_push( CODE_OLDJUNK_E3 );
               Spark_Advance_eTPU = 0;
         }
-
-        // Dwell
-        Dwell = Dwell_Set;                      // user specified value
-        if (V_Batt < (13 << 10))                // use longer dwell when battery is low (< 13V bin 10)
-           Dwell = (typeof(Dwell))((Dwell * table_lookup_jz(V_Batt, 0, Dwell_Table)) >> 13);  // dwell is in usec, bin 0
-
-        if (Dwell > 15000 || Dwell < 500) {               // error checking
-              err_push( CODE_OLDJUNK_E2 );
-              Dwell = 3000;
-        }
-
+     
         // Calculate an appropriate re-calculation angle for the current Spark_Angle so the update is as close to firing time as possible
         uint32_t Temp1 = (((RPM * Dwell) >> 14) * (uint32_t) (1.2 * (1 << 12)) >> 12);  // 1.2 is to give the processor time to do the math 
         uint32_t Temp2 = (uint32_t) (.0006 * (1 << 12));        // conversion factor to get Temp1 into deg x 100
         uint32_t Angle_Temp = 72000 - ((Temp1 * Temp2) >> 12);
 
         Spark_Recalc_Angle_eTPU = (Spark_Advance_eTPU + Angle_Temp);
-        if (Spark_Recalc_Angle_eTPU >= 72000)
-            Spark_Recalc_Angle_eTPU -= 72000;
-
+           if (Spark_Recalc_Angle_eTPU >= 72000) // roll it over at 720 degrees
+               Spark_Recalc_Angle_eTPU -= 72000;
+          //Update re-calculation angle in eTPU
         fs_etpu_spark_set_recalc_offset_angle(Spark_Channels[0], Spark_Recalc_Angle_eTPU); // global value despite the channel param
 
-    }  // if
+        // Dwell
+           Dwell = (typeof(Dwell))((Dwell_Set * table_lookup_jz(V_Batt, 0, Dwell_Table)) >> 13);  // dwell is in usec, bin 0
+             //the engine position is not known, of over rev limit, shut off the spark
+              if (Enable_Ignition == 0 //spark disabled
+                 || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC //crank position unknow
+                 || (RPM > Rev_Limit && (Rev_Limit_Type == 2 || Rev_Limit_Type == 4))) //rev limit engaged
+                    //Turn spark off
+                    Dwell = 0;
 
-    // set advance and dwell
 
-    uint32_t Dwell_2;
-    uint32_t Spark_Advance_eTPU_2;      // for second pulse
 
-    if (Ignition_Type == 1) {           // wasted spark mode - fire twice, 360 degrees apart
-       Dwell_2 = Dwell;
-       Spark_Advance_eTPU_2 = Spark_Advance_eTPU + 36000;
-       if (Spark_Advance_eTPU_2 >= 72000) 
-          Spark_Advance_eTPU_2 -= 72000;
-    } else {
-       Dwell_2 = 0;                     // disable second spark
-       Spark_Advance_eTPU_2=0;  
-    } // if
+        if (Dwell > 15000 || Dwell < 500) {               // error checking
+              err_push( CODE_OLDJUNK_E2 );
+              Dwell = 3000;
+        }
+
+
+        // Dwell_2 - used for waste spark
+        
+           Dwell_2 = Dwell * Ignition_Type; //used for waste spark, set to zero otherwise
 
     // send values to eTPU
     for (i = 0; i < N_Coils; ++i) {
         fs_etpu_spark_set_end_angles(Spark_Channels[i], Spark_Advance_eTPU, Spark_Advance_eTPU_2);
-        if (Dwell != Prev_Dwell) 
-           fs_etpu_spark_set_dwell_times(Spark_Channels[i], Dwell, Dwell_2);
+        
+        fs_etpu_spark_set_dwell_times(Spark_Channels[i], Dwell, Dwell_2);
     }                           // for
 
-    Prev_Dwell = Dwell;         // used to avoid unnecessary updates
 
 } // Set_Spark()
 
 //TODO - add to ini for setting in TS.  Issue #11
 #define CRANK_VOLTAGE 11
-#define Run_Threshold 250       // RPM below this then not running
-#define Enrich_Threshold 6000
-#define Prime_Cycles_Threshold 100
-#define TPS_Dot_Dead 2000
+//#define Run_Threshold 250       // RPM below this then not running
+
+
 
 // Primary purpose is to set the fuel pulse width/injection time
 
@@ -439,199 +251,55 @@ static void Set_Fuel(void)
     static uint32_t error_code;
     static uint32_t Dead_Time;
     static uint32_t Dead_Time_Corr;
-    static uint32_t Prime_Post_Start_Last = 1;
-    static uint32_t Prime_Decay = (1 << 14);
-    static uint32_t Prime_Decay_Last = (1 << 14);
-    static uint32_t Prime_Corr;
-    static uint32_t TPS_Last = 0;       // bin 14
-    static uint32_t Degree_Clock_Last = 0;      // bin 0 
-    static uint32_t TPS_Dot_Decay_Last = (1 << 14);     // bin 14
-    static uint32_t TPS_Dot_Degree = 0;
-    static uint32_t TPS_Dot_Decay_Rate = (1 << 14);
+
     static uint32_t Load_Ref_AFR;
-    static int32_t TPS_Dot_Last = 0;    // bin 14
-    static int32_t TPS_Dot_Limit;       // bin 14
-    static int32_t TPS_Dot_Decay;       // bin 14
-    static int32_t TPS_Dot_Corr;
-    static int32_t TPS_Dot_Sign = 0;
-    static int32_t TPS_Dot_Temp;
 
     // if the engine is not turning, the engine position is not known, or over reving, shut off the fuel channels
-    if (RPM == 0 
-        || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC 
-        || Enable_Inj == 0
-        || (RPM > Rev_Limit && (Rev_Limit_Type == 1 || Rev_Limit_Type == 3))) {
 
-        int i;
-        for (i = 0; i < N_Cyl; ++i) {
-            fs_etpu_fuel_switch_off(Fuel_Channels[i]);
-            Injection_Time = 0;
 
-        } // for
 
-        // set the accel/deccel variables to current conditions
-        TPS_Last = TPS;
-        TPS_Dot_Limit = 1 << 14;
-        TPS_Dot_Corr = 0;
-        TPS_Dot = 0;
-        TPS_Dot_Last = 0;
-        TPS_Dot_Sign = 0;
-
-        Degree_Clock_Last = Degree_Clock;
-
-    } else {
 
         // calc fuel pulse width
-
-        // base (max) pulse width
-        Pulse_Width = Max_Inj_Time;     // base value in microseconds bin 0
+        //Max_Inj_Time
+        Pulse_Width = Base_Pulse_Width;
 
         // apply various multiplier adjustments
 
-        // RPM correction based on engine model - this is the primary tuning
-        if (Model_Tuning_Enable) {       
-            Corr = table_lookup_jz(RPM, 0, Eng_Model_Table);
-            Pulse_Width = (Pulse_Width * Corr) >> 14;
-            // Adjust according to load
-            //This is where the user tells the ecu what to do mixture wise at different loads
-            // Normally low power is run leaner than high power.
-            // this corrention is set up so it does NOT alter full power mixture, that point is the reference condition 
-            Load_Ref_AFR = table_lookup_jz((1 << 14), 0, Load_Model_Table);     //get the 100% load AFR
-            Corr = table_lookup_jz(Load, 0, Load_Model_Table);
-            Corr = (Load_Ref_AFR << 10) / Corr;
-            Pulse_Width = (Pulse_Width * Corr) >> 10;
-        }
-        // Load correction - assumes fuel required is roughly proportional to load
-        Pulse_Width = (Pulse_Width * Load) >> 14;
+
+        // Reference_VE correction - assumes fuel required is roughly proportional to Reference_VE
+        Pulse_Width = (Pulse_Width * Reference_VE) >> 12;
 
         // Main fuel table correction - this is used to adjust for RPM effects
-        Corr = table_lookup_jz(RPM, Load, Inj_Time_Corr_Table);
+        Corr = table_lookup_jz(RPM, Reference_VE, Inj_Time_Corr_Table);
         Pulse_Width = (Pulse_Width * Corr) >> 14;
 
-        // Air temperature correction....I can't figure out how to not make this a divide at the moment
-        Pulse_Width = (Pulse_Width << 14) / IAT;
 
         // Coolant temp correction from enrichment_ops
-        Corr = table_lookup_jz(CLT, 0, Fuel_Temp_Corr_Table);
-        Pulse_Width = (Pulse_Width * Corr) >> 13;
-
-        // check if enrichment cals shold be done - this might want to be a % of redline
-        // maintain some timers for use by enrichment
-        // did we just start?
-        if ((RPM < Enrich_Threshold) && (Enable_Accel_Decel == 1)) {
-            // Prime pulse - extra fuel to wet the manifold on start-up   
-            // check if in prime needed conditions   
-            if (Post_Start_Cycles < Prime_Cycles_Threshold) {
-
-                Prime_Corr = table_lookup_jz(CLT, 0, Dummy_Corr_Table);
-                // scale the correction to the pusle width
-                Prime_Corr = (((Pulse_Width * Prime_Corr) >> 13) - Pulse_Width);
-
-                // Update Prime decay each cycle - this is a log decay of the prime pulse
-                if (Post_Start_Cycles > Prime_Post_Start_Last) {
-                    // reset cycle number
-                    Prime_Post_Start_Last = Post_Start_Cycles;
-                    // Get the decay rate for current conditions
-                    Prime_Decay = table_lookup_jz(RPM, 0, Prime_Decay_Table);
-                    // decrease decay by the new value
-                    Prime_Decay = (Prime_Decay_Last * Prime_Decay) >> 14;
-                    // reset last
-                    Prime_Decay_Last = Prime_Decay;
-                }
-                // apply the decay
-                Prime_Corr = (Prime_Corr * Prime_Decay) >> 14;
-                // Reduce the Prime correction by the decay rate and add to pulse_width            
-                Pulse_Width = (Pulse_Width + Prime_Corr);
-            }
-            /**********************************************************************************/
-            /*                           accel/decel enrichment                               */
-            /* This working by looking at the rate the throttle is moving  and  calculating   */
-            /* an enrichment or a derichment to compensate for fuel that  condenses on the    */
-            /* manifold wall due to the pressure increase when the throttle opens. This is    */
-            /* done by watching the throttle change rate since throttle is the first variable */
-            /* to change.                                                                     */
-            /*                                                                                */
-            /* The accel/decel variables are set to base values above at the start of the     */
-            /* fuel routine so they get current sensor values to work with.                   */
-            /*                                                                                */
-            /* Get the TPS change. This simply compares the throttle position each pass       */
-            /* through.  It probbly should be an actual rate by dividing by  the change in    */
-            /* crank position but that added too much noise to the  calculation when I tried  */
-            /*                                                                                */
-            /* The throttle change rate is compared to a dead band.  The deadband helps       */
-            /* clean up noise but more importantly no throttle enrichment is required for     */
-            /* slow throttle change rates.                                                    */
-            /*                                                                                */
-            /* When TPS_Dot is above the deadband, the sensativity value is used to calculate */
-            /* howw much enrichment is required.  The faster the throttle is moving the more  */
-            /* enrifchment should be added.                                                   */
-            /*                                                                                */
-            /* When the TPS_Dot stops increasing a decay is applied which deceases the        */
-            /* enrichment by the specified % each engine cycle.  It's done by cycle because   */
-            /* each cylinder has it's own manifold runner and port so each cylinder require   */
-            /* the enrichment.                                                                */
-            /*                                                                                */
-            /* If TPS_Dot goes negative, ie the throttle is closing, accel enrichment ends    */
-            /* imediately and a calculation is done to determine if decel derichment is       */
-            /* required.  Decel derichment works exactly the same a acel enrichment, only     */
-            /* using negative TPS_Dot rates an dpusle width reductions to compensate for fuel */
-            /* being remover from the port and manifold walls due to pressure drop            */
-            /*                                                                                */
-            /**********************************************************************************/
-
-            //get a TPS change         
-            TPS_Dot_Temp = (TPS_Last - TPS);
-            TPS_Last = (3 * TPS_Last + TPS) >> 2;
-            //get           
-            TPS_Dot = TPS_Dot_Temp << 3;
-            TPS_Dot_Degree = (Degree_Clock - Degree_Clock_Last);
-            // check if acceleration enrich required
-            if (TPS_Dot >= TPS_Dot_Dead && TPS_Dot > TPS_Dot_Last) {
-                TPS_Dot_Limit = table_lookup_jz(RPM, 0, Accel_Limit_Table);
-                TPS_Dot_Corr = table_lookup_jz(RPM, 0, Accel_Sensativity_Table);
-                TPS_Dot_Decay_Rate = table_lookup_jz(RPM, 0, Accel_Decay_Table);
-                TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot - TPS_Dot_Dead)) >> 14;
-
-                // update the last clock
-                Degree_Clock_Last = Degree_Clock;
-                TPS_Dot_Degree = 0;
-                TPS_Dot_Decay_Last = 1 << 14;
-                TPS_Dot_Sign = 1;
-                // decel required 
-            } else if (TPS_Dot <= (-TPS_Dot_Dead) && TPS_Dot < TPS_Dot_Last) {
-                TPS_Dot_Limit = table_lookup_jz(RPM, 0, Decel_Limit_Table);
-                TPS_Dot_Corr = table_lookup_jz(RPM, 0, Decel_Sensativity_Table);
-                TPS_Dot_Decay_Rate = table_lookup_jz(RPM, 0, Decel_Decay_Table);
-                TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot_Dead - TPS_Dot)) >> 14;
-                // update the last clock
-                Degree_Clock_Last = Degree_Clock;
-                TPS_Dot_Degree = 0;
-                TPS_Dot_Decay_Last = 1 << 14;
-                TPS_Dot_Sign = -1;
-            }
-            TPS_Dot_Last = TPS_Dot;
-            // calculate the required decay
-            if (TPS_Dot_Degree >= 720) {
-                Degree_Clock_Last = Degree_Clock_Last + 720;
-                TPS_Dot_Decay = (TPS_Dot_Decay_Last * TPS_Dot_Decay_Rate) >> 14;
-                TPS_Dot_Decay_Last = TPS_Dot_Decay;
-                TPS_Dot_Corr = (TPS_Dot_Corr * TPS_Dot_Decay) >> 14;
-            }
-            if (TPS_Dot_Corr > TPS_Dot_Limit)
-                TPS_Dot_Corr = TPS_Dot_Limit;
-            if (TPS_Dot_Sign > -1) {
-                Pulse_Width = (Pulse_Width + ((Pulse_Width * TPS_Dot_Corr) >> 14));
-            } else {
-                Pulse_Width = (Pulse_Width - ((Pulse_Width * TPS_Dot_Corr) >> 14));
-                if (Pulse_Width < 0)
-                    Pulse_Width = 0;
-            }
-
+        if (Enable_Coolant_Temp_Corr == 1){
+           Fuel_Temp_Corr = table_lookup_jz(CLT, 0, Fuel_Temp_Corr_Table);
+           Pulse_Width = (Pulse_Width * Fuel_Temp_Corr) >> 13;
         }
+                // Coolant temp correction from enrichment_ops
+        if (Enable_Air_Temp_Corr == 1){
+           Fuel_Temp_Corr = table_lookup_jz(IAT, 0, IAT_Fuel_Corr_Table);
+           Pulse_Width = (Pulse_Width * Fuel_Temp_Corr) >> 13;
+        }
+        
+        
+
+        // Prime/warmup correction
+        Get_Prime_Corr();
+        Pulse_Width = (Pulse_Width + Prime_Corr);
+            
+        // Acel/decel correction
+        Get_Accel_Decel_Corr();
+        
+        Pulse_Width = (Pulse_Width + ((Pulse_Width * Accel_Decel_Corr) >> 14));
+                 
         // TODO adjust based on O2 sensor data Issue #8
         // Corr = O2_Fuel();
         // Pulse_Width = (Pulse_Width * Corr) >> 14;
-
+        
         // Assume fuel pressure is constant
 
         // fuel dead time - extra pulse needed to open the injector
@@ -641,17 +309,18 @@ static void Set_Fuel(void)
          //this give the tuner the current pulse width
         Injection_Time = Pulse_Width + Dead_Time;
         
-
-        // TODO - add code for semi-seq fuel 
+        // TODO - add code for semi-seq fuel
+       
         // Sanity check - greater than 99% duty cycle?
         if (Injection_Time > ((990000 * 60 * 2) / RPM)) {
             err_push( CODE_OLDJUNK_E1 );
         }
 
         // Fuel pulse width calc is done
-
+        
+//Injection_angle()
         // where should pulse end (injection timing)?
-        uint32_t Inj_End_Angle_eTPU = (table_lookup_jz(RPM, Load, Inj_End_Angle_Table)) << 2;   // Bin shift tuner angles from -2 to 0 for eTPU use 
+        uint32_t Inj_End_Angle_eTPU = (table_lookup_jz(RPM, Reference_VE, Inj_End_Angle_Table)) << 2;   // Bin shift tuner angles from -2 to 0 for eTPU use 
 
         if (Inj_End_Angle_eTPU >= Drop_Dead_Angle << 2)            // clip to 1 degree before Drop_Dead
             Inj_End_Angle_eTPU = (Drop_Dead_Angle << 2) - (1 * 100);
@@ -665,8 +334,9 @@ static void Set_Fuel(void)
         uint32_t Fuel_Recalc_Angle_eTPU = (Inj_End_Angle_eTPU + Angle_Temp);
         if (Fuel_Recalc_Angle_eTPU > 72000)
             Fuel_Recalc_Angle_eTPU -= 72000;
+ 
 
-        // TODO - Cylinder Trim math and updates.  Issue #9
+        // TODO - Cylinder Trim math and updates.  Issue #9 
         // TODO - Staged injection math and updates Issue #10
 
         // tell eTPU to use new fuel injection pulse values (same for all cylinders)
@@ -676,6 +346,13 @@ static void Set_Fuel(void)
 
             error_code = 1;
             while (error_code != 0)     // This tries until the channel is actually updated
+     //look up trim values
+         //need to make table use the "j" value before it will work
+            //Corr = table_lookup_jz(RPM, Reference_VE, Cyl_Trim_1_Table);
+            //Cyl_Pulse_Width=  (Pulse_Width * Corr) >> 14;
+            
+                //error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Cyl_Pulse_Width);
+                //this goes away once cyl trim is working
                 error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Pulse_Width);
 
         }                       // for
@@ -684,12 +361,27 @@ static void Set_Fuel(void)
         fs_etpu_fuel_set_compensation_time(Fuel_Channels[0], Dead_Time);
         fs_etpu_fuel_set_normal_end_angle(Fuel_Channels[0], Inj_End_Angle_eTPU);        // degrees * 100
         fs_etpu_fuel_set_recalc_offset_angle(Fuel_Channels[0], Fuel_Recalc_Angle_eTPU); // degrees * 100
-    }                           // else
+    
+   
+        if (fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC 
+           || Enable_Inj == 0
+           || (RPM > Rev_Limit && (Rev_Limit_Type == 1 || Rev_Limit_Type == 3))) {
+
+           int i;
+           for (i = 0; i < N_Cyl; ++i) {
+             fs_etpu_fuel_switch_off(Fuel_Channels[i]);
+             Injection_Time = 0;
+           } // for
+         }//if
 }                               // Set_Fuel()
+
+/***************************************************************************************/ 
 
 // read status - returns can be viewed in the debugger or sent to the tuner
 // see etpu_crank_auto.h and AN3769
-
+//
+//MOVE THIS
+//
 static void Check_Engine(void)
 {
     int8_t s4;
