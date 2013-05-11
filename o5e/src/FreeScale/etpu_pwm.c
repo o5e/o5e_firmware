@@ -20,6 +20,12 @@
 #include "etpu_pwm.h"			/* eTPU PWM API defines */
 extern uint32_t fs_etpu_data_ram_start;
 
+#if __CWCC__
+#pragma push
+#pragma warn_unusedvar    off
+#pragma warn_implicitconv off
+#endif
+
 /******************************************************************************
 FUNCTION     : fs_etpu_pwm_init
 PURPOSE      : To initialize an eTPU channel to generate a PWM output.
@@ -259,4 +265,6 @@ uint32_t fs_etpu_pwm_get_freq( uint8_t channel, uint32_t timebase_freq)
  *  Freescale Semiconductor assumes no responsibility for the
  *  maintenance and support of this software
  ********************************************************************/
-
+#if __CWCC__
+#pragma pop
+#endif

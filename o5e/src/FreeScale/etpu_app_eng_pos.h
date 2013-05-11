@@ -1,5 +1,5 @@
 /**************************************************************************
- * FILE NAME: $RCSfile: etpu_app_eng_pos.h,v $                       *
+ * FILE NAME: $RCSfile: etpu_app_eng_pos.h,v $                            *
  *                                           COPYRIGHT (c) FREESCALE 2007 *
  * DESCRIPTION:                                     All Rights Reserved   *
  * This file contains the prototypes and defines for the eTPU automotive  *

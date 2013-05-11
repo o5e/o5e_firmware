@@ -44,6 +44,12 @@ extern uint32_t fs_etpu_data_ram_ext;
 extern uint32_t etpu_a_tcr1_freq;
 extern uint32_t etpu_b_tcr1_freq;
 
+#if __CWCC__
+#pragma push
+#pragma warn_unusedvar    off
+#pragma warn_implicitconv off
+#endif
+
 /*******************************************************************************
 * FUNCTION: fs_etpu_fuel_init_3cylinders
 *
@@ -1175,3 +1181,6 @@ uint24_t fs_etpu_fuel_get_CPU_real_injection_time(uint8_t channel)
  *  Freescale Semiconductor assumes no responsibility for the
  *  maintenance and support of this software
  ********************************************************************/
+#if __CWCC__
+#pragma pop
+#endif

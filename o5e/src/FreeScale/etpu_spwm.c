@@ -36,6 +36,12 @@
 #include "etpu_spwm.h"		  	/* eTPU SPWM API defines */
 extern uint32_t fs_etpu_data_ram_start;
 
+#if __CWCC__
+#pragma push
+#pragma warn_unusedvar    off
+#pragma warn_implicitconv off
+#endif
+
 /******************************************************************************
 FUNCTION     : fs_etpu_spwm_init_master
 PURPOSE      : To initialize an eTPU channel to generate a master SPWM output.
@@ -455,6 +461,7 @@ int32_t fs_etpu_spwm_update_master( uint8_t channel,
 	*(pba + ((FS_ETPU_SPWM_ACTIVE_OFFSET )>>2))  = (chan_period * duty) / 10000;
 
 
+	return 0;
 }
 
 /******************************************************************************
@@ -515,4 +522,6 @@ uint32_t fs_etpu_spwm_get_freq_master( uint8_t channel,
  *  Freescale Semiconductor assumes no responsibility for the
  *  maintenance and support of this software
  ********************************************************************/
-
+#if __CWCC__
+#pragma pop
+#endif

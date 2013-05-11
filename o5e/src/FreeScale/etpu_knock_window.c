@@ -19,6 +19,12 @@
 #include "etpu_knock_window.h"	 	   	   /* eTPU Knock Window API defines */
 extern uint32_t fs_etpu_data_ram_start;
 
+#if __CWCC__
+#pragma push
+#pragma warn_unusedvar    off
+#pragma warn_implicitconv off
+#endif
+
 /****************************************************************************
 FUNCTION     : fs_etpu_knock_window_init
 PURPOSE      : To initialize an eTPU channel to generate a knock window 
@@ -258,3 +264,6 @@ int32_t fs_etpu_knock_window_update ( uint8_t channel,
 	  
 	return(error_code);
 }
+#if __CWCC__
+#pragma pop
+#endif

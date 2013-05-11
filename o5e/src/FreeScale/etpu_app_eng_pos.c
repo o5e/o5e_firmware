@@ -1,5 +1,5 @@
 /**************************************************************************
- * FILE NAME: $RCSfile: etpu_app_eng_pos.c,v $                    *
+ * FILE NAME: $RCSfile: etpu_app_eng_pos.c,v $                            *
  *                                           COPYRIGHT (c) FREESCALE 2006 *
  *                                                  All Rights Reserved   *
  * DESCRIPTION:                                                           *
@@ -41,6 +41,13 @@ extern uint32_t fs_etpu_data_ram_start;
  **************************************************************************/
 
 uint8_t g_crank_channel, g_cam_channel;
+
+#if __CWCC__
+#pragma push
+#pragma warn_unusedvar    off
+#pragma warn_implicitconv off
+#endif
+
 /******************************************************************************
 FUNCTION     : fs_etpu_app_eng_pos_init
 PURPOSE      : To initialize 2 eTPU channels to for the synchronisation 
@@ -623,3 +630,7 @@ int32_t fs_etpu_eng_pos_adjust_angle (int24_t angle_adjust )
   fs_etpu_set_hsr( g_crank_channel,  FS_ETPU_CRANK_ANGLE_ADJUST);
   return(0);	
 }
+
+#if __CWCC__
+#pragma pop
+#endif

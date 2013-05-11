@@ -5,129 +5,111 @@
     @brief  Open5xxxECU - calls init routines, creates tasks, starts scheduler to run them
     @note www.Open5xxxECU.org
     @version 1.3
-    @copyright MIT License
+    @copyright 2011 Jon Zeeff
     @warning O5E is not for use in safety critical systems or pollution controlled vehicles.
 
 **********************************************************************************/
 
 /*
-Copyright (c) 2011 Jon Zeeff
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+Copyright (c) 2011 Jon Zeeff  - All Rights Reserved
+Copyright (c) 2012 Sean Stasiak <sstasiak at gmail dot com>
 */
 
-#include "config.h"
-#include "system.h"
 #include <stdint.h>
-#define EXTERN
-#include "main.h"
-#include "cpu.h"
-#include "variables.h"
-#include "OS.h"
 #include <stdio.h>
-#include "eSCI_DMA.h"
+#include "config.h"
+#include "mpc563xm.h"
+#include "cocoos.h"
+#include "main.h"
+#include "variables.h"
+#include "Tuner.h"
+#include "Engine_OPS.h"
+#include "err.h"
+#include "led.h"
 #include "etpu_struct.h"
 #include "etpu_util.h"
-#include "FreeScale/FSutil.h"
-#include "eSCI_OPS.h"
-#include "mpc5500_ccdcfg.h"
-#include "Functions.h"
+#include "etpu_app_eng_pos.h"
+#include "eTPU_OPS.h"
+#include "Testing_OPS.h"
+#include "Fake_Cam_Signal.h"
+
+
+
+static void Angle_Clock_Task(void);
+static Evt_t event;             // dummy event for angle task
+static void LED_Task(void);
 
 // Note: CocoOS allows less critical tasks to run less frequently and prevents spagetti code caused by state machines
 //       Currently it uses no interrupts and no preemption.  But it does use Duff's device - so no non-static local 
 //       variables in a task (elsewhere is fine).
+/* classic misunderstanding above TODO: remove */
 
-void System_Init(void);         // init routine
-
-// OS housekeeping
-static void scheduler(void);
-static uint8_t task_id[N_TASKS];        // tasks that have been created
-static uint8_t num_tasks = 0;
-static Evt_t event;             // dummy event
-static uint32_t max_delay = 0;  // worse case OS delay
+void System_Init(void);                 // init routine
 
 /*************************************************************************************/
 
-int main(void)
+void main( void )
 {
+  err_init(); /**< get code logger abilities up asap */
     // Initialize the O5E system
     System_Init();
-
     // the code that we want to run repeatedly
-    // Note: order by priority
     // Note: all tasks must "task_wait(n)" at least every 1/2 msec, preferably more often
     // CRITICAL: tasks cannot have non-static local variables and cannot use switch statements!
-
+    /* classic misunderstanding above TODO: remove */
+    
     if (Flash_OK != 0) {        // don't run these with nonsense flash values 
-        //task_id[num_tasks] = task_create(Enrichment_Task,num_tasks+128,0,0,0);       	// create the task
-        //++num_tasks;
-        task_id[num_tasks] = task_create(Engine10_Task, num_tasks + 128, 0, 0, 0);      // create the task
-        ++num_tasks;
-        task_id[num_tasks] = task_create(Fuel_Pump_Task, num_tasks + 128, 0, 0, 0);     // create the task
-        ++num_tasks;
-        task_id[num_tasks] = task_create(Slow_Vars_Task, num_tasks + 128, 0, 0, 0);     // create the task
-        ++num_tasks;
-        //task_id[num_tasks] = task_create(O2_Task,num_tasks + 128,0,0,0);         	// create the task
-        //++num_tasks;
-        task_id[num_tasks] = task_create(Eng_Pos_Status_BLINK_Task, num_tasks + 128, 0, 0, 0);      //create the task - very low priority
-        ++num_tasks;
-    }
-    task_id[num_tasks] = task_create(tuner_task, num_tasks + 128, 0, 0, 0);     // create the task
-    ++num_tasks;
-    task_id[num_tasks] = task_create(LED_task, num_tasks + 128, 0, 0, 0);       // create the task 
-    ++num_tasks;
-    // =====  add more here ======
+        (void)task_create(Engine10_Task, 0 + 128, 0, 0, 0);      // create the task
+        (void)task_create(Fuel_Pump_Task, 1 + 128, 0, 0, 0);     // create the task
+        (void)task_create(Slow_Vars_Task, 2 + 128, 0, 0, 0);     // create the task
+        (void)task_create(Eng_Pos_Status_BLINK_Task, 3 + 128, 0, 0, 0);      //create the task 
+        if (Sync_Mode_Select == 1){   // user option to generate a cam signal
+           (void)task_create(Cam_Pulse_Task, 4 + 128, 0, 0, 0);      // create the task
+        }
 
-    // must be last
-    task_id[num_tasks] = task_create(scheduler, 254, 0, 0, 0);  		// task to update clocks - always last
-    ++num_tasks;
-    event = event_create();     // dummy event
+    } 
+   	(void)task_create(Test_RPM_Task, 5 + 128, 0, 0, 0);
+    (void)task_create(Tuner_Task, 6 + 128, 0, 0, 0);     // create the task
+    (void)task_create(LED_Task, 7 + 128, 0, 0, 0);       // create the task 
+    //this should always be last
+    (void)task_create(Angle_Clock_Task, 254, 0, 0, 0);                  // task to update angle clock, always last
 
-    os_start();                 // never returns
-    return 0;
+  os_start();
 }
 
-/*************************************************************************************/
-
-// CocoOS is non-preemptive and uses no interrupts.  
-// This task is always ready to run, but it has the lowest priority. 
-// Similar to an idle routine.
-// It also updates the OS clocks
-
-static void scheduler(void)
+static void Angle_Clock_Task(void)
 {
-    static uint32_t prev_clock; // for msec clock
     static uint32_t prev_angle; // previous cam position in ticks
-    static uint32_t i;
-    register uint64_t j;
+    static uint32_t i;   
+    register uint64_t j =0;
+    static int8_t status;
+    static int8_t Previous_Status;
+    static uint32_t Start_Time;     // time when start started
+	static uint32_t Start_Degrees;  // engine position when start started
 
+    
+#define ANGLE_TICKS_PER_DEGREE ((Ticks_Per_Tooth * (N_Teeth + Missing_Teeth)) / 360)
     task_open();                // NOTE: must be first line
 
-    prev_clock = hclock();      // for msec clock
-    prev_angle = angle_clock(); // previous cam position in ticks
-    max_delay = 0;              // diagnostic
+
+// previous cam position in ticks
 
     for (;;) {
 
-        // update msec clock
-        i = (hclock() - prev_clock) & 0xffffff; // 24 bit hw counter
-        j = i * (((uint64_t)1 << 32) / TICKS_PER_MSEC);        // avoid a run time divide
-        i = (uint32_t) (j >> 32);       // convert back to bin 0
-        if (i > 0) {            // delta full msec
-            msec_clock += i;    // firmware maintained clock
-            prev_clock = (prev_clock + i * TICKS_PER_MSEC) & 0xffffff;  // increment previous
-            os_task_tick(0, (uint16_t) i);      // increment os msec clock value
-
-            // other slow events can be checked and set here
+        status = fs_etpu_eng_pos_get_engine_position_status ();
+      	if  (Previous_Status != status || status != FS_ETPU_ENG_POS_FULL_SYNC){  //position known so fuel and spark have started
+            Degree_Clock = 0;;
+            prev_angle = angle_clock();
+            Start_Time = systime;
+            Start_Degrees = Degree_Clock;
+            Post_Start_Time = 0;
+            Post_Start_Cycles = 0;
+            Previous_Status = status;
         }
-        // update crank shaft degree/angle clock (not synced to TDC cyl #1)
-        // 
-#define ANGLE_TICKS_PER_DEGREE 10
+
+        
+        // update crank shaft degree/angle clock (free running, not synced to an absolute engine position)
+//Match the degrees per tic to the eTPU settings
         i = (angle_clock() - prev_angle) & 0xffffff;    // 24 bit hw counter 
         j = i * (((uint64_t)1 << 32) / ANGLE_TICKS_PER_DEGREE);        // avoid a run time divide
         i = (uint32_t) (j >> 32);       // convert back to bin 0
@@ -135,67 +117,40 @@ static void scheduler(void)
             Degree_Clock += i;
             prev_angle = (prev_angle + i * ANGLE_TICKS_PER_DEGREE) & 0xffffff;
             os_task_tick(1, (uint16_t) i);      // increment os angle clock value
-        }
-        // TODO test and set other fast events here
-
-        // TODO - track %CPU for each task, max delay and a "load average".  Use STM clock.
-
-        // do diagnostics and cause task switch
-        static uint32_t save_clock;
-        save_clock = hclock();  // current time
-
+        } 
+                      // maintain some timers for use by enrichment
+         //update + make sure the timers don't overflow  - TODO eliminate divides
+        if (Post_Start_Time < 10000)
+           Post_Start_Time = (uint16_t)(systime - Start_Time) / 1000;
+        if (Post_Start_Cycles < 10000)
+            Post_Start_Cycles = (uint16_t)(Degree_Clock - Start_Degrees) / 720;
         event_signal(event);    // dummy to cause task change - all higher priority tasks will be run
 
-        save_clock = (hclock() - save_clock) & 0xffffff;        // how long all other tasks took
-        if (save_clock > max_delay) {   // track max OS delay ever seen
-            max_delay = save_clock;
-            //if (max_delay > TICKS_PER_MSEC * 10)      // 10 msec is too long
-            //   Last_Error = 3894;
-        }
-
-    }                           // for ever
-
-    task_close();               // never reached
-
-}                               // scheduler()
-
-/*************************************************************************************/
-
-#include <string.h>
-
-// Routine to record an error
-void system_error(uint16_t code, char *file, uint16_t line, char *note)
-{
-    Last_Error = code;          // output that will be sent to tuner
-    sprintf((char *)Error_String, "%d %u %s %u %s\r\n", msec_clock, code, file, line, note);    // log error
+        
+     } // for ever
+    
+    task_close();
 }
+    
+// Task to verify that OS is running - flash a LED, feed the watchdog, feed TunerStudio
 
-/*************************************************************************************/
-
-char string[80];
-
-// Task to verify that OS is running - flash a LED and feed the watchdog
-
-void LED_task(void)
+static void LED_Task(void)
 {
     task_open();                // NOTE:  no non-static local variables allowed
-    task_wait(410);
-
-    sprintf(string, "\r\nO5E main.c %s %s\r\n", __DATE__, __TIME__);
-    write_serial((unsigned char *)string, (unsigned short)strlen(string));
-
-    // init LED pin
-    init_LED(LED_PIN, 0);
+    task_wait(410);             /**< why the wait? */
 
     // flash every second and feed watchdog
     for (;;) {
+        /* don't even bother hitting wd here, this is the wrong way to it */
         //Feed_Watchdog();        // will reset cpu if not fed
 
-        // Check for DMA errors
-        if (EDMA.ESR.R != 0)
-            system_error(31629, __FILE__, __LINE__, "");
 
-        invert_LED(LED_PIN);
+        // DEBUG - check for DMA errors
+        /* if we have DMA errors, so what ? */
+        if (EDMA.ESR.R != 0)
+            err_push( CODE_OLDJUNK_D5 );
+
+        led_invert( LED1 );
         if (Last_Error == 0)
             task_wait(999);     // delay about 1 sec
         else 

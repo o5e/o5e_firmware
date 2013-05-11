@@ -1,15 +1,15 @@
 
 #ifndef ENRICHMENT_OPS_H
 #define ENRICHMENT_OPS_H
-
-#ifndef EXTERN
-#define EXTERN extern
+#ifdef __cplusplus
+extern "C"
+{
 #endif
 
-EXTERN int16_t Accel_Corr;                 // bin 12
+void Get_Accel_Decel_Corr(void);
+void Get_Prime_Corr(void);
 
-extern uint8_t CLT_Corr, Post_Start_Corr;     
-void Enrichment_Task();
-
+#ifdef __cplusplus
+}
 #endif
-#undef EXTERN
+#endif

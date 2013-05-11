@@ -13,8 +13,4 @@
 /**************************************************************************/
 
 void init_eDMA(void);
-void Read_ADs(void);
 void Zero_DMA_Channel(int DMA_chan);
-uint8_t * memcpy_DMA(uint8_t *dest, uint8_t *src, int n);
-
-

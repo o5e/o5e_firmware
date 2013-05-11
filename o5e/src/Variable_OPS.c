@@ -1,51 +1,58 @@
-/**********************************************************************************/
-/* FILE NAME: Variable_OPS.c                                                      */
-/*                                                                                */
-/* DESCRIPTION:                                                                   */
-/* This file contains functions for Reading and "Smoothing" Operating Variables   */
-/* MAP_value, MAP_rate, TPS and TPS_rate.                                         */
-/*                                                                                */
-/*================================================================================*/
-/* ORIGINAL AUTHOR:  Paul Schlein                                                 */
-/* REV      AUTHOR          DATE          DESCRIPTION OF CHANGE                   */
-/* ---     -----------     ----------    ---------------------                    */
-/* 3.0     J. Zeeff        19/May-12     cleanup, filtering, error check, O2      */
-/* 2.0     M. Eberhardt    20/Dec/11     added new table format                   */
-/* 1.0     P. Schlein      12/Sep/11     Initial version                          */
-/**********************************************************************************/
+/*********************************************************************************
+
+        @file   Variable_OPS.c                                                              
+        @author Paul Schlein, M. Eberhardt, Jon Zeeff 
+        @date   May 19, 2012
+        @brief  Open5xxxECU - knock detection
+        @note   This file contains functions for Reading and "Smoothing" Operating Variables   
+        @version  1.1
+        @copyright 2011 P. Schlein, M. Eberhardt, J. Zeeff
+
+*************************************************************************************/
+
+/* 
+Portions Copyright 2011 P. Schlein - MIT License
+Portions Copyright 2011,2012  M. Eberhardt - MIT License
+Portions Copyright 2011,2012  Jon Zeeff - All rights reserved
+Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause License
+*/
 
 /*  General                                                                    */
+#include <stdint.h>
+#include "typedefs.h" /**< pickup vuint_xxx */
 #include "config.h"
-#include "system.h"
 #include "variables.h"
 #include "Variable_OPS.h"
 #include "etpu_util.h"
 #include "Table_Lookup_JZ.h"
 #include "eQADC_OPS.h"
-#include "eDMA_OPS.h"
+#include "eTPU_OPS.h"
+#include "bsp.h" //pickup systime for the clock to work
+
 
 /*  eTPU APIs                                                                  */
 #include "etpu_toothgen.h"
 #include "etpu_app_eng_pos.h"
 
-/*  Other  */
-#include "cpu.h"
-
-#if 1
 
 /* Global Declarations  */
-#   define MAX_AD_COUNTS  16384./* why not 4096? */
+#   define MAX_AD_COUNTS  16384.                /* not 4096 as you might expect */
 #   define MAX_AD_VOLTAGE 5.
 
 #   define VBATT_VOLTAGE_DIVIDER (49.0/10.0)
-#   define V_Batt_AD    ADC_RsltQ0[11]
+#   define V_Batt_AD    ADC_RsltQ0[25]
 #   define CLT_VOLTAGE_DIVIDER 1.0
-#   define V_CLT_AD    ADC_RsltQ0[21]
+#   define V_CLT_AD    ADC_RsltQ0[39]
 #   define IAT_VOLTAGE_DIVIDER 1.0
+<<<<<<< HEAD
 #   define V_IAT_AD    ADC_RsltQ0[23]
+=======
+#   define V_IAT_AD    ADC_RsltQ0[38]
+>>>>>>> development_5634
 #   define TPS_VOLTAGE_DIVIDER 1.0
-#   define V_TPS_AD    ADC_RsltQ0[16]
+#   define V_TPS_AD    ADC_RsltQ0[31]
 #   define MAP_1_VOLTAGE_DIVIDER 1.0
+<<<<<<< HEAD
 #   define V_MAP_1_AD    ADC_RsltQ0[9] // Q5 [0]         // special case - from window sampled Q
 #   define MAP_2_VOLTAGE_DIVIDER 1.0
 #   define V_MAP_2_AD    ADC_RsltQ0 [23]	/* TODO */
@@ -61,6 +68,25 @@
 #   define V_P4_AD    ADC_RsltQ0 [35]
 #   define P5_VOLTAGE_DIVIDER 1.0
 #   define V_P5_AD    ADC_RsltQ0 [35]
+=======
+#   define V_MAP_1_AD    ADC_RsltQ5 [0]       
+#   define MAP_2_VOLTAGE_DIVIDER 1.0
+#   define V_MAP_2_AD    ADC_RsltQ0 [23]	/* TODO */
+#   define MAP_3_VOLTAGE_DIVIDER 1.0
+#   define V_MAP_3_AD    ADC_RsltQ0 [23]
+#   define MAF_1_VOLTAGE_DIVIDER 1.0
+#   define V_MAF_1_AD    ADC_RsltQ0 [35]
+#   define P1_VOLTAGE_DIVIDER 1.0
+#   define V_P1_AD    ADC_RsltQ0 [17]
+#   define P2_VOLTAGE_DIVIDER 1.0
+#   define V_P2_AD    ADC_RsltQ0 [31]
+#   define P3_VOLTAGE_DIVIDER 1.0
+#   define V_P3_AD    ADC_RsltQ0 [32]
+#   define P4_VOLTAGE_DIVIDER 1.0
+#   define V_P4_AD    ADC_RsltQ0 [33]
+#   define P5_VOLTAGE_DIVIDER 1.0
+#   define V_P5_AD    ADC_RsltQ0 [34]
+>>>>>>> development_5634
 #   define P6_VOLTAGE_DIVIDER 1.0
 #   define V_P6_AD    ADC_RsltQ0 [35]
 #   define P7_VOLTAGE_DIVIDER 1.0
@@ -80,6 +106,7 @@
 #   define P14_VOLTAGE_DIVIDER 1.0
 #   define V_P14_AD    ADC_RsltQ0 [35]
 #   define O2_1_UA_VOLTAGE_DIVIDER 1.0
+<<<<<<< HEAD
 #   define V_O2_1_UA_AD    ADC_RsltQ0 [24]
 #   define O2_1_UR_VOLTAGE_DIVIDER 1.0
 #   define V_O2_1_UR_AD    ADC_RsltQ0 [27]
@@ -87,6 +114,15 @@
 #   define V_O2_2_UA_AD    ADC_RsltQ0 [35]
 #   define O2_2_UR_VOLTAGE_DIVIDER 1.0
 #   define V_O2_2_UR_AD    ADC_RsltQ0 [35]
+=======
+#   define V_O2_1_UA_AD    ADC_RsltQ0 [23]
+#   define O2_1_UR_VOLTAGE_DIVIDER 1.0
+#   define V_O2_1_UR_AD    ADC_RsltQ0 [24]
+#   define O2_2_UA_VOLTAGE_DIVIDER 1.0
+#   define V_O2_2_UA_AD    ADC_RsltQ0 [28]
+#   define O2_2_UR_VOLTAGE_DIVIDER 1.0
+#   define V_O2_2_UR_AD    ADC_RsltQ0 [30]
+>>>>>>> development_5634
 #   define Knock_1_VOLTAGE_DIVIDER 1.0
 #   define V_Knock_1_AD    ADC_RsltQ0 [0]   // TODO
 #   define Knock_2_VOLTAGE_DIVIDER 1.0
@@ -94,6 +130,8 @@
 
 extern uint32_t etpu_a_tcr1_freq;       //Implicit Defn.in eTPU_OPS.c
 extern uint32_t etpu_b_tcr1_freq;       //Implicit Defn.in eTPU_OPS.c
+
+int8_t crank_position_status;
 
 // filter a raw A/D value in ADC_RsltQ0 - done "in place"
 // strength can be 1,2,3,.. for 1/2, 1/4, 1/8, etc
@@ -106,12 +144,6 @@ Filter_AD(vuint16_t * Value, uint16_t Strength)
 {
 register unsigned int index = (unsigned int)(Value - &ADC_RsltQ0[0]);   // 0 to 39 normally
 
-#if 0
-// check for A/D values outside normal range
-if (*Value < (MAX_AD_COUNTS * .01) || *Value > (MAX_AD_COUNTS * .99))
-   system_error(32805, __FILE__, __LINE__, "");
-#endif
-
 // use, for example (strength = 3), 7/8 of old value and 1/8 of new value
 
 // check that it is in the memory range of RsltQ0, otherwise do nothing
@@ -120,17 +152,6 @@ if (index < (unsigned int)(sizeof(ADC_RsltQ0) / sizeof(uint16_t)))
 
 return prev_value[index];
 }
-
-#if 0
-uint16_t median_3 (const uint16_t a, const uint16_t, const uint16_t c)
-{
-  if ((a <= b) && (a <= c))
-    return (b <= c) ? b : c;
-  if ((b <= a) && (b <= c))
-    return (a <= c) ? a : c;
-  return (a <= b) ? a : b;
-}
-#endif
 
 //**********************************************************************************
 // FUNCTION     : Get_Operational_Variables                                       
@@ -149,29 +170,38 @@ void Get_Slow_Op_Vars(void)
     // Test_Enable allows real time variables to be set in TunerStudio to test code.
 
     if (Test_Enable == 1) {
-        // Test_Value = 0 allows the actual value to be input bypassing reading the ADC and the table lookup
 
+        // speed doesn't matter here
+
+        // Test_Value = 0 allows the actual value to be input bypassing reading the ADC and the table lookup
         if (Test_Value == 0) {
             CLT = Test_CLT;
             IAT = Test_IAT;
-            MAP[1] = Test_MAP_2;
 
         } else {
-            // Test_Value = 1 allows values simulating the ADC to be input 
 
+            // Test_Value = 1 allows values simulating the ADC to be input 
             V_CLT = Test_V_CLT;
             CLT = (int16_t) table_lookup_jz(V_CLT, 0, CLT_Table);
 
             V_IAT = Test_V_IAT;
             IAT = (int16_t) table_lookup_jz(V_IAT, 0, IAT_Table);
 
-            V_MAP[1] = Test_V_MAP_2;
-            MAP[1] = (int16_t) table_lookup_jz(V_MAP[1], 0, MAP_2_Table);
 
-            // Updates toothgen with the desired test RPM
-            fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM, (CPU_CLOCK / 32) / 2);
-        }
-    } else {                    //Run Mode, normal operation
+        } // if
+
+        /* TODO: this needs to be selectively enabled, what happens when firmware is
+           built without SIMULATOR defined in etpu_ops.c ? - this code shouldn't run in
+           that case */
+        /* might be best to alias this functionality under its own thread that is
+           compiled out in one place instead of spreading this functionality
+           across multiple files */
+        // Updates toothgen with the desired test RPM
+//#ifndef SIMULATOR
+//        fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM, etpu_tcr1_freq);
+//#endif
+
+    } else {                    // Run Mode, normal operation
 
         // coolant temperature
         Filter_AD(&V_CLT_AD,3);  // smooth by 8
@@ -183,42 +213,20 @@ void Get_Slow_Op_Vars(void)
         V_IAT = (int16_t) ((V_IAT_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * IAT_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_IAT is bin 12
         IAT = (int16_t) table_lookup_jz(V_IAT, 0, IAT_Table);
 
-        // manifold absolute pressure - TODO - make it clear what the 3 are
-        V_MAP[0] = (int16_t) ((V_MAP_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_1 is bin 12
-        MAP[0] = (int16_t) table_lookup_jz(V_MAP[0], 0, MAP_1_Table);
+        // manifold absolute pressure - TODO - Mark, make it clear what the 3 are
 
-        V_MAP[1] = (int16_t) ((V_MAP_2_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_2_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_2 is bin 12
-        MAP[1] = (int16_t) table_lookup_jz(V_MAP[1], 0, MAP_2_Table);
+        //V_MAP[2] = (int16_t) ((V_MAP_3_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_3_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_3 is bin 12
+        //MAP[2] = (int16_t) table_lookup_jz(V_MAP[2], 0, MAP_3_Table);
 
-        V_MAP[2] = (int16_t) ((V_MAP_3_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_3_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_3 is bin 12
-        MAP[2] = (int16_t) table_lookup_jz(V_MAP[2], 0, MAP_3_Table);
-
-        // O2 sensors
+        // O2 sensors - only for pass through to tuner
         V_O2_UA[0] = (int16_t) ((V_O2_1_UA_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_1_UA_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);     // V_O2 is bin 12
         V_O2_UR[0] = (int16_t) ((V_O2_1_UR_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_1_UR_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);     // V_O2 is bin 12
-        AFR[0] = (int16_t) table_lookup_jz (V_O2_UA[0],0, AFR_1_Table); 	// convert volts to AFR
+        Lambda[0] = (int16_t) table_lookup_jz (V_O2_UA[0],0, Lambda_1_Table); 	// convert volts to lambda
         V_O2_UA[1] = (int16_t) ((V_O2_2_UA_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_2_UA_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);     // V_O2 is bin 12
         V_O2_UR[1] = (int16_t) ((V_O2_2_UR_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_2_UR_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);     // V_O2 is bin 12
-        AFR[1] = (int16_t) table_lookup_jz (V_O2_UA[0],0, AFR_2_Table); 	// convert volts to AFR
+        Lambda[1] = (int16_t) table_lookup_jz (V_O2_UA[0],0, Lambda_2_Table); 	// convert volts to lambda
 
-    }
-
-#   if 0
-    V_P1 = (uint16_t) ((V_P1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);    // V_P1 is bin 12
-    V_P2 = (uint16_t) ((V_P2_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P2_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);    // V_P2 is bin 12
-    V_P3 = (uint16_t) ((V_P3_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P3_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);    // V_P3 is bin 12
-    V_P4 = (uint16_t) ((V_P4_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P4_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);    // V_P4 is bin 12
-    V_P5 = (uint16_t) ((V_P5_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P5_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);    // V_P5 is bin 12
-    V_P6 = (uint16_t) ((V_P6_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P6_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);    // V_P6 is bin 12
-    V_P7 = (uint16_t) ((V_P7_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P7_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);    // V_P7 is bin 12
-    V_P8 = (uint16_t) ((V_P8_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P8_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);    // V_P8 is bin 12
-    V_P9 = (uint16_t) ((V_P9_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P9_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);    // V_P9 is bin 12
-    V_P10 = (uint16_t) ((V_P10_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P10_VOLTAGE_DIVIDER) * (1 << 20))) >> 8); // V_P10 is bin 12
-    V_P11 = (uint16_t) ((V_P11_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P11_VOLTAGE_DIVIDER) * (1 << 20))) >> 8); // V_P11 is bin 12
-    V_P12 = (uint16_t) ((V_P12_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P12_VOLTAGE_DIVIDER) * (1 << 20))) >> 8); // V_P12 is bin 12
-    V_P13 = (uint16_t) ((V_P13_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P13_VOLTAGE_DIVIDER) * (1 << 20))) >> 8); // V_P13 is bin 12
-    V_P14 = (uint16_t) ((V_P14_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P14_VOLTAGE_DIVIDER) * (1 << 20))) >> 8); // V_P14 is bin 12
-#   endif
+    }  // if normal run mode
 
 }
 
@@ -226,6 +234,10 @@ void Get_Slow_Op_Vars(void)
 
 void Get_Fast_Op_Vars(void)
 {
+       crank_position_status = fs_etpu_eng_pos_get_engine_position_status ();
+       // = fs_etpu_eng_pos_get_crank_error_status();
+        //TS looks at "seconds" to know ift he OS is running....we're giving it msec but that will do
+       seconds = systime;//(EMIOS.CH[MSEC_EMIOS_CHANNEL].CCNTR.R);
     // Code for testing
     // Test_Enable allows real time variables to be set in TunerStudio to test code
 
@@ -234,18 +246,26 @@ void Get_Fast_Op_Vars(void)
         // Test_Value = 0 allows the actual value to be input bypassing reading the ADC and the table lookup       
         if (Test_Value == 0) {
             V_Batt = Test_V_Batt;
-            RPM = Test_RPM;
+            RPM = Test_RPM_1;
             TPS = Test_TPS;
             MAP[0] = Test_MAP_1;
+            MAP[1] = Test_MAP_2;
+            MAF[0] = Test_MAF_1;
 
         } else {                // Test_Value = 1 allows values simulating the ADC to be input 
             V_Batt = Test_V_Batt;
+			if (crank_position_status == 0) //if status = 0 the TCR2 clock in not valid so set rpm to 0
+			    RPM = 0;
+			else
+				RPM = (uint16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);   // Read RPM from eTPU
 
-            RPM = (int16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);   // Read RPM from eTPU
+            
+            // TODO: if using a double gap wheel, divide rpm by 2
 
             V_TPS = Test_V_TPS;
-            V_TPS = (int16_t) ((V_TPS_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * TPS_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);       // V_TPS is bin 12
             TPS = (int16_t) table_lookup_jz(V_TPS, 0, TPS_Table);
+            V_MAP[1] = Test_V_MAP_2;
+            MAP[1] = (int16_t) table_lookup_jz(V_MAP[1], 0, MAP_2_Table);
             /* Angle based stuff */
             V_MAP[0] = Test_V_MAP_1;
             MAP[0] = (int16_t) table_lookup_jz(V_MAP[0], 0, MAP_1_Table);
@@ -254,25 +274,37 @@ void Get_Fast_Op_Vars(void)
     } else {                    //Run Mode, normal operation
 
         /* On fast for now, but should be medium speed ...100hz or so */
+        Filter_AD(&V_Batt_AD,3);  // smooth by 8
         V_Batt = (int16_t) ((V_Batt_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * VBATT_VOLTAGE_DIVIDER) * (1 << 20))) >> 10);  // V_Batt is bin 10
-
-        RPM = (int16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);       // Read RPM from eTPU
+		if(crank_position_status == 0) //if status = 0 the TCR2 clock in not valid so set rpm to 0
+			RPM = 0;
+		else
+        	RPM = (uint16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);       // Read RPM from eTPU
 
         /* Fast speed stuff...1000hz or so */
+        Filter_AD(&V_TPS_AD,3);  // smooth by 8
         V_TPS = (int16_t) ((V_TPS_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * TPS_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);       // V_TPS is bin 12
         TPS = (int16_t) table_lookup_jz(V_TPS, 0, TPS_Table);
+        
+        Filter_AD(&V_MAP_2_AD,3);  // smooth by 8
+        V_MAP[1] = (int16_t) ((V_MAP_2_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_2_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_2 is bin 12
+        MAP[1] = (int16_t) table_lookup_jz(V_MAP[1], 0, MAP_2_Table);
+        
+        Filter_AD(&V_MAF_1_AD,3);  // smooth by 8
+        V_MAF[0] = (int16_t) ((V_MAF_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAF_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAF_1 is bin 12
+        MAF[0] = (int16_t) table_lookup_jz(V_MAF[0], 0, MAF_1_Table);
 
         /* Angle based stuff */
-        V_MAP[0] = (int16_t) ((V_MAP_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP_1 is bin 12
+        Filter_AD(&V_MAP_1_AD,3);  // smooth by 8
+        V_MAP[0] = (int16_t) ((V_MAP_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8);        // V_MAP is bin 12
         MAP[0] = (int16_t) table_lookup_jz(V_MAP[0], 0, MAP_1_Table);
+        
+        
+        /* convert P1*/
+        Filter_AD(&V_P1_AD,3);  // smooth by 8
+        Pot_RPM = (int16_t) ((V_P1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P1_VOLTAGE_DIVIDER ) * (1 << 20))) >> 8);       // V_P1_AD is bin 12
+        Pot_RPM=  (3000* Pot_RPM) >>12;
+        
     }
 
-#   if 0
-    /*knock window based stuff */
-    V_Knock_1 = (uint16_t) ((V_Knock_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * Knock_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8); // V_Knock_1 is bin 12
-    V_Knock_2 = (uint16_t) ((V_Knock_1_AD * (uint32_t) (((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * Knock_1_VOLTAGE_DIVIDER) * (1 << 20))) >> 8); // V_Knock_2 is bin 12
-#   endif
-
 }                               // Get_Fast_Op_Vars()
-
-#endif

@@ -11,12 +11,11 @@
 /* 1.0     P. Schlein      22/Sep/11     Initial version                          */
 /**********************************************************************************/
 
+/* Copyright (c) 2011 P. Schlein */
+
+#include "mpc563xm.h"
 #include "config.h"
-#include "system.h"
-
-#ifndef MPC5602
-
-#   include "eSCI_OPS.h"
+#include "eSCI_OPS.h"
 
 /**********************************************************************************/
 /* FUNCTION     : Initialize the eSCI for Queued Operations                       */
@@ -73,5 +72,3 @@ void init_eSCI(void)
     ESCI_B.SR.R = 0xffffffff;   /* Clear flags */
 
 }
-
-#endif
