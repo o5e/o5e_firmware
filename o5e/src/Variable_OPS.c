@@ -44,27 +44,10 @@ Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause
 #   define CLT_VOLTAGE_DIVIDER 1.0
 #   define V_CLT_AD    ADC_RsltQ0[39]
 #   define IAT_VOLTAGE_DIVIDER 1.0
-#   define V_IAT_AD    ADC_RsltQ0[23]
 #   define V_IAT_AD    ADC_RsltQ0[38]
 #   define TPS_VOLTAGE_DIVIDER 1.0
 #   define V_TPS_AD    ADC_RsltQ0[31]
 #   define MAP_1_VOLTAGE_DIVIDER 1.0
-#   define V_MAP_1_AD    ADC_RsltQ0[9] // Q5 [0]         // special case - from window sampled Q
-#   define MAP_2_VOLTAGE_DIVIDER 1.0
-#   define V_MAP_2_AD    ADC_RsltQ0 [23]	/* TODO */
-#   define MAP_3_VOLTAGE_DIVIDER 1.0
-#   define V_MAP_3_AD    ADC_RsltQ0 [35] //put unused stuff on 35 for now
-#   define P1_VOLTAGE_DIVIDER 1.0
-#   define V_P1_AD    ADC_RsltQ0 [35]
-#   define P2_VOLTAGE_DIVIDER 1.0
-#   define V_P2_AD    ADC_RsltQ0 [35]
-#   define P3_VOLTAGE_DIVIDER 1.0
-#   define V_P3_AD    ADC_RsltQ0 [35]
-#   define P4_VOLTAGE_DIVIDER 1.0
-#   define V_P4_AD    ADC_RsltQ0 [35]
-#   define P5_VOLTAGE_DIVIDER 1.0
-#   define V_P5_AD    ADC_RsltQ0 [35]
-=======
 #   define V_MAP_1_AD    ADC_RsltQ5 [0]       
 #   define MAP_2_VOLTAGE_DIVIDER 1.0
 #   define V_MAP_2_AD    ADC_RsltQ0 [23]	/* TODO */
@@ -82,7 +65,6 @@ Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause
 #   define V_P4_AD    ADC_RsltQ0 [33]
 #   define P5_VOLTAGE_DIVIDER 1.0
 #   define V_P5_AD    ADC_RsltQ0 [34]
->>>>>>> development_5634
 #   define P6_VOLTAGE_DIVIDER 1.0
 #   define V_P6_AD    ADC_RsltQ0 [35]
 #   define P7_VOLTAGE_DIVIDER 1.0
@@ -102,15 +84,6 @@ Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause
 #   define P14_VOLTAGE_DIVIDER 1.0
 #   define V_P14_AD    ADC_RsltQ0 [35]
 #   define O2_1_UA_VOLTAGE_DIVIDER 1.0
-<<<<<<< HEAD
-#   define V_O2_1_UA_AD    ADC_RsltQ0 [24]
-#   define O2_1_UR_VOLTAGE_DIVIDER 1.0
-#   define V_O2_1_UR_AD    ADC_RsltQ0 [27]
-#   define O2_2_UA_VOLTAGE_DIVIDER 1.0
-#   define V_O2_2_UA_AD    ADC_RsltQ0 [35]
-#   define O2_2_UR_VOLTAGE_DIVIDER 1.0
-#   define V_O2_2_UR_AD    ADC_RsltQ0 [35]
-=======
 #   define V_O2_1_UA_AD    ADC_RsltQ0 [23]
 #   define O2_1_UR_VOLTAGE_DIVIDER 1.0
 #   define V_O2_1_UR_AD    ADC_RsltQ0 [24]
@@ -118,7 +91,6 @@ Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause
 #   define V_O2_2_UA_AD    ADC_RsltQ0 [28]
 #   define O2_2_UR_VOLTAGE_DIVIDER 1.0
 #   define V_O2_2_UR_AD    ADC_RsltQ0 [30]
->>>>>>> development_5634
 #   define Knock_1_VOLTAGE_DIVIDER 1.0
 #   define V_Knock_1_AD    ADC_RsltQ0 [0]   // TODO
 #   define Knock_2_VOLTAGE_DIVIDER 1.0

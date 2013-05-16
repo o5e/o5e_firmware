@@ -179,17 +179,6 @@ static void Set_Spark()
 
        
         // Looks up the desired spark advance in degrees before Top Dead Center (TDC)
-
-        Spark_Advance = Table_Lookup_JZ(RPM, Load, Spark_Advance_Table) ;  // Bin shift tuner angles from -2 to 0 for eTPU use 
-        Spark_Advance_eTPU = 72000 - (Spark_Advance <<2);
-
-        // TODO Knock_Retard();
-
-        // Update min/max dwell time
-        Min_Dwell = (Dwell * 102) / 128;        // compiler will use a shift, >> 7
-        Max_Dwell = (Dwell * 153) / 128;
-        fs_etpu_spark_set_min_max_dwell_times(Spark_Channels[0], Min_Dwell, Max_Dwell);
-
         Spark_Advance = (int16_t) table_lookup_jz(RPM, Reference_VE, Spark_Advance_Table);        
 
         Spark_Advance_eTPU = (uint24_t) (72000 - (Spark_Advance << 2));    // bin -2 to 0 for eTPU use 
@@ -200,7 +189,6 @@ static void Set_Spark()
           
         // TODO Knock_Retard(); Issue #7
  
-
 
         if (Spark_Advance_eTPU < (72000 - 4000) && Spark_Advance_eTPU > 2000) {      // error checking, -40 to +20 is OK
               err_push( CODE_OLDJUNK_E3 );
@@ -358,7 +346,6 @@ static void Set_Fuel(void)
 
             error_code = 1;
             while (error_code != 0)     // This tries until the channel is actually updated
-
      //look up trim values
          //need to make table use the "j" value before it will work
             //Corr = table_lookup_jz(RPM, Reference_VE, Cyl_Trim_1_Table);
@@ -366,7 +353,6 @@ static void Set_Fuel(void)
             
                 //error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Cyl_Pulse_Width);
                 //this goes away once cyl trim is working
-
                 error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Pulse_Width);
 
         }                       // for
