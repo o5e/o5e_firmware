@@ -73,7 +73,7 @@ void init_SIU(void)
 
         // eTPU0, pin 114 is special and needs a 11 instead of 01 for primary function
         SIU.PCR[114].R = B0011 | INPUT; 	// configure  for CRANK (TCRCLKA or eTPU[0])
-<<<<<<< HEAD
+
         SIU.PCR[115].R = B0001 | INPUT;       	// cam sensor input eTPU1
         SIU.PCR[116].R = B0001 | OUTPUT; 	// eTPU[2] ignition 1
         SIU.PCR[117].R = B0001 | OUTPUT; 	// eTPU[3] ignition 2
@@ -103,7 +103,7 @@ void init_SIU(void)
         SIU.PCR[141].R = GPIO | UNUSED; 	// eTPU[27] pin available but etpu channel reserved for injector 11
         SIU.PCR[142].R = B0001 | OUTPUT; 	// eTPU[28] Knock window
         SIU.PCR[143].R = GPIO | UNUSED; 	// eTPU[29] pin available but etpu channel reserved for injector 12
-=======
+
         SIU.PCR[115].R = B0001 | INPUT;     // cam sensor input eTPU1
         SIU.PCR[116].R = B0001 | OUTPUT; 	// eTPU[2] ignition 6
         SIU.PCR[117].R = B0001 | OUTPUT; 	// eTPU[3] ignition 5
@@ -133,12 +133,11 @@ void init_SIU(void)
         SIU.PCR[141].R = B0001 | OUTPUT; 	// eTPU[27] Stepper PWM signal  Fuel Pump & etpu channel
         SIU.PCR[142].R = GPIO  | UNUSED; 	// eTPU[28] pin available, & Knock window internal
         SIU.PCR[143].R = B0001 | OUTPUT; 	// eTPU[29] PWM_Pad &  
->>>>>>> development_5634
         SIU.PCR[144].R = B0011 | OUTPUT;    // eTPU[30] toothgen simulator, eTPU30 hardwired to eTPU1 
         SIU.PCR[145].R = B0011 | OUTPUT;    // eTPU[31] toothgen simulator, eTPU31 hardwired to eTPU0 
 
         //EMIOS primary
-<<<<<<< HEAD
+
         SIU.PCR[179].R = GPIO | OUTPUT; 	// eMIOS 0 fuel pump
         SIU.PCR[180].R = GPIO | UNUSED; 	// eMIOS 1
         SIU.PCR[181].R = GPIO | UNUSED; 	// eMIOS 2
@@ -179,7 +178,7 @@ void init_SIU(void)
         //AN35 - V_P5
         //AN35 - V_P6
 
-=======
+
         SIU.PCR[179].R = B0001 | OUTPUT; 	// eMIOS 0 DBW1
         SIU.PCR[180].R = GPIO | UNUSED; 	// eMIOS 1 no pin on the 144 processor
         SIU.PCR[181].R = B0001 | OUTPUT; 	// eMIOS 2 DBW2
@@ -231,7 +230,6 @@ void init_SIU(void)
         //AN39 - V_CLT
         
         
->>>>>>> development_5634
 /*
 Fuel    eTPU21 eTPU9 eTPU10 eTPU11 eTPU12 eTPU13 eTPU18 eTPU20 eTPU22 eTPU23 eTPU24 eTPU25
 Spark   eTPU19 eTPU2 eTPU3 eTPU4 eTPU5 eTPU6 eTPU7 eTPU8

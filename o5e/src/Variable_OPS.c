@@ -44,15 +44,11 @@ Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause
 #   define CLT_VOLTAGE_DIVIDER 1.0
 #   define V_CLT_AD    ADC_RsltQ0[39]
 #   define IAT_VOLTAGE_DIVIDER 1.0
-<<<<<<< HEAD
 #   define V_IAT_AD    ADC_RsltQ0[23]
-=======
 #   define V_IAT_AD    ADC_RsltQ0[38]
->>>>>>> development_5634
 #   define TPS_VOLTAGE_DIVIDER 1.0
 #   define V_TPS_AD    ADC_RsltQ0[31]
 #   define MAP_1_VOLTAGE_DIVIDER 1.0
-<<<<<<< HEAD
 #   define V_MAP_1_AD    ADC_RsltQ0[9] // Q5 [0]         // special case - from window sampled Q
 #   define MAP_2_VOLTAGE_DIVIDER 1.0
 #   define V_MAP_2_AD    ADC_RsltQ0 [23]	/* TODO */
