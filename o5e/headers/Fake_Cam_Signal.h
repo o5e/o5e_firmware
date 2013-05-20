@@ -1,5 +1,5 @@
-#ifndef Fake_Cam_Signal_H
-#define Fake_Cam_Signal_H
+#ifndef Optional_Output_Ops_H
+#define Optional_Output_Ops_H
 
 
 
