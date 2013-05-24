@@ -34,6 +34,13 @@
 #define PWM1_PAD     143    // servo GPIO pad # for above
 #define PWM1_HZ      50     // recommend 50 for servos, 200 or 300 for IAC
 
+//Outptional outputs
+#define GENERIC_OUPUT_1 215 //assign pad #
+#define GENERIC_OUPUT_2 216 //assign pad #
+#define GENERIC_OUPUT_3 217 //assign pad #
+#define GENERIC_OUPUT_4 218 //assign pad #
+
+
 // increasing clock available for general use - runs at CPU_CLOCK/1000000 ticks per msec
 //not currently used anywhere
 //#define MSEC_EMIOS_CHANNEL 9  // eMIOS channel to use for the msec timer (OS and many other uses will roll!!)

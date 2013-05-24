@@ -2,7 +2,7 @@
 
     @file      Optional_Output_Ops.c                                                              
     @date      May 2013
-    @brief     Open5xxxECU - this file contains functions for generating a fake cam signal
+    @brief     Open5xxxECU - this file contains functions for controlling user setup outputs
     @note      www.Open5xxxECU.org
     @version   1.0
     @copyright 2013 - M. Eberhardt
@@ -23,85 +23,300 @@
 #include "bsp.h"   /**< pickup systime      */
 #include "main.h"  /**< pickup Degree_Clock */
 #include "Optional_Output_Ops.h"
+#include "Table_Lookup_JZ.h"
+
+
+int16_t Generic_Output_Scale;
+int16_t Generic_Output_Translate;
+uint8_t Generic_Output_1_Condition_1 = 0;
+uint8_t Generic_Output_1_Condition_2 = 0;
+uint8_t Generic_Output_1_Condition_3 = 0;
+uint8_t Generic_Output_1_Condition_4 = 0;
+uint8_t Generic_Output_1;
+int16_t Generic_Output_1_Link_1_on_ecu;
+int16_t Generic_Output_1_Link_1_off_ecu;
+int16_t Generic_Output_1_Link_2_on_ecu;
+int16_t Generic_Output_1_Link_2_off_ecu;
+int16_t Generic_Output_1_Link_3_on_ecu;
+int16_t Generic_Output_1_Link_3_off_ecu;
+int16_t Generic_Output_1_Link_4_on_ecu;
+int16_t Generic_Output_1_Link_4_off_ecu;
+
+int16_t Generic_Output_1_Link_1_value;
+int16_t Generic_Output_1_Link_2_value;
+int16_t Generic_Output_1_Link_3_value;
+int16_t Generic_Output_1_Link_4_value;
 
 
 
-
-#if __CWCC__
-#pragma push
-#pragma warn_unusedvar    off
-#pragma warn_implicitconv off
-#endif
-/* the above is inserted until I can figure out how this code works
-   and fix it properly */
-
-
-
-// Generate a cam pulse every other rev for engines that don't have a cam signal
-// Doesn't have to be very accurate - cam is not used for timing
-// Note: this implies batch fuel which is done by tying pins together - each pin only fires once per 720 degree cycle
-// The calibration must position an extra wide cam window (because the timing isn't exact)
-// This code could use the eTPU Synchronized Pulse-Width Modulation Function instead.
-
-void Cam_Pulse_Task(void)
+void Generic_Output_1_Task(void)
     {
         task_open();                // standard OS entry
         task_wait(1);
 
-        static uint_fast8_t tooth;
-        static uint8_t start_tooth;
-        static uint_fast8_t prev_tooth = 255;
-        static uint_fast8_t alternate = 1;
-        static uint_fast8_t sync_flag = 1;//normally zero when odd fire stuff is running
-        static uint_fast8_t TDC_Tooth;
-        static uint_fast8_t TDC_Minus_Position;
-        static uint_fast8_t TDC_Plus_Position;
-        static uint32_t TDC_Minus_Position_RPM = 0;
-        static uint32_t Last_TDC_Minus_Position_RPM = 0;
-        
-        start_tooth = (typeof(start_tooth))Start_Tooth;     // position is based on user setting of cam position
-        //position =  Total_Teeth / 2;    // doesn't matter where, but this is a good spot
-        //these are needed for syncing a crank only odd fire engine
-        TDC_Tooth = ((Engine_Position << 2) / Degrees_Per_Tooth_x100) % Total_Teeth; //adjust from bin-2 to bin 0
-        //find teeth to compare rpm to test if compression stroke
-        TDC_Minus_Position = (Total_Teeth  + TDC_Tooth - ((Odd_Fire_Sync_Angle <<2) / Degrees_Per_Tooth_x100)) % Total_Teeth;
 
+//convert setpoints to correct bin point/translate point
+Generic_Output_Scale =  (int16_t) table_lookup_jz(Generic_Output_1_Link_1, 0, Generic_Output_Link_Shift_Table);
+Generic_Output_Translate = (int16_t) table_lookup_jz(Generic_Output_1_Link_1, 1, Generic_Output_Link_Shift_Table);      
+Generic_Output_1_Link_1_on_ecu = (Generic_Output_1_Link_1_on_set *Generic_Output_Scale) - Generic_Output_Translate;
+Generic_Output_1_Link_1_off_ecu=  (Generic_Output_1_Link_1_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
+
+Generic_Output_Scale =  (int16_t) table_lookup_jz(Generic_Output_1_Link_2, 0, Generic_Output_Link_Shift_Table);
+Generic_Output_Translate = (int16_t) table_lookup_jz(Generic_Output_1_Link_2, 1, Generic_Output_Link_Shift_Table);      
+Generic_Output_1_Link_2_on_ecu = (Generic_Output_1_Link_1_on_set *Generic_Output_Scale) - Generic_Output_Translate;
+Generic_Output_1_Link_2_off_ecu=  (Generic_Output_1_Link_1_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
+
+Generic_Output_Scale =  (int16_t) table_lookup_jz(Generic_Output_1_Link_3, 0, Generic_Output_Link_Shift_Table);
+Generic_Output_Translate = (int16_t) table_lookup_jz(Generic_Output_1_Link_3, 1, Generic_Output_Link_Shift_Table);      
+Generic_Output_1_Link_3_on_ecu = (Generic_Output_1_Link_1_on_set *Generic_Output_Scale) - Generic_Output_Translate;
+Generic_Output_1_Link_3_off_ecu=  (Generic_Output_1_Link_1_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
+
+Generic_Output_Scale =  (int16_t) table_lookup_jz(Generic_Output_1_Link_4, 0, Generic_Output_Link_Shift_Table);
+Generic_Output_Translate = (int16_t) table_lookup_jz(Generic_Output_1_Link_4, 1, Generic_Output_Link_Shift_Table);      
+Generic_Output_1_Link_4_on_ecu = (Generic_Output_1_Link_4_on_set *Generic_Output_Scale) - Generic_Output_Translate;
+Generic_Output_1_Link_4_off_ecu=  (Generic_Output_1_Link_4_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
+
+//set link 1
+if (Generic_Output_1_Link_1 == 0)
+    Generic_Output_1_Link_1_value = RPM;
+else if(Generic_Output_1_Link_1 == 1)
+    Generic_Output_1_Link_1_value = Reference_VE;
+else if (Generic_Output_1_Link_1 == 2)
+    Generic_Output_1_Link_1_value = IAT;
+else if (Generic_Output_1_Link_1 == 3)
+    Generic_Output_1_Link_1_value = CLT;
+else if (Generic_Output_1_Link_1 == 4)
+    Generic_Output_1_Link_1_value = TPS;
+else if (Generic_Output_1_Link_1 == 6)
+    Generic_Output_1_Link_1_value = MAP[0];
+else if (Generic_Output_1_Link_1 == 6)
+    Generic_Output_1_Link_1_value = MAP[1];
+else
+    Generic_Output_1_Link_1_value = 0;
+//set link 2
+if (Generic_Output_1_Link_2 == 0)
+    Generic_Output_1_Link_2_value = RPM;
+else if(Generic_Output_1_Link_1 == 1)
+    Generic_Output_1_Link_2_value = Reference_VE;
+else if (Generic_Output_1_Link_2 == 2)
+    Generic_Output_1_Link_2_value = IAT;
+else if (Generic_Output_1_Link_2 == 3)
+    Generic_Output_1_Link_2_value = CLT;
+else if (Generic_Output_1_Link_2 == 4)
+    Generic_Output_1_Link_2_value = TPS;
+else if (Generic_Output_1_Link_2 == 6)
+    Generic_Output_1_Link_2_value = MAP[0];
+else if (Generic_Output_1_Link_2 == 6)
+    Generic_Output_1_Link_2_value = MAP[1];
+else
+    Generic_Output_1_Link_2_value = 0;
+//set link 3
+if (Generic_Output_1_Link_3 == 0)
+    Generic_Output_1_Link_3_value = RPM;
+else if(Generic_Output_1_Link_3 == 1)
+    Generic_Output_1_Link_3_value = Reference_VE;
+else if (Generic_Output_1_Link_3 == 2)
+    Generic_Output_1_Link_3_value = IAT;
+else if (Generic_Output_1_Link_3 == 3)
+    Generic_Output_1_Link_3_value = CLT;
+else if (Generic_Output_1_Link_3 == 4)
+    Generic_Output_1_Link_3_value = TPS;
+else if (Generic_Output_1_Link_3 == 6)
+    Generic_Output_1_Link_3_value = MAP[0];
+else if (Generic_Output_1_Link_3 == 6)
+    Generic_Output_1_Link_3_value = MAP[1];
+else
+    Generic_Output_1_Link_3_value = 0;
+//set link 4
+if (Generic_Output_1_Link_4 == 0)
+    Generic_Output_1_Link_4_value = RPM;
+else if(Generic_Output_1_Link_4 == 1)
+    Generic_Output_1_Link_4_value = Reference_VE;
+else if (Generic_Output_1_Link_4 == 2)
+    Generic_Output_1_Link_4_value = IAT;
+else if (Generic_Output_1_Link_4 == 3)
+    Generic_Output_1_Link_4_value = CLT;
+else if (Generic_Output_1_Link_4 == 4)
+    Generic_Output_1_Link_4_value = TPS;
+else if (Generic_Output_1_Link_4 == 6)
+    Generic_Output_1_Link_4_value = MAP[0];
+else if (Generic_Output_1_Link_4 == 6)
+    Generic_Output_1_Link_4_value = MAP[1];
+else
+    Generic_Output_1_Link_4_value = 0;
+
+
+
+       
         for (;;) {
+          if(Generic_Output_1_type > 0){ //if output enablebed
 
-                // output pulse once per 2 crank revs
+	            //link 1 switch condition
+			if (Generic_Output_1_type <= 4){ //Switch with 1 link
+			   //link 1
+			   //on condition
+			   if (Generic_Output_1_Link_1_on == 0){
+			       // on below
+			       if (Generic_Output_1_Link_1_value <= Generic_Output_1_Link_1_on_set ) 
+			           Generic_Output_1_Condition_1 = 1;
+			       //off above
+			       else if(Generic_Output_1_Link_1_value >= Generic_Output_1_Link_1_on_set ) 
+			           Generic_Output_1_Condition_1 = 0; 
+			       
+			   }
+			            //todo - the bin points need to be sorted here!!!
+				//on above
+			   else { 
+			      if (Generic_Output_1_Link_1_value <= Generic_Output_1_Link_1_on_set )
+			          Generic_Output_1_Condition_1 = 1;
+			      // off below
+			      else if (Generic_Output_1_Link_1_value <= Generic_Output_1_Link_1_on_set ) 
+			           Generic_Output_1_Condition_1 = 0;			   	
+			   }
+			          //todo - the bin points need to be sorted here!!! 
+               
+               Generic_Output_1 = Generic_Output_1_Condition_1;
 
-                tooth = fs_etpu_eng_pos_get_tooth_number();     // runs number of teeth
-         /* not safe to use with the cam window opened up much past 120 degrees.....currently setto 720               
-                 //find cylinder #1 on odd fire engines
-                // this works by comparing the rpm before #1TDC to rpm after #1TDC
-                // if the RPM after is great than the minus rpm plus a sync_theshold #1TDC position is known
+	            //link 2 switch condition
+			   if (Generic_Output_1_type >= 2){ //Switch with 2 links
+			      //link 1
+			      //on condition
+			      if (Generic_Output_1_Link_2_on == 0){
+			          // on below
+			          if (Generic_Output_1_Link_2_value <= Generic_Output_1_Link_2_on_set ) 
+			              Generic_Output_1_Condition_2 = 1;
+			          //off above
+			          else if(Generic_Output_1_Link_2_value >= Generic_Output_1_Link_2_on_set ) 
+			              Generic_Output_1_Condition_2 = 0; 
+			       
+			   	  }
+			            //todo - the bin points need to be sorted here!!!
+				  //on above
+			  	  else { 
+			      	if (Generic_Output_1_Link_2_value <= Generic_Output_1_Link_2_on_set )
+			      	    Generic_Output_1_Condition_2 = 1;
+			     	 // off below
+			     	 else if (Generic_Output_1_Link_2_value <= Generic_Output_1_Link_2_on_set ) 
+			           Generic_Output_1_Condition_2 = 0;			   	
+			  	  }
+			          //todo - the bin points need to be sorted here!!!
+			      if (Generic_Output_1_Link_2_logic == 0)    
+			         Generic_Output_1 = Generic_Output_1 + Generic_Output_1_Condition_2;
+			      else
+			         Generic_Output_1 = Generic_Output_1 * Generic_Output_1_Condition_2;
 
-           if (Engine_Type_Select && Sync_Mode_Select == 0 && sync_flag == 0){
-                   Get_Fast_Op_Vars(); // Read current RPM from eTPU
-                   if (tooth == TDC_Minus_Position )
-                       TDC_Minus_Position_RPM = RPM;
-                   
-                   if (TDC_Minus_Position_RPM > Odd_Fire_Sync_Threshold && Last_TDC_Minus_Position_RPM > Odd_Fire_Sync_Threshold && TDC_Minus_Position_RPM < (Last_TDC_Minus_Position_RPM - Odd_Fire_Sync_Threshold))
-                       sync_flag = 1;
-                   
-                   if (tooth < prev_tooth) //detect missing tooth
-                   Last_TDC_Minus_Position_RPM = TDC_Minus_Position_RPM;
-                   
-           }else{ 
-           
-                sync_flag = 1;  
-           }*/
-        
-                // after odd fire home found or any time on even fire engines
-           if (sync_flag == 1 && prev_tooth < start_tooth && tooth >= start_tooth  && (alternate ^= 1)){
-              	Set_Pin(FAKE_CAM_PIN, 1);           // create rising edge 
-                task_wait(1);                       // always 1 msec wide
-                Set_Pin(FAKE_CAM_PIN, 0);           // falling edge 
-                task_wait (3);                       // TODO-angle would be better
-           } else
-				task_wait(1);
-                   
-            prev_tooth = tooth;
+
+	              //link 3 switch condition
+				  if (Generic_Output_1_type == 3){ //Switch with 3 links
+			  	     //link 1
+			  	     //on condition
+			  	     if (Generic_Output_1_Link_3_on == 0){
+			     	      // on below
+			    	    if (Generic_Output_1_Link_3_value <= Generic_Output_1_Link_3_on_set ) 
+			     	      Generic_Output_1_Condition_3 = 1;
+			     	    //off above
+			      	    else if(Generic_Output_1_Link_3_value >= Generic_Output_1_Link_3_on_set ) 
+			      	       Generic_Output_1_Condition_3 = 0; 
+			       
+			  	     }
+			            //todo - the bin points need to be sorted here!!!
+					//on above
+			      	 else { 
+			   	        if (Generic_Output_1_Link_3_value <= Generic_Output_1_Link_3_on_set )
+			               Generic_Output_1_Condition_3 = 1;
+			   	        // off below
+			    	    else if (Generic_Output_1_Link_3_value <= Generic_Output_1_Link_3_on_set ) 
+			               Generic_Output_1_Condition_3 = 0;			   	
+			   	     }
+			          //todo - the bin points need to be sorted here!!! 
+			         if (Generic_Output_1_Link_2_logic == 0)    
+			            Generic_Output_1 = Generic_Output_1 + Generic_Output_1_Condition_3;
+			         else
+			            Generic_Output_1 = Generic_Output_1 * Generic_Output_1_Condition_3;
+
+	                  //link 4 switch condition
+				     if (Generic_Output_1_type == 4){ //Switch with 4 links
+			  	        //link 1
+			  	        //on condition
+			  	        if (Generic_Output_1_Link_4_on == 0){
+			   	           // on below
+			   	           if (Generic_Output_1_Link_4_value <= Generic_Output_1_Link_4_on_set ) 
+			                  Generic_Output_1_Condition_4 = 1;
+			   	           //off above
+			    	       else if(Generic_Output_1_Link_4_value >= Generic_Output_1_Link_4_on_set ) 
+			                  Generic_Output_1_Condition_4 = 0; 
+			       
+			  	        }
+			            //todo - the bin points need to be sorted here!!!
+				        //on above
+			   	        else { 
+			    	       if (Generic_Output_1_Link_4_value <= Generic_Output_1_Link_4_on_set )
+			    	          Generic_Output_1_Condition_4 = 1;
+			    	       // off below
+			    	       else if (Generic_Output_1_Link_4_value <= Generic_Output_1_Link_4_on_set ) 
+			                  Generic_Output_1_Condition_4 = 0;			   	
+			  	        }
+			          //todo - the bin points need to be sorted here!!! 
+			            if (Generic_Output_1_Link_2_logic == 0)    
+			               Generic_Output_1 = Generic_Output_1 + Generic_Output_1_Condition_4;
+			            else
+			               Generic_Output_1 = Generic_Output_1 * Generic_Output_1_Condition_4;
+	
+			     	 }//link 4 switch condition
+		          }//link 3 switch condition
+		       }//link 2 switch condition
+		       if (Generic_Output_1 > 1)
+		           Generic_Output_1 = 1;
+		       Set_Pin(GENERIC_OUPUT_1, Generic_Output_1);			
+			}//link 1 switch condition
+			
+						
+//			}else if(Generic_Output_1_type == 5){ //PWM Fixed
+//			}else if(Generic_Output_1_type == 6){ //PWM Fixed Frequency w/dutycycle Table
+//			}else if(Generic_Output_1_type == 7){ //PWM Fixed DutyCycle w/frequency Table
+//			}else if(Generic_Output_1_type == 8){ //PWM Fixed Frequency w/dutycycle contol
+//			}else if(Generic_Output_1_type == 9){ //PWM Fixed DutyCycle w/frequeny contol
+			
+//			}else{ //off	Generic_Output_1_type == 0		
+//			
+//			}
+
+          }//if output enabled
+   
+           task_wait(97);    
+        } // for
+
+    task_close();     
+
+} // Cam_Pulse_Task()
+
+void Generic_Output_2_Task(void)
+    {
+        task_open();                // standard OS entry
+        task_wait(1);
+
+        //static uint_fast8_t tooth;
+
+       
+        for (;;) {
+			if (Generic_Output_2_type == 0)	{ //off
+				
+			}else if(Generic_Output_2_type == 1){ //Switch w/1 link
+				
+			}else if(Generic_Output_2_type == 2){ //Switch w/2 links
+				
+			}else if(Generic_Output_2_type == 3){ //Switch w/3 links
+			}else if(Generic_Output_2_type == 4){ //Switch w/4 links
+			}else if(Generic_Output_2_type == 5){ //PWM FIxed
+			}else if(Generic_Output_2_type == 6){ //PWM Fixed Frequency w/dutycycle Table
+			}else if(Generic_Output_2_type == 7){ //PWM Fixed DutyCycle w/frequency Table
+			}else if(Generic_Output_2_type == 8){ //PWM Fixed Frequency w/dutycycle contol
+			}else if(Generic_Output_2_type == 9){ //PWM Fixed DutyCycle w/frequeny contol
+			
+			}
+
+
+   
             
         } // for
 
@@ -109,8 +324,71 @@ void Cam_Pulse_Task(void)
 
 } // Cam_Pulse_Task()
 
+void Generic_Output_3_Task(void)
+    {
+        task_open();                // standard OS entry
+        task_wait(1);
+
+        //static uint_fast8_t tooth;
+
+       
+        for (;;) {
+			if (Generic_Output_3_type == 0)	{ //off
+				
+			}else if(Generic_Output_3_type == 1){ //Switch w/1 link
+				
+			}else if(Generic_Output_3_type == 2){ //Switch w/2 links
+				
+			}else if(Generic_Output_3_type == 3){ //Switch w/3 links
+			}else if(Generic_Output_3_type == 4){ //Switch w/4 links
+			}else if(Generic_Output_3_type == 5){ //PWM FIxed
+			}else if(Generic_Output_3_type == 6){ //PWM Fixed Frequency w/dutycycle Table
+			}else if(Generic_Output_3_type == 7){ //PWM Fixed DutyCycle w/frequency Table
+			}else if(Generic_Output_3_type == 8){ //PWM Fixed Frequency w/dutycycle contol
+			}else if(Generic_Output_3_type == 9){ //PWM Fixed DutyCycle w/frequeny contol
+			
+			}
 
 
-#if __CWCC__
-#pragma pop
-#endif
+   
+            
+        } // for
+
+    task_close();     
+
+} // Cam_Pulse_Task()
+
+void Generic_Output_4_Task(void)
+    {
+        task_open();                // standard OS entry
+        task_wait(1);
+
+        //static uint_fast8_t tooth;
+
+       
+        for (;;) {
+			if (Generic_Output_4_type == 0)	{ //off
+				
+			}else if(Generic_Output_4_type == 1){ //Switch w/1 link
+				
+			}else if(Generic_Output_4_type == 2){ //Switch w/2 links
+				
+			}else if(Generic_Output_4_type == 3){ //Switch w/3 links
+			}else if(Generic_Output_4_type == 4){ //Switch w/4 links
+			}else if(Generic_Output_4_type == 5){ //PWM FIxed
+			}else if(Generic_Output_4_type == 6){ //PWM Fixed Frequency w/dutycycle Table
+			}else if(Generic_Output_4_type == 7){ //PWM Fixed DutyCycle w/frequency Table
+			}else if(Generic_Output_4_type == 8){ //PWM Fixed Frequency w/dutycycle contol
+			}else if(Generic_Output_4_type == 9){ //PWM Fixed DutyCycle w/frequeny contol
+			
+			}
+
+
+   
+            
+        } // for
+
+    task_close();     
+
+} // Cam_Pulse_Task()
+
