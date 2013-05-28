@@ -214,7 +214,7 @@ void Get_Fast_Op_Vars(void)
         // Test_Value = 0 allows the actual value to be input bypassing reading the ADC and the table lookup       
         if (Test_Value == 0) {
             V_Batt = Test_V_Batt;
-            RPM = Test_RPM_1;
+            RPM = (int16_t)Test_RPM_1;
             TPS = Test_TPS;
             MAP[0] = Test_MAP_1;
             MAP[1] = Test_MAP_2;
@@ -225,7 +225,7 @@ void Get_Fast_Op_Vars(void)
 			if (crank_position_status == 0) //if status = 0 the TCR2 clock in not valid so set rpm to 0
 			    RPM = 0;
 			else
-				RPM = (uint16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);   // Read RPM from eTPU
+				RPM = (int16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);   // Read RPM from eTPU
 
             
             // TODO: if using a double gap wheel, divide rpm by 2
@@ -247,7 +247,7 @@ void Get_Fast_Op_Vars(void)
 		if(crank_position_status == 0) //if status = 0 the TCR2 clock in not valid so set rpm to 0
 			RPM = 0;
 		else
-        	RPM = (uint16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);       // Read RPM from eTPU
+        	RPM = (int16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);       // Read RPM from eTPU
 
         /* Fast speed stuff...1000hz or so */
         Filter_AD(&V_TPS_AD,3);  // smooth by 8
