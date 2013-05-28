@@ -32,6 +32,7 @@ Copyright (c) 2012 Sean Stasiak <sstasiak at gmail dot com>
 #include "eTPU_OPS.h"
 #include "Testing_OPS.h"
 #include "Fake_Cam_Signal.h"
+#include "Optional_Output_Ops.h"
 
 
 
@@ -66,13 +67,27 @@ void main( void )
         if (Sync_Mode_Select == 1){   // user option to generate a cam signal
            (void)task_create(Cam_Pulse_Task, 4 + 128, 0, 0, 0);      // create the task
         }
-
+        //if (Generic_Output_1_type != 0){  //optional user configured output
+        (void)task_create(Generic_Output_1_Task, 5 + 128, 0, 0, 0); // create the task	
+        //}
+        //if (Generic_Output_2_type != 0){  //optional user configured output
+       // (void)task_create(Generic_Output_2_Task, 6 + 128, 0, 0, 0); // create the task	
+       // }                
+        //if (Generic_Output_3_type != 0){  //optional user configured output
+        //(void)task_create(Generic_Output_3_Task, 7 + 128, 0, 0, 0); // create the task	
+        //}
+        //if (Generic_Output_4_type != 0){  //optional user configured output
+        //(void)task_create(Generic_Output_4_Task, 8 + 128, 0, 0, 0); // create the task	
+        //}       
+        
+        
     } 
-   	(void)task_create(Test_RPM_Task, 5 + 128, 0, 0, 0);
-    (void)task_create(Tuner_Task, 6 + 128, 0, 0, 0);     // create the task
-    (void)task_create(LED_Task, 7 + 128, 0, 0, 0);       // create the task 
+   	(void)task_create(Test_RPM_Task, 9 + 128, 0, 0, 0);
+    (void)task_create(Tuner_Task, 10 + 128, 0, 0, 0);           // create the task
+    (void)task_create(LED_Task, 11 + 128, 0, 0, 0);             // create the task 
+
     //this should always be last
-    (void)task_create(Angle_Clock_Task, 254, 0, 0, 0);                  // task to update angle clock, always last
+    (void)task_create(Angle_Clock_Task, 254, 0, 0, 0);         // task to update angle clock, always last
 
   os_start();
 }
