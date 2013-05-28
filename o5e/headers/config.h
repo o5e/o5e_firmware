@@ -10,15 +10,15 @@
 // TODO define eTPU channels to use here
 // Note: different hardware may have to change these
 // Note: what is here must match what is in SIU_OPS.c
-#define FUEL_CHANNELS_1_6     25,24,22,21,8,9   //5 used instead of 10 to get LED on on deme board
-#define FUEL_CHANNELS_7_12    12,14,5,15,20,20
+#define FUEL_CHANNELS_1_6     6,7,8,9,9,10   //5 used instead of 10 to get LED on on deme board
+#define FUEL_CHANNELS_7_12    11,12,24,24,20,20
 #define FUEL_CHANNELS_13_18   20,20,20,20,20,20  /* not used for 5634 */
 #define FUEL_CHANNELS_19_24   20,20,20,20,20,20  /* not used for 5634*/
 //changed the channel 18 for testing
-#define SPARK_CHANNELS_1_6    10,7,6,4,3,2        // 10 used instead of 5,to give LED to fuel 1
-#define SPARK_CHANNELS_7_12   20,20,20,20,20,20   /* 9-12 not used for 5634*/ 
-#define TACH_CHANNEL          11                  // Tach Output (pwm) eTPU chan
-#define FUEL_PUMP_PIN         127                 // fuel pump
+#define SPARK_CHANNELS_1_6    2,3,4,5,24,24        // 10 used instead of 5,to give LED to fuel 1
+#define SPARK_CHANNELS_7_12   24,24,24,24,24,24   /* 9-12 not used for 5634*/ 
+#define TACH_CHANNEL          14                  // Tach Output (pwm) eTPU chan
+#define FUEL_PUMP_PIN         129                 // fuel pump
 #define WHEEL_SPEED_1_4       16,17,18,19      // read wheel speed
 //for testing - Blink based on engine position status
 #define MAP_WINDOW_CHANNEL    26    // eTPU channel to output MAP sample windows on - fixed, do not change
@@ -35,10 +35,10 @@
 #define PWM1_HZ      50     // recommend 50 for servos, 200 or 300 for IAC
 
 //Outptional outputs
-#define GENERIC_OUPUT_1 215 //assign pad #
-#define GENERIC_OUPUT_2 216 //assign pad #
-#define GENERIC_OUPUT_3 217 //assign pad #
-#define GENERIC_OUPUT_4 218 //assign pad #
+#define GENERIC_OUPUT_1 135 //assign pad #
+#define GENERIC_OUPUT_2 136 //assign pad #
+//#define GENERIC_OUPUT_3 217 //assign pad #
+//#define GENERIC_OUPUT_4 218 //assign pad #
 
 
 // increasing clock available for general use - runs at CPU_CLOCK/1000000 ticks per msec

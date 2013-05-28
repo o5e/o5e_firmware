@@ -56,7 +56,7 @@ void Generic_Output_1_Task(void)
 
 
 //convert setpoints to correct bin point/translate point
-Generic_Output_Scale =  (int16_t) table_lookup_jz(Generic_Output_1_Link_1, 0, Generic_Output_Link_Shift_Table);
+/*Generic_Output_Scale =  (int16_t) table_lookup_jz(Generic_Output_1_Link_1, 0, Generic_Output_Link_Shift_Table);
 Generic_Output_Translate = (int16_t) table_lookup_jz(Generic_Output_1_Link_1, 1, Generic_Output_Link_Shift_Table);      
 Generic_Output_1_Link_1_on_ecu = (Generic_Output_1_Link_1_on_set *Generic_Output_Scale) - Generic_Output_Translate;
 Generic_Output_1_Link_1_off_ecu=  (Generic_Output_1_Link_1_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
@@ -75,6 +75,7 @@ Generic_Output_Scale =  (int16_t) table_lookup_jz(Generic_Output_1_Link_4, 0, Ge
 Generic_Output_Translate = (int16_t) table_lookup_jz(Generic_Output_1_Link_4, 1, Generic_Output_Link_Shift_Table);      
 Generic_Output_1_Link_4_on_ecu = (Generic_Output_1_Link_4_on_set *Generic_Output_Scale) - Generic_Output_Translate;
 Generic_Output_1_Link_4_off_ecu=  (Generic_Output_1_Link_4_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
+
 
 //set link 1
 if (Generic_Output_1_Link_1 == 0)
@@ -145,10 +146,11 @@ else if (Generic_Output_1_Link_4 == 6)
 else
     Generic_Output_1_Link_4_value = 0;
 
-
+*/
 
        
         for (;;) {
+        /*
           if(Generic_Output_1_type > 0){ //if output enablebed
 
 	            //link 1 switch condition
@@ -267,8 +269,26 @@ else
 		       }//link 2 switch condition
 		       if (Generic_Output_1 > 1)
 		           Generic_Output_1 = 1;
-		       Set_Pin(GENERIC_OUPUT_1, Generic_Output_1);			
+		       Set_Pin(GENERIC_OUPUT_1, Generic_Output_1);
+
+		       
+		    			
 			}//link 1 switch condition
+			*/
+			
+			//Fan switch
+			if( CLT >= Generic_Output_1_Link_1_on_set)
+		       Set_Pin(GENERIC_OUPUT_1, 1);
+			else if (CLT <= Generic_Output_1_Link_1_off_set)
+		 	   Set_Pin(GENERIC_OUPUT_1, 0);
+			
+			
+			//Water injectiojn switch
+			if( RPM >= Generic_Output_2_Link_1_on_set || Reference_VE >= Generic_Output_2_Link_2_on_set || IAT >= Generic_Output_2_Link_3_on_set)
+		       Set_Pin(GENERIC_OUPUT_2, 1);
+			else if ( RPM <= Generic_Output_2_Link_1_off_set && Reference_VE <= Generic_Output_2_Link_2_off_set && IAT <= Generic_Output_2_Link_3_off_set)
+		 	   Set_Pin(GENERIC_OUPUT_2, 0);			
+			
 			
 						
 //			}else if(Generic_Output_1_type == 5){ //PWM Fixed
@@ -281,7 +301,7 @@ else
 //			
 //			}
 
-          }//if output enabled
+         // }//if output enabled
    
            task_wait(97);    
         } // for
@@ -323,7 +343,7 @@ void Generic_Output_2_Task(void)
     task_close();     
 
 } // Cam_Pulse_Task()
-
+/*
 void Generic_Output_3_Task(void)
     {
         task_open();                // standard OS entry
@@ -390,5 +410,5 @@ void Generic_Output_4_Task(void)
 
     task_close();     
 
-} // Cam_Pulse_Task()
+} // Cam_Pulse_Task()*/
 

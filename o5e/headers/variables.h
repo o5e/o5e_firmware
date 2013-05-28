@@ -46,7 +46,7 @@ void Set_Page_Locations(uint8_t block);
 #define PROTOCOL  "001"
 //
 
-#define  NPAGES  	21
+#define  NPAGES  	15
 
 extern uint16_t const pageSize[NPAGES];
 
@@ -540,7 +540,7 @@ extern struct Outputs Output_Channels;
 #define Generic_Output_2_Link_2_off_set (*(CONST S16 * )(&Page_Ptr[14][708]))
 #define Generic_Output_2_Link_3 (*(CONST U08 * )(&Page_Ptr[14][710]) & ((2<<2)-1))
 #define Generic_Output_2_Link_3_on (*(CONST U08 * )(&Page_Ptr[14][711]) & ((2<<0)-1))
-#define Generic_Output_2_Link2_3_on_set (*(CONST S16 * )(&Page_Ptr[14][712]))
+#define Generic_Output_2_Link_3_on_set (*(CONST S16 * )(&Page_Ptr[14][712]))
 #define Generic_Output_2_Link_3_logic (*(CONST U08 * )(&Page_Ptr[14][714]) & ((2<<0)-1))
 #define Generic_Output_2_Link_3_off_set (*(CONST S16 * )(&Page_Ptr[14][716]))
 #define Generic_Output_2_Link_4 (*(CONST U08 * )(&Page_Ptr[14][718]) & ((2<<2)-1))
@@ -556,6 +556,7 @@ extern struct Outputs Output_Channels;
 #define Generic_Output_2_Link_1_PWM_integral (*(CONST S16 * )(&Page_Ptr[14][1382]))
 #define Generic_Output_2_Link_1_PWM_differential (*(CONST S16 * )(&Page_Ptr[14][1384])) 
 #define Generic_Output_2_Link_1_PWM_hysteresis (*(CONST S16 * )(&Page_Ptr[14][1386]))
+/*
 // Page 16
 #define Generic_Output_3_Link_1 (*(CONST U08 * )(&Page_Ptr[15][0]) & ((2<<2)-1))
 #define Generic_Output_3_Link_1_on (*(CONST U08 * )(&Page_Ptr[15][1]) & ((2<<0)-1))
@@ -843,7 +844,7 @@ extern struct Outputs Output_Channels;
 #define Generic_Output_12_Link_1_PWM_hysteresis (*(CONST S16 * )(&Page_Ptr[19][1386]))
 //page21
 #define Generic_Output_Link_Shift_Table ((CONST struct table_jz * )(&Page_Ptr[20][0]))
-
+*/
 // ---------------------------------------------------
 // Below here does not come from the .ini file
 
