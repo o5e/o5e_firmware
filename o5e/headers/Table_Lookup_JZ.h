@@ -10,8 +10,8 @@
 #define table_info 	\
 	uint16_t rows;     \
 	uint16_t cols; 	\
-	int16_t x_axis[MAX_ROWS]; \
-	int16_t y_axis[MAX_COLS];  \
+	int32_t x_axis[MAX_ROWS]; \
+	int32_t y_axis[MAX_COLS];  \
 	uint8_t variable_axis; \
 	uint8_t byte_table;	\
 	uint8_t filler[2]	
