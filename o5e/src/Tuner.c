@@ -338,13 +338,13 @@ void Tuner_Task(void)
                 continue;
             if (count != 7)     // sanity check
                 continue;
-
+/*
             // reading flash may be password protected
             if (Password != 0xffffffff && Password != 0 && !password_received) {
                 err_push( CODE_OLDJUNK_EF );
                 continue;
             }
-
+*/
             // find page #
             page = *(uint16_t *) (tmp_buf + PAYLOAD_OFFSET + 1) - PAGE_OFFSET;
             if (page >= NPAGES)
@@ -449,7 +449,7 @@ void Tuner_Task(void)
             make_packet(OK, (const void *)&crc, sizeof(crc));
             continue;
         }
-
+/*
         // receive 32 bit password to allow flash reading
         if (tmp_buf[2] == 'p') {
             if ((count = check_crc(tmp_buf)) == -1)     // check crc on packet
@@ -467,11 +467,11 @@ void Tuner_Task(void)
                password_received = 1;
                make_packet(OK, (const void *)&crc, sizeof(crc));
             } else
-               __start();   // reboot /**< this is NOT a reboot, this is a restart */
+               __start();   // reboot < this is NOT a reboot, this is a restart 
 
             continue;
         }
-
+*/
         // no match to command
         make_packet(unrecognized_command, "", 0);
 

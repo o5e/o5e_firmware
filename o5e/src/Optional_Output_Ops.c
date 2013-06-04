@@ -48,7 +48,6 @@ int16_t Generic_Output_1_Link_3_value;
 int16_t Generic_Output_1_Link_4_value;
 
 
-
 void Generic_Output_1_Task(void)
     {
         task_open();                // standard OS entry

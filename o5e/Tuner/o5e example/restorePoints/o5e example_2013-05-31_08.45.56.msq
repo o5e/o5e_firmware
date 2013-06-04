@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.2.13 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;    &#10;        &#10;      &#10;      &#10;              &#10;  " writeDate="Tue May 28 11:21:01 EDT 2013"/>
-<versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
+<bibliography author="TunerStudio MS(Beta) 2.2.13 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;    &#10;&#10;      &#10;    &#10;  " writeDate="Fri May 31 08:45:56 EDT 2013"/>
+<versionInfo fileFormat="4.0" firmwareInfo="" nPages="15" signature="MShift 2.111       "/>
 <page number="0" size="234">
 <constant cols="1" digits="0" name="Version" rows="20">
          255.0 
@@ -112,7 +112,7 @@
 <constant name="Pulses_Per_Rev">"1"</constant>
 <constant name="Crank_Edge_Select">"rising edge"</constant>
 <constant name="Cam_Edge_Select">"rising edge"</constant>
-<constant name="Sync_Mode_Select">"half sync (360 degree)"</constant>
+<constant name="Sync_Mode_Select">"full sync (720 degree)"</constant>
 <constant name="Engine_Type_Select">"4 stroke"</constant>
 <constant digits="1" name="Cam_Window_Open_Set">60.0</constant>
 <constant digits="1" name="Cam_Window_Width_Set">120.0</constant>
@@ -504,7 +504,7 @@
          3.8076191 
          5.4775419 
       </constant>
-<constant digits="0" name="Password">-1.0</constant>
+<constant digits="0" name="Password">1.0</constant>
 <constant name="Model_Tuning_Enable">"on"</constant>
 <constant digits="0" name="Spare9">255.0</constant>
 <constant digits="0" name="Spare10">65535.0</constant>
