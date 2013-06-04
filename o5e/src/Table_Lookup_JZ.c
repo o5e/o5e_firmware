@@ -3,7 +3,7 @@
 	@file   	table_lookup_jz.c
 	@author 	Jon Zeeff
 	@date   	September, 2011
-	@brief  	table lookup - fast, generic, 1D, 2D, variable axis, int32_t, binary search 
+	@brief  	table lookup - fast, generic, 1D, 2D, variable axis, fixed axis, int16_t or uint8_t, binary search 
 	@copyright 	MIT license
 	@version 	1.7
 	
@@ -26,7 +26,6 @@
 ****************************************************************************************************/
 
 /* Copyright (c) 2011, 2012 Jon Zeeff */
-/* Copyright (c) 2013 - altered for s32 search */
 
 #include <stdint.h>
 #include "Table_Lookup_JZ.h"
@@ -37,17 +36,22 @@
 #   define TRUE 1
 #endif
 
+/* if you are using fixed axis spacing, then using these is more convenient */
+#define min_x x_axis[0]
+#define max_x x_axis[1]
+#define min_y y_axis[0]
+#define max_y y_axis[1]
 
-static inline uint32_t bsearch_jz (register const int32_t value, const int32_t * const array, uint32_t n);
+static inline uint16_t bsearch_jz (register const int16_t value, const int16_t * const array, uint16_t n);
 
-/* generic binary search for a int32_t array */
+/* generic binary search for a int16_t array */
 /* does not do bounds checking */
 
-static inline uint32_t bsearch_jz(register const int32_t value, const int32_t * const array, uint32_t n)
+static inline uint16_t bsearch_jz(register const int16_t value, const int16_t * const array, uint16_t n)
 {
-    register uint32_t lower;
-    register uint32_t middle;
-    register uint32_t upper;
+    register uint16_t lower;
+    register uint16_t middle;
+    register uint16_t upper;
 
     lower = 0;
     upper = --n;                /* note, n is now max index */
@@ -71,20 +75,20 @@ static inline uint32_t bsearch_jz(register const int32_t value, const int32_t * 
 
 /* Given a fraction, find value between two values */
 
-inline static int32_t interpolate(const unsigned fraction, const int32_t value1, const int32_t value2)
+inline static int16_t interpolate(const unsigned fraction, const int16_t value1, const int16_t value2)
 /* Note: fraction is bin 8 and ranges 0 to 1 */
 {
     if (value1 == value2 || fraction == 0)      /* for speed */
         return value1;
 
     if (value1 < value2)        /* postitive slope */
-        return value1 + (int32_t)(((value2 - value1) * (int)fraction) / 256);    /* correct back to bin 0  */
+        return value1 + (int16_t)(((value2 - value1) * (int)fraction) / 256);    /* correct back to bin 0  */
     else
-        return value1 - (int32_t)(((value1 - value2) * (int)fraction) / 256);    /* correct back to bin 0  */
+        return value1 - (int16_t)(((value1 - value2) * (int)fraction) / 256);    /* correct back to bin 0  */
 }
 
-/*  macro to extract value from table - could be s16 or s32 */
-#define value(index)   (byte_table !=0 ? (int32_t)(*(int32_t *)(index)) : (*(int32_t *)(index)))
+/*  macro to extract value from table - could be u8 or s16 */
+#define value(index)   (byte_table !=0 ? (int16_t)(*(uint8_t *)(index)) : (*(int16_t *)(index)))
 
 /************************************************************************
 
@@ -96,13 +100,13 @@ inline static int32_t interpolate(const unsigned fraction, const int32_t value1,
 ************************************************************************/
 int table_lookup_jz(const int x, const int y, const struct table_jz * const table)
 {
-    register uint32_t xbin;     	/* bin 8, the x value converted to an index with fraction */
-    register uint32_t ybin;     	/* bin 8, the y value converted to an index with fraction */
-    register uint32_t x_index;     /* bin 0 index version of xbin */
-    register uint32_t y_index;     /* bin 0 index version of ybin */
-    register uint8_t *ptr;      	/* caution: this pointer actually points to int16s or int32s */
+    register uint16_t xbin;     	/* bin 8, the x value converted to an index with fraction */
+    register uint16_t ybin;     	/* bin 8, the y value converted to an index with fraction */
+    register uint16_t x_index;     /* bin 0 index version of xbin */
+    register uint16_t y_index;     /* bin 0 index version of ybin */
+    register uint8_t *ptr;      	/* caution: this pointer actually points to uint8s or int16s */
     register int value1;
-    register uint8_t entry_size;  	/* 0 or 1 for 16 bit or 32 bit lookup */
+    register uint8_t entry_size;  	/* 0 or 1 for 8 bit or 16 bit lookup */
     int i;
 
     /* for readability */
@@ -144,10 +148,10 @@ int table_lookup_jz(const int x, const int y, const struct table_jz * const tabl
         if (x <= table->min_x)  	/* less than min  */
             x_index = xbin = 0;
         else if (x >= table->max_x) {   /* greater than max */
-            x_index = (uint32_t)(cols - 1);
+            x_index = (uint16_t)(cols - 1);
             xbin = 0;
         } else {                	/* in the middle, calc how far */
-            xbin = (uint32_t)(((cols - 1) * (uint64_t) (x - table->min_x) * 256) / (table->max_x - table->min_x));  /* result is bin 8 */
+            xbin = (uint16_t)(((cols - 1) * (uint32_t) (x - table->min_x) * 256) / (table->max_x - table->min_x));  /* result is bin 8 */
             x_index = (xbin >> 8);      /* convert factional index to integer index */
             xbin &= 0xff;
         }
@@ -158,10 +162,10 @@ int table_lookup_jz(const int x, const int y, const struct table_jz * const tabl
             ptr = (uint8_t *) table->data + (x_index << entry_size);
         } else {                	/* find y position in table  */
             if (y >= table->max_y) {
-                y_index = (uint32_t)(rows - 1);
+                y_index = (uint16_t)(rows - 1);
                 ybin = 0;
             } else {            	/* in the middle */
-                ybin = (uint32_t)(((rows - 1) * (uint64_t) (y - table->min_y) * 256) / (table->max_y - table->min_y));      /* result is bin 8 */
+                ybin = (uint16_t)(((rows - 1) * (uint32_t) (y - table->min_y) * 256) / (table->max_y - table->min_y));      /* result is bin 8 */
                 y_index = (ybin >> 8);
                 y_index &= 0xff;
             }
@@ -173,12 +177,12 @@ int table_lookup_jz(const int x, const int y, const struct table_jz * const tabl
         if (x <= table->x_axis[0]) {              /* < first */
            x_index = xbin = 0;
         } else if (x >= table->x_axis[cols-1]) {  /* > last */ 
-           x_index = (uint32_t)cols - 1;
+           x_index = cols - 1;
            xbin = 0;
         } else {
            /* find x index and fractional index */
-           x_index = bsearch_jz((int32_t) x, table->x_axis, (uint32_t) cols);
-           xbin = (uint32_t)(((x - table->x_axis[x_index]) * 256) / (table->x_axis[x_index + 1] - table->x_axis[x_index]));  /* bin 8 result */
+           x_index = bsearch_jz((int16_t) x, table->x_axis, (uint16_t) cols);
+           xbin = (uint16_t)(((x - table->x_axis[x_index]) * 256) / (table->x_axis[x_index + 1] - table->x_axis[x_index]));  /* bin 8 result */
         }
 
         /* do y axis if this is a 2D lookup */
@@ -187,12 +191,12 @@ int table_lookup_jz(const int x, const int y, const struct table_jz * const tabl
             y_index = ybin = 0;
             ptr = (uint8_t *) table->data + (x_index << entry_size);
         } else if (y >= table->y_axis[rows-1]) {     /* > last */
-            y_index = (uint32_t)rows - 1;
+            y_index = rows - 1;
             ybin = 0;
             ptr = (uint8_t *) table->data + (x_index << entry_size);
         } else {  /* find y index and fractional index */
-            y_index = bsearch_jz((int32_t) y, table->y_axis, (uint32_t) rows);
-            ybin = (uint32_t)(((y - table->y_axis[y_index]) * 256) / (table->y_axis[y_index + 1] - table->y_axis[y_index]));
+            y_index = bsearch_jz((int16_t) y, table->y_axis, (uint16_t) rows);
+            ybin = (uint16_t)(((y - table->y_axis[y_index]) * 256) / (table->y_axis[y_index + 1] - table->y_axis[y_index]));
             ptr = (uint8_t *) table->data + (((cols * y_index) + x_index) << entry_size);
         }
     }
@@ -221,6 +225,6 @@ int table_lookup_jz(const int x, const int y, const struct table_jz * const tabl
             value2 = interpolate(xbin, value(ptr + (cols << entry_size)), value(ptr + ((cols + 1) << entry_size)));
 
         /* interpolate between 2 values */
-        return (int) interpolate(ybin, (int32_t)value1, (int32_t)value2);
+        return (int) interpolate(ybin, (int16_t)value1, (int16_t)value2);
     }
 }                               /* table_lookup_jz() */
