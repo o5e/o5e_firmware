@@ -104,35 +104,11 @@ int32_t Accel_Decel_Corr;
 uint32_t Prime_Corr;
 uint32_t Fuel_Temp_Corr;
 int16_t Pot_RPM;
-int16_t Generic_Output_1_x;
-int16_t Generic_Output_1_y;
-int16_t Generic_Output_2_x;
-int16_t Generic_Output_2_y;
-int16_t Generic_Output_3_x;
-int16_t Generic_Output_3_y;
-int16_t Generic_Output_4_x;
-int16_t Generic_Output_4_y;
-int16_t Generic_Output_5_x;
-int16_t Generic_Output_5_y;
-int16_t Generic_Output_6_x;
-int16_t Generic_Output_6_y;
-int16_t Generic_Output_7_x;
-int16_t Generic_Output_7_y;
-int16_t Generic_Output_8_x;
-int16_t Generic_Output_8_y;
-int16_t Generic_Output_9_x;
-int16_t Generic_Output_9_y;
-int16_t Generic_Output_10_x;
-int16_t Generic_Output_10_y;
-int16_t Generic_Output_11_x;
-int16_t Generic_Output_11_y;
-int16_t Generic_Output_12_x;
-int16_t Generic_Output_12_y;
 uint8_t Spares[10];
 };
 
 // this must match the offsets in the .ini file AND must be a multiple of 4
-#define OUTPUT_CHANNELS_SIZE  208        // don't use sizeof() here
+#define OUTPUT_CHANNELS_SIZE  160        // don't use sizeof() here
 
 
 // these are for convenience and more readable code - must match above
@@ -177,30 +153,7 @@ uint8_t Spares[10];
 #define Prime_Corr Output_Channels.Prime_Corr
 #define Fuel_Temp_Corr Output_Channels.Fuel_Temp_Corr
 #define Pot_RPM Output_Channels.Pot_RPM
-#define Generic_Output_1_x Output_Channels.Generic_Output_1_x
-#define Generic_Output_1_y Output_Channels.Generic_Output_1_y
-#define Generic_Output_2_x Output_Channels.Generic_Output_2_x
-#define Generic_Output_2_y Output_Channels.Generic_Output_2_y
-#define Generic_Output_3_x Output_Channels.Generic_Output_3_x
-#define Generic_Output_3_y Output_Channels.Generic_Output_3_y
-#define Generic_Output_4_x Output_Channels.Generic_Output_4_x
-#define Generic_Output_4_y Output_Channels.Generic_Output_4_y
-#define Generic_Output_5_x Output_Channels.Generic_Output_5_x
-#define Generic_Output_5_y Output_Channels.Generic_Output_5_y
-#define Generic_Output_6_x Output_Channels.Generic_Output_6_x
-#define Generic_Output_6_y Output_Channels.Generic_Output_6_y
-#define Generic_Output_7_x Output_Channels.Generic_Output_7_x
-#define Generic_Output_7_y Output_Channels.Generic_Output_7_y
-#define Generic_Output_8_x Output_Channels.Generic_Output_8_x
-#define Generic_Output_8_y Output_Channels.Generic_Output_8_y
-#define Generic_Output_9_x Output_Channels.Generic_Output_9_x
-#define Generic_Output_9_y Output_Channels.Generic_Output_9_y
-#define Generic_Output_10_x Output_Channels.Generic_Output_10_x
-#define Generic_Output_10_y Output_Channels.Generic_Output_10_y
-#define Generic_Output_11_x Output_Channels.Generic_Output_11_x
-#define Generic_Output_11_y Output_Channels.Generic_Output_11_y
-#define Generic_Output_12_x Output_Channels.Generic_Output_12_x
-#define Generic_Output_12_y Output_Channels.Generic_Output_12_y
+
 
 //*******************************************************
 // initialized to all zeros
