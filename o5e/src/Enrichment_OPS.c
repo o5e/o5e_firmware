@@ -171,7 +171,7 @@ void Get_Prime_Corr(void)
             // check if in prime needed conditions   
             if (Post_Start_Cycles < Prime_Cycles_Threshold) {
 
-                Prime_Corr = table_lookup_jz(CLT, 0, Dummy_Corr_Table);
+                Prime_Corr = table_lookup_jz(CLT, 0, Prime_Corr_Table);
                 // scale the correction to the pusle width
                 Prime_Corr = (((Pulse_Width * Prime_Corr) >> 13) - Pulse_Width);
 
