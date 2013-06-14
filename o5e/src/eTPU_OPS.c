@@ -275,8 +275,8 @@ int32_t init_eTPU()
 
     // might be using staged injection
     N_Injectors = N_Cyl;
-    if (Staged_Inj > 0) 
-       N_Injectors *= 2;
+    //if (Staged_Inj > 0) 
+     //  N_Injectors *= 2;
 
     // might be using wasted spark
     N_Coils = N_Cyl;
@@ -288,8 +288,8 @@ int32_t init_eTPU()
 
     for (i = 0; i < N_Cyl; ++i) {
         Cyl_Angle_eTPU[i] = (((int32_t)Cyl_Offset_Array[i] << 2 ) + Engine_Position_eTPU) % 72000;  // << to convert bin -2 to bin 0
-        if (Staged_Inj) 
-           Cyl_Angle_eTPU[i+N_Cyl] = Cyl_Angle_eTPU[i];
+        //if (Staged_Inj) 
+        //   Cyl_Angle_eTPU[i+N_Cyl] = Cyl_Angle_eTPU[i];
     }
 
     Drop_Dead_Angle_eTPU = ((Drop_Dead_Angle  << 2 ) + Engine_Position_eTPU) % 72000;   // << to convert bin -2 x100 to bin 0 x100

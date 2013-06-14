@@ -25,7 +25,7 @@
 #include "Enrichment_OPS.h"
 #include "Variable_OPS.h"
 #include "cocoos.h"
-#include "table_lookup.h"
+#include "Table_Lookup.h"
 #include "etpu_util.h"
 #include "etpu_spark.h"
 #include "etpu_fuel.h"

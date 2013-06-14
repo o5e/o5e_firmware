@@ -19,7 +19,7 @@
 #include "typedefs.h"
 #include "Load_OPS.h"
 #include "Base_Values_OPS.h"
-#include "table_lookup.h"
+#include "Table_Lookup.h"
 
 uint32_t gram_flow;
   

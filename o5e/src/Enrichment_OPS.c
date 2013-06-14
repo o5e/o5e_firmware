@@ -14,7 +14,7 @@
 #include "Enrichment_OPS.h"
 #include "Engine_OPS.h"
 #include "variables.h"
-#include "table_lookup.h"
+#include "Table_Lookup.h"
 #include "main.h"  /**< pickup Degree_Clock */
 
 

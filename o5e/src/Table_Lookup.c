@@ -28,7 +28,7 @@
 /* Copyright (c) 2011, 2012 Jon Zeeff */
 
 #include <stdint.h>
-#include "table_lookup.h"
+#include "Table_Lookup.h"
 #include "err.h"
 
 #ifndef FALSE

@@ -18,7 +18,7 @@
 #include "variables.h"
 #include "typedefs.h"
 #include "Base_Values_OPS.h"
-#include "table_lookup.h"
+#include "Table_Lookup.h"
 
 uint32_t Base_Pulse_Width;
 uint32_t Inverse_Injector_Pressure; //bin 20

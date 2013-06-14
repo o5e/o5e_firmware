@@ -24,7 +24,7 @@ Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause
 #include "variables.h"
 #include "Variable_OPS.h"
 #include "etpu_util.h"
-#include "table_lookup.h"
+#include "Table_Lookup.h"
 #include "eQADC_OPS.h"
 #include "eTPU_OPS.h"
 #include "bsp.h" //pickup systime for the clock to work
@@ -186,7 +186,7 @@ void Get_Fast_Op_Vars(void)
         // Test_Value = 0 allows the actual value to be input bypassing reading the ADC and the table lookup       
         if (Test_Value == 0) {
             V_Batt = Test_V_Batt;
-            RPM = (int16_t)Test_RPM_1;
+            RPM = (int16_t)Test_RPM[0];
             TPS = Test_TPS;
             MAP[0] = Test_MAP_1;
             MAP[1] = Test_MAP_2;

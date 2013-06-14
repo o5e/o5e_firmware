@@ -23,7 +23,7 @@
 #include "bsp.h"   /**< pickup systime      */
 #include "main.h"  /**< pickup Degree_Clock */
 #include "Optional_Output_Ops.h"
-#include "table_lookup.h"
+#include "Table_Lookup.h"
 
 
 int16_t Generic_Output_Scale;
@@ -316,7 +316,7 @@ void Generic_Output_2_Task(void)
 
         //static uint_fast8_t tooth;
 
-       
+/*       
         for (;;) {
 			if (Generic_Output_2_type == 0)	{ //off
 				
@@ -338,7 +338,7 @@ void Generic_Output_2_Task(void)
    
             
         } // for
-
+*/
     task_close();     
 
 } // Cam_Pulse_Task()
