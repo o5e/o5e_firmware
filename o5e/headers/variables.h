@@ -233,10 +233,6 @@ extern struct Outputs Output_Channels;
 #define Config_Inj_6 (*(CONST U08 * )(&Page_Ptr[0][241]) & ((2<<3)-1))
 #define Config_Inj_7 (*(CONST U08 * )(&Page_Ptr[0][242]) & ((2<<3)-1))
 #define Config_Inj_8 (*(CONST U08 * )(&Page_Ptr[0][243]) & ((2<<3)-1))
-#define Config_Inj_9 (*(CONST U08 * )(&Page_Ptr[0][244]) & ((2<<3)-1))
-#define Config_Inj_10 (*(CONST U08 * )(&Page_Ptr[0][245]) & ((2<<3)-1))
-#define Config_Inj_11 (*(CONST U08 * )(&Page_Ptr[0][246]) & ((2<<3)-1))
-#define Config_Inj_12 (*(CONST U08 * )(&Page_Ptr[0][247]) & ((2<<3)-1))
 
 #define Config_LS_Array ((CONST U08 * )(&Page_Ptr[0][260]))
 #define Config_LS_1 (*(CONST U08 * )(&Page_Ptr[0][260]) & ((2<<0)-1))
