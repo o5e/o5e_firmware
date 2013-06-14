@@ -14,7 +14,7 @@
 #include "Enrichment_OPS.h"
 #include "Engine_OPS.h"
 #include "variables.h"
-#include "Table_Lookup_JZ.h"
+#include "table_lookup.h"
 #include "main.h"  /**< pickup Degree_Clock */
 
 
@@ -120,9 +120,9 @@ void Get_Accel_Decel_Corr(void)
           TPS_Dot_Degree = (Degree_Clock - Degree_Clock_Last);
             // check if acceleration enrich required
           if (TPS_Dot >= TPS_Dot_Dead && TPS_Dot > TPS_Dot_Last) {
-              TPS_Dot_Limit = table_lookup_jz(RPM, 0, Accel_Limit_Table);
-              TPS_Dot_Corr = table_lookup_jz(RPM, 0, Accel_Sensativity_Table);
-              TPS_Dot_Decay_Rate = table_lookup_jz(RPM, 0, Accel_Decay_Table);
+              TPS_Dot_Limit = table_lookup(RPM, 0, Accel_Limit_Table);
+              TPS_Dot_Corr = table_lookup(RPM, 0, Accel_Sensativity_Table);
+              TPS_Dot_Decay_Rate = table_lookup(RPM, 0, Accel_Decay_Table);
               TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot - TPS_Dot_Dead)) >> 14;
 
               // update the last clock
@@ -132,9 +132,9 @@ void Get_Accel_Decel_Corr(void)
               TPS_Dot_Sign = 1;
                 // decel required 
           } else if (TPS_Dot <= (-TPS_Dot_Dead) && TPS_Dot < TPS_Dot_Last) {
-              TPS_Dot_Limit = table_lookup_jz(RPM, 0, Decel_Limit_Table);
-              TPS_Dot_Corr = table_lookup_jz(RPM, 0, Decel_Sensativity_Table);
-              TPS_Dot_Decay_Rate = table_lookup_jz(RPM, 0, Decel_Decay_Table);
+              TPS_Dot_Limit = table_lookup(RPM, 0, Decel_Limit_Table);
+              TPS_Dot_Corr = table_lookup(RPM, 0, Decel_Sensativity_Table);
+              TPS_Dot_Decay_Rate = table_lookup(RPM, 0, Decel_Decay_Table);
               TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot_Dead - TPS_Dot)) >> 14;
               // update the last clock
               Degree_Clock_Last = Degree_Clock;
@@ -171,7 +171,7 @@ void Get_Prime_Corr(void)
             // check if in prime needed conditions   
             if (Post_Start_Cycles < Prime_Cycles_Threshold) {
 
-                Prime_Corr = table_lookup_jz(CLT, 0, Prime_Corr_Table);
+                Prime_Corr = table_lookup(CLT, 0, Prime_Corr_Table);
                 // scale the correction to the pusle width
                 Prime_Corr = (((Pulse_Width * Prime_Corr) >> 13) - Pulse_Width);
 
@@ -180,7 +180,7 @@ void Get_Prime_Corr(void)
                     // reset cycle number
                     Prime_Post_Start_Last = Post_Start_Cycles;
                     // Get the decay rate for current conditions
-                    Prime_Decay = table_lookup_jz(RPM, 0, Prime_Decay_Table);
+                    Prime_Decay = table_lookup(RPM, 0, Prime_Decay_Table);
                     // decrease decay by the new value
                     Prime_Decay = (Prime_Decay_Last * Prime_Decay) >> 14;
                     // reset last

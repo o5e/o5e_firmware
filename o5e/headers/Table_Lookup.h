@@ -1,6 +1,6 @@
 
-#ifndef Table_Lookup_JZ_h
-#define Table_Lookup_JZ_h
+#ifndef Table_Lookup_h
+#define Table_Lookup_h
 
 /* size of biggest table we will use - max 255 */
 #define MAX_ROWS 32
@@ -17,12 +17,12 @@
 	uint8_t filler[2]	
 
 /* generic version */
-struct table_jz
+struct table
 {
 	table_info;
 	uint8_t data[MAX_ROWS*MAX_COLS];   	/* rows*cols array of ints, X order, rows first */
 };
 
-int table_lookup_jz (const int x, const int y, const struct table_jz * const t);
+int table_lookup (const int x, const int y, const struct table * const t);
 
 #endif

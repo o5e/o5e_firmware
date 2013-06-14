@@ -23,7 +23,7 @@
 #include "bsp.h"   /**< pickup systime      */
 #include "main.h"  /**< pickup Degree_Clock */
 #include "Optional_Output_Ops.h"
-#include "Table_Lookup_JZ.h"
+#include "table_lookup.h"
 
 
 int16_t Generic_Output_Scale;
@@ -55,23 +55,23 @@ void Generic_Output_1_Task(void)
 
 
 //convert setpoints to correct bin point/translate point
-/*Generic_Output_Scale =  (int16_t) table_lookup_jz(Generic_Output_1_Link_1, 0, Generic_Output_Link_Shift_Table);
-Generic_Output_Translate = (int16_t) table_lookup_jz(Generic_Output_1_Link_1, 1, Generic_Output_Link_Shift_Table);      
+/*Generic_Output_Scale =  (int16_t) table_lookup(Generic_Output_1_Link_1, 0, Generic_Output_Link_Shift_Table);
+Generic_Output_Translate = (int16_t) table_lookup(Generic_Output_1_Link_1, 1, Generic_Output_Link_Shift_Table);      
 Generic_Output_1_Link_1_on_ecu = (Generic_Output_1_Link_1_on_set *Generic_Output_Scale) - Generic_Output_Translate;
 Generic_Output_1_Link_1_off_ecu=  (Generic_Output_1_Link_1_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
 
-Generic_Output_Scale =  (int16_t) table_lookup_jz(Generic_Output_1_Link_2, 0, Generic_Output_Link_Shift_Table);
-Generic_Output_Translate = (int16_t) table_lookup_jz(Generic_Output_1_Link_2, 1, Generic_Output_Link_Shift_Table);      
+Generic_Output_Scale =  (int16_t) table_lookup(Generic_Output_1_Link_2, 0, Generic_Output_Link_Shift_Table);
+Generic_Output_Translate = (int16_t) table_lookup(Generic_Output_1_Link_2, 1, Generic_Output_Link_Shift_Table);      
 Generic_Output_1_Link_2_on_ecu = (Generic_Output_1_Link_1_on_set *Generic_Output_Scale) - Generic_Output_Translate;
 Generic_Output_1_Link_2_off_ecu=  (Generic_Output_1_Link_1_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
 
-Generic_Output_Scale =  (int16_t) table_lookup_jz(Generic_Output_1_Link_3, 0, Generic_Output_Link_Shift_Table);
-Generic_Output_Translate = (int16_t) table_lookup_jz(Generic_Output_1_Link_3, 1, Generic_Output_Link_Shift_Table);      
+Generic_Output_Scale =  (int16_t) table_lookup(Generic_Output_1_Link_3, 0, Generic_Output_Link_Shift_Table);
+Generic_Output_Translate = (int16_t) table_lookup(Generic_Output_1_Link_3, 1, Generic_Output_Link_Shift_Table);      
 Generic_Output_1_Link_3_on_ecu = (Generic_Output_1_Link_1_on_set *Generic_Output_Scale) - Generic_Output_Translate;
 Generic_Output_1_Link_3_off_ecu=  (Generic_Output_1_Link_1_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
 
-Generic_Output_Scale =  (int16_t) table_lookup_jz(Generic_Output_1_Link_4, 0, Generic_Output_Link_Shift_Table);
-Generic_Output_Translate = (int16_t) table_lookup_jz(Generic_Output_1_Link_4, 1, Generic_Output_Link_Shift_Table);      
+Generic_Output_Scale =  (int16_t) table_lookup(Generic_Output_1_Link_4, 0, Generic_Output_Link_Shift_Table);
+Generic_Output_Translate = (int16_t) table_lookup(Generic_Output_1_Link_4, 1, Generic_Output_Link_Shift_Table);      
 Generic_Output_1_Link_4_on_ecu = (Generic_Output_1_Link_4_on_set *Generic_Output_Scale) - Generic_Output_Translate;
 Generic_Output_1_Link_4_off_ecu=  (Generic_Output_1_Link_4_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
 
@@ -274,7 +274,7 @@ else
 		    			
 			}//link 1 switch condition
 			*/
-			
+/*	
 			//Fan switch
 			if( CLT >= Generic_Output_1_Link_1_on_set)
 		       Set_Pin(GENERIC_OUPUT_1, 1);
@@ -288,7 +288,7 @@ else
 			else if ( RPM <= Generic_Output_2_Link_1_off_set && Reference_VE <= Generic_Output_2_Link_2_off_set && IAT <= Generic_Output_2_Link_3_off_set)
 		 	   Set_Pin(GENERIC_OUPUT_2, 0);			
 			
-			
+*/	
 						
 //			}else if(Generic_Output_1_type == 5){ //PWM Fixed
 //			}else if(Generic_Output_1_type == 6){ //PWM Fixed Frequency w/dutycycle Table

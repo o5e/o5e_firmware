@@ -18,7 +18,7 @@
 #include "variables.h"
 #include "typedefs.h"
 #include "Base_Values_OPS.h"
-#include "Table_Lookup_JZ.h"
+#include "table_lookup.h"
 
 uint32_t Base_Pulse_Width;
 uint32_t Inverse_Injector_Pressure; //bin 20
@@ -30,7 +30,7 @@ void Get_Base_Pulse_Width(void)
 	//correct injector flow rate for actual fuel pressure
 	Inverse_Injector_Pressure = (1 <<20) / (uint32_t )Rating_Fuel_Presure;
     Injector_Flow = (Fuel_Presure * Inverse_Injector_Pressure) >>10; //convert to bin 10
-    Injector_Flow = (uint32_t)(table_lookup_jz(((int16_t)Injector_Flow), 0, sqrt_Table));
+    Injector_Flow = (uint32_t)(table_lookup(((int16_t)Injector_Flow), 0, sqrt_Table));
     Injector_Flow = (Injector_Flow * Injector_Size) >>10;// get current injector folw and convert to bin 0	
 	
     // base (max) pulse width

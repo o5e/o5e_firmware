@@ -1,6 +1,6 @@
 /**************************************************************************************************
 
-	@file   	table_lookup_jz.c
+	@file   	table_lookup.c
 	@author 	Jon Zeeff
 	@date   	September, 2011
 	@brief  	table lookup - fast, generic, 1D, 2D, variable axis, fixed axis, int16_t or uint8_t, binary search 
@@ -17,7 +17,7 @@
 	Does range and error checks
 	ISO C90 compatible (yuck, check with "gcc -Wall -pedantic -Wextra")
 	
-	To use this, you need to fill out a table_jz structure and then pass the lookup 
+	To use this, you need to fill out a table structure and then pass the lookup 
 	routine a pointer to the structure.
 
         Notes: a 1D table means that rows = 1.  The origin is the upper left and axis values must increase or 
@@ -28,7 +28,7 @@
 /* Copyright (c) 2011, 2012 Jon Zeeff */
 
 #include <stdint.h>
-#include "Table_Lookup_JZ.h"
+#include "table_lookup.h"
 #include "err.h"
 
 #ifndef FALSE
@@ -98,7 +98,7 @@ inline static int16_t interpolate(const unsigned fraction, const int16_t value1,
 @return lookup value from table
 
 ************************************************************************/
-int table_lookup_jz(const int x, const int y, const struct table_jz * const table)
+int table_lookup(const int x, const int y, const struct table * const table)
 {
     register uint16_t xbin;     	/* bin 8, the x value converted to an index with fraction */
     register uint16_t ybin;     	/* bin 8, the y value converted to an index with fraction */
@@ -227,4 +227,4 @@ int table_lookup_jz(const int x, const int y, const struct table_jz * const tabl
         /* interpolate between 2 values */
         return (int) interpolate(ybin, (int16_t)value1, (int16_t)value2);
     }
-}                               /* table_lookup_jz() */
+}                               /* table_lookup() */

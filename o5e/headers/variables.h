@@ -88,22 +88,23 @@ uint32_t Post_Start_Time;
 uint16_t Post_Start_Cycles;
 uint16_t Post_Start_Cylinders;
 uint16_t Sync_Status;            // see Freescale code for values 
-int16_t Cam_Errors;             // count of errors seen
-int16_t Crank_Errors;           // count of errors seen
+uint16_t Cam_Errors;             // count of errors seen
+uint16_t Crank_Errors;           // count of errors seen
 uint16_t spare1;
-float Pot_RPM;
-uint32_t spare2;
-uint32_t spare3;
 uint32_t Last_Error;            // error code for last system error
 uint32_t Last_Error_Time;       // time that Last_Error or Crank or Cam error occured
-
-
-
-
+float Pot_RPM;
+float V_MAP[2];
+float V_CLT; 
+float V_IAT; 
+float V_TPS;
+float V_MAF[2]; 
+float V_O2[2]; 
+float V_P[4];
 };
 
 // this must match the offsets in the .ini file AND must be a multiple of 4
-#define OUTPUT_CHANNELS_SIZE  116        // don't use sizeof() here
+#define OUTPUT_CHANNELS_SIZE  160        // don't use sizeof() here
 
 
 // these are for convenience and more readable code - must match above
@@ -132,24 +133,25 @@ uint32_t Last_Error_Time;       // time that Last_Error or Crank or Cam error oc
 #define Sync_Status Output_Channels.Sync_Status
 #define Cam_Errors Output_Channels.Cam_Errors
 #define Crank_Errors Output_Channels.Crank_Errors
+#define Last_Error Output_Channels.Last_Error
+#define Last_Error_Time Output_Channels.Last_Error_Time
 #define Pot_RPM Output_Channels.Pot_RPM
+#define V_MAP Output_Channels.V_MAP
+#define V_CLT Output_Channels.V_CLT 
+#define V_IAT Output_Channels.V_IAT 
+#define V_TPS  Output_Channels.V_TPS
+#define V_MAF Output_Channels.V_MAF 
+#define V_O2 Output_Channels.V_O2 
+#define V_P Output_Channels.V_P 
 
 //*******************************************************
 //stuff stored in ram for general use but removed from the output block
-#define V_CLT 0.0f
-#define V_IAT 0.0f
-#define V_TPS 0.0f
-#define V_MAF 0.0f
-#define V_O2_UA 0.0f
-#define V_O2_UR 0.0f
-#define V_P 0.0f
+
 #define Reference_VE_Dot 0.0f 
-#define V_MAP 0.0f
 #define RPM_Dot 0.0f
 #define MAP_Dot 0.0f
-#define MAF_Dot0.0f 
-#define Last_Error
-#define Last_Error_Time
+#define MAF_Dot 0.0f 
+
 //*******************************************************
 // initialized to all zeros
 extern struct Outputs Output_Channels;
@@ -161,7 +163,7 @@ extern struct Outputs Output_Channels;
 // Cast the flash memory pages into variable names
 // Note: some of these could have ram copies for speed reasons
 //--------------------------------------------------------
-#defien Password(*(CONST U32 * )(&Page_Ptr[0][0]))
+#define Password (*(CONST U32 * )(&Page_Ptr[0][0]))
 #define Version_Array ((CONST U08 * )(&Page_Ptr[0][4]))
 #define N_Cyl (*(CONST U08 * )(&Page_Ptr[0][24]) & ((2<<3)-1))
 #define N_Teeth (*(CONST U08 * )(&Page_Ptr[0][25]))
@@ -262,7 +264,7 @@ extern struct Outputs Output_Channels;
 #define Fuel_Temp_Corr_Table ((CONST struct table * )(&Page_Ptr[1][4]))
 
 #define Enable_Air_Temp_Corr (*(CONST U08 * )(&Page_Ptr[1][328]) & ((2<<0)-1))
-#define IAT_Fuel_Corr_Table ((CONST struct table_jz * )(&Page_Ptr[1][332]))
+#define IAT_Fuel_Corr_Table ((CONST struct table * )(&Page_Ptr[1][332]))
 
 #define Enable_Ignition (*(CONST U08 * )(&Page_Ptr[1][656]) & ((2<<0)-1))
 #define Enable_Map_Control (*(CONST U08 * )(&Page_Ptr[1][657]) & ((2<<0)-1))
