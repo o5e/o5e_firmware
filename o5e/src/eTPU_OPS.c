@@ -41,6 +41,9 @@ uint8_t Fuel_Channels[24] = { FUEL_CHANNELS_1_6, FUEL_CHANNELS_7_12, FUEL_CHANNE
 uint8_t Wheel_Speed_Channels[4] = {WHEEL_SPEED_1_4};
 
 
+
+
+
 static uint24_t Cyl_Angle_eTPU[24];
 static int32_t error_code;
 
@@ -154,6 +157,12 @@ int32_t init_eTPU()
     uint8_t Gen_Tooth_open;
     uint8_t Gen_Tooth_close;
     uint8_t Cam_Edge_Select_eTPU;
+    
+    uint24_t crank_windowing_ratio_normal_set = 0xffffff;
+    uint24_t crank_windowing_ratio_after_gap_set  =0xffffff; 
+    uint24_t crank_windowing_ratio_across_gap_set = 0xffffff;
+    uint24_t crank_windowing_ratio_timeout_set = 0xffffff;
+    uint24_t crank_gap_ratio_set = 0xffffff;
     
     #define Fake_Cam_Window_Width 72000 // Use 120*100 for the width of the cam window when Fake cam is used
 	#define Fake_Cam_Lobe_Position 54000 // Use 540 8 100 as athe location of fake cam

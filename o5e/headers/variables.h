@@ -298,11 +298,7 @@ extern struct Outputs Output_Channels;
 
 #define Jitter (*(CONST S16 * )(&Page_Ptr[0][1700]))
 #define RPM_Pot (*(CONST S16 * )(&Page_Ptr[0][1702]))
-#define crank_windowing_ratio_normal_set (*(CONST U32 * )(&Page_Ptr[0][1704]))
-#define crank_windowing_ratio_after_gap_set (*(CONST U32 * )(&Page_Ptr[0][1708])) 
-#define crank_windowing_ratio_across_gap_set (*(CONST U32 * )(&Page_Ptr[0][1712]))
-#define crank_windowing_ratio_timeout_set (*(CONST U32 * )(&Page_Ptr[0][1716]))
-#define crank_gap_ratio_set  (*(CONST U32 * )(&Page_Ptr[0][1720]))
+
 
 #define RPM_Change_Rate_Array ((CONST U32 * )(&Page_Ptr[0][1724]))
 #define RPM_Change_Rate_1 (*(CONST U32 * )(&Page_Ptr[0][1724]))
