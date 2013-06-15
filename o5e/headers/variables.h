@@ -172,14 +172,6 @@ extern struct Outputs Output_Channels;
 #define Cam_Lobe_Pos (*(CONST U32 * )(&Page_Ptr[0][28]))
 
 #define Cyl_Offset_Array ((CONST U32 * )(&Page_Ptr[0][32]))
-#define Cyl_Offset_1 (*(CONST U32 * )(&Page_Ptr[0][32]))
-#define Cyl_Offset_2 (*(CONST U32 * )(&Page_Ptr[0][36]))
-#define Cyl_Offset_3 (*(CONST U32 * )(&Page_Ptr[0][40]))
-#define Cyl_Offset_4 (*(CONST U32 * )(&Page_Ptr[0][44]))
-#define Cyl_Offset_5 (*(CONST U32 * )(&Page_Ptr[0][48]))
-#define Cyl_Offset_6 (*(CONST U32 * )(&Page_Ptr[0][52]))
-#define Cyl_Offset_7 (*(CONST U32 * )(&Page_Ptr[0][56]))
-#define Cyl_Offset_8 (*(CONST U32 * )(&Page_Ptr[0][60]))
 
 #define Engine_Position (*(CONST S32 * )(&Page_Ptr[0][80]))
 #define Drop_Dead_Angle (*(CONST S32 * )(&Page_Ptr[0][84]))
@@ -205,50 +197,14 @@ extern struct Outputs Output_Channels;
 #define Fuel_Presure   (*(CONST F32 * )(&Page_Ptr[0][124]))
 
 #define Inj_Dead_Array ((CONST F32 * )(&Page_Ptr[0][128]))
-#define Inj_Dead_1 (*(CONST F32 * )(&Page_Ptr[0][128]))
-#define Inj_Dead_2 (*(CONST F32 * )(&Page_Ptr[0][132]))
-#define Inj_Dead_3 (*(CONST F32 * )(&Page_Ptr[0][136]))
-#define Inj_Dead_4 (*(CONST F32 * )(&Page_Ptr[0][140]))
-#define Inj_Dead_5 (*(CONST F32 * )(&Page_Ptr[0][144]))
-#define Inj_Dead_6 (*(CONST F32 * )(&Page_Ptr[0][148]))
-#define Inj_Dead_7 (*(CONST F32 * )(&Page_Ptr[0][152]))
-#define Inj_Dead_8 (*(CONST F32 * )(&Page_Ptr[0][156]))
-#define Inj_Dead_9 (*(CONST F32 * )(&Page_Ptr[0][160]))
-#define Inj_Dead_10 (*(CONST F32 * )(&Page_Ptr[0][164]))
-#define Inj_Dead_11 (*(CONST F32 * )(&Page_Ptr[0][168]))
-#define Inj_Dead_12 (*(CONST F32 * )(&Page_Ptr[0][172]))
 
 #define Config_Ign_Array ((CONST U08 * )(&Page_Ptr[0][224]))
-#define Config_Ign_1 (*(CONST U08 * )(&Page_Ptr[0][224]) & ((2<<3)-1))
-#define Config_Ign_2 (*(CONST U08 * )(&Page_Ptr[0][225]) & ((2<<3)-1))
-#define Config_Ign_3 (*(CONST U08 * )(&Page_Ptr[0][226]) & ((2<<3)-1))
-#define Config_Ign_4 (*(CONST U08 * )(&Page_Ptr[0][227]) & ((2<<3)-1))
 
 #define Config_Inj_Array ((CONST U08 * )(&Page_Ptr[0][236]))
-#define Config_Inj_1 (*(CONST U08 * )(&Page_Ptr[0][236]) & ((2<<3)-1))
-#define Config_Inj_2 (*(CONST U08 * )(&Page_Ptr[0][237]) & ((2<<3)-1))
-#define Config_Inj_3 (*(CONST U08 * )(&Page_Ptr[0][238]) & ((2<<3)-1))
-#define Config_Inj_4 (*(CONST U08 * )(&Page_Ptr[0][239]) & ((2<<3)-1))
-#define Config_Inj_5 (*(CONST U08 * )(&Page_Ptr[0][240]) & ((2<<3)-1))
-#define Config_Inj_6 (*(CONST U08 * )(&Page_Ptr[0][241]) & ((2<<3)-1))
-#define Config_Inj_7 (*(CONST U08 * )(&Page_Ptr[0][242]) & ((2<<3)-1))
-#define Config_Inj_8 (*(CONST U08 * )(&Page_Ptr[0][243]) & ((2<<3)-1))
 
 #define Config_LS_Array ((CONST U08 * )(&Page_Ptr[0][260]))
-#define Config_LS_1 (*(CONST U08 * )(&Page_Ptr[0][260]) & ((2<<0)-1))
-#define Config_LS_2 (*(CONST U08 * )(&Page_Ptr[0][261]) & ((2<<0)-1))
-#define Config_LS_3 (*(CONST U08 * )(&Page_Ptr[0][262]) & ((2<<1)-1))
-#define Config_LS_4 (*(CONST U08 * )(&Page_Ptr[0][263]) & ((2<<1)-1))
-#define Config_LS_5 (*(CONST U08 * )(&Page_Ptr[0][264]) & ((2<<1)-1))
-#define Config_LS_6 (*(CONST U08 * )(&Page_Ptr[0][265]) & ((2<<1)-1))
-#define Config_LS_7 (*(CONST U08 * )(&Page_Ptr[0][266]) & ((2<<0)-1))
-#define Config_LS_8 (*(CONST U08 * )(&Page_Ptr[0][267]) & ((2<<0)-1))
 
 #define Config_Input_Array ((CONST U08 * )(&Page_Ptr[0][280]))
-#define Config_Input_1 (*(CONST U08 * )(&Page_Ptr[0][280]) & ((2<<0)-1))
-#define Config_Input_2 (*(CONST U08 * )(&Page_Ptr[0][281]) & ((2<<0)-1))
-#define Config_Input_3 (*(CONST U08 * )(&Page_Ptr[0][282]) & ((2<<1)-1))
-#define Config_Input_4 (*(CONST U08 * )(&Page_Ptr[0][283]) & ((2<<1)-1))
 
 #define sqrt_Table ((CONST struct table * )(&Page_Ptr[0][308]))
 
@@ -265,23 +221,15 @@ extern struct Outputs Output_Channels;
 #define Test_TPS (*(CONST F32 * )(&Page_Ptr[0][1624]))
 
 #define Test_Lambda_Array ((CONST F32 * )(&Page_Ptr[0][1628]))
-#define Test_Lambda_1 (*(CONST F32 * )(&Page_Ptr[0][1628]))
-#define Test_Lambda_2 (*(CONST F32 * )(&Page_Ptr[0][1632]))
 
 #define Test_MAP_Array ((CONST F32 * )(&Page_Ptr[0][1636]))
-#define Test_MAP_1 (*(CONST F32 * )(&Page_Ptr[0][1636]))
-#define Test_MAP_2 (*(CONST F32 * )(&Page_Ptr[0][1640]))
 
 #define Test_MAF_Array ((CONST F32 * )(&Page_Ptr[0][1644]))
-#define Test_MAF_1 (*(CONST F32 * )(&Page_Ptr[0][1644]))
-#define Test_MAF_2 (*(CONST F32 * )(&Page_Ptr[0][1648]))
 
 #define Test_CLT (*(CONST F32 * )(&Page_Ptr[0][1652]))
 #define Test_IAT (*(CONST F32 * )(&Page_Ptr[0][1656]))
 
 #define Test_V_MAP_Array ((CONST F32 * )(&Page_Ptr[0][1660]))
-#define Test_V_MAP_1 (*(CONST F32 * )(&Page_Ptr[0][1660]))
-#define Test_V_MAP_2 (*(CONST F32 * )(&Page_Ptr[0][1664]))
 
 #define Test_V_Batt (*(CONST F32 * )(&Page_Ptr[0][1668]))
 #define Test_V_CLT (*(CONST F32 * )(&Page_Ptr[0][1672]))
@@ -289,34 +237,18 @@ extern struct Outputs Output_Channels;
 #define Test_V_TPS (*(CONST F32 * )(&Page_Ptr[0][1680]))
 
 #define Test_V_MAF_Array ((CONST F32 * )(&Page_Ptr[0][1684]))
-#define Test_V_MAF_1 (*(CONST F32 * )(&Page_Ptr[0][1684]))
-#define Test_V_MAF_2 (*(CONST F32 * )(&Page_Ptr[0][1688]))
 
 #define Test_V_O2_Array ((CONST F32 * )(&Page_Ptr[0][1692]))
-#define Test_V_O2_1 (*(CONST F32 * )(&Page_Ptr[0][1692]))
-#define Test_V_O2_2 (*(CONST F32 * )(&Page_Ptr[0][1696]))
 
 #define Jitter (*(CONST S16 * )(&Page_Ptr[0][1700]))
 #define RPM_Pot (*(CONST S16 * )(&Page_Ptr[0][1702]))
 
 
 #define RPM_Change_Rate_Array ((CONST U32 * )(&Page_Ptr[0][1724]))
-#define RPM_Change_Rate_1 (*(CONST U32 * )(&Page_Ptr[0][1724]))
-#define RPM_Change_Rate_2 (*(CONST U32 * )(&Page_Ptr[0][1728]))
-#define RPM_Change_Rate_3 (*(CONST U32 * )(&Page_Ptr[0][1732]))
-#define RPM_Change_Rate_4 (*(CONST U32 * )(&Page_Ptr[0][1736]))
 
 #define Test_RPM_Array  ((CONST F32 * )(&Page_Ptr[0][1740]))
-#define Test_RPM_1  (*(CONST F32 * )(&Page_Ptr[0][1740]))
-#define Test_RPM_2  (*(CONST F32 * )(&Page_Ptr[0][1744]))
-#define Test_RPM_3  (*(CONST F32 * )(&Page_Ptr[0][1748]))
-#define Test_RPM_4  (*(CONST F32 * )(&Page_Ptr[0][1752]))
 
 #define Test_RPM_Dwell_Array  ((CONST S16 * )(&Page_Ptr[0][1756]))
-#define Test_RPM_Dwell_1  (*(CONST S16 * )(&Page_Ptr[0][1756]))
-#define Test_RPM_Dwell_2  (*(CONST S16 * )(&Page_Ptr[0][1758]))
-#define Test_RPM_Dwell_3  (*(CONST S16 * )(&Page_Ptr[0][1760]))
-#define Test_RPM_Dwell_4  (*(CONST S16 * )(&Page_Ptr[0][1762]))
 
 #define Test_RPM_Type (*(CONST U08 * )(&Page_Ptr[0][1764]) & ((2<<1)-1))
  

@@ -188,9 +188,9 @@ void Get_Fast_Op_Vars(void)
             V_Batt = Test_V_Batt;
             RPM = (int16_t)Test_RPM[0];
             TPS = Test_TPS;
-            MAP[0] = Test_MAP_1;
-            MAP[1] = Test_MAP_2;
-            MAF[0] = Test_MAF_1;
+            MAP[0] = Test_MAP_Array[0];
+            MAP[1] = Test_MAP_Array[1];
+            MAF[0] = Test_MAF_Array[0];
 
         } else {                // Test_Value = 1 allows values simulating the ADC to be input 
             V_Batt = Test_V_Batt;
@@ -199,15 +199,13 @@ void Get_Fast_Op_Vars(void)
 			else
 				RPM = (int16_t) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);   // Read RPM from eTPU
 
-            
-            // TODO: if using a double gap wheel, divide rpm by 2
 
             V_TPS = Test_V_TPS;
             TPS = (int16_t) table_lookup(V_TPS, 0, TPS_Table);
-            V_MAP[1] = Test_V_MAP_2;
+            V_MAP[1] = Test_V_MAP_Array[1];
             MAP[1] = (int16_t) table_lookup(V_MAP[1], 0, MAP_2_Table);
             /* Angle based stuff */
-            V_MAP[0] = Test_V_MAP_1;
+            V_MAP[0] = Test_V_MAP_Array[0];
             MAP[0] = (int16_t) table_lookup(V_MAP[0], 0, MAP_1_Table);
         }
 

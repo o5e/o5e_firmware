@@ -76,27 +76,27 @@ void Test_RPM_Task(void)// test routine, only run ifdef SIMULATOR (see main.c)
            jitter_rpm = Test_RPM[0] * Jitter / 100;
            jitter_previous = Jitter; 
         }
-         set_RPM = Test_RPM_1 + jitter_rpm;
+         set_RPM = Test_RPM_Array[0] + jitter_rpm;
          fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);
          task_wait (1); //TODO this should be angle based
           
-         set_RPM = Test_RPM_1 - jitter_rpm;
+         set_RPM = Test_RPM_Array[0] - jitter_rpm;
          fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xFFFFFF, set_RPM, etpu_tcr1_freq);
          task_wait (1); //TODO this should be angle based               
         }//else if
       else if (Test_RPM_Type == 2){ //Run RPM cycle
 
-    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_1, Test_RPM_1, etpu_tcr1_freq); //set a base RPM to get started 
-    	task_wait (Test_RPM_Dwell_1);
+    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_Array[0], Test_RPM_Array[0], etpu_tcr1_freq); //set a base RPM to get started 
+    	task_wait (Test_RPM_Dwell_Array[0]);
     			 
-    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_2, Test_RPM_2, etpu_tcr1_freq); //set a base RPM to get started 
-    	task_wait (Test_RPM_Dwell_2);
+    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_Array[1], Test_RPM_Array[1], etpu_tcr1_freq); //set a base RPM to get started 
+    	task_wait (Test_RPM_Dwell_Array[1]);
     	
-    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_3, Test_RPM_3, etpu_tcr1_freq); //set a base RPM to get started 
-    	task_wait (Test_RPM_Dwell_3);
+    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_Array[2], Test_RPM_Array[2], etpu_tcr1_freq); //set a base RPM to get started 
+    	task_wait (Test_RPM_Dwell_Array[2]);
     	
-    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_4, Test_RPM_4, etpu_tcr1_freq); //set a base RPM to get started 
-    	task_wait (Test_RPM_Dwell_4);
+    	fs_etpu_toothgen_adj(TOOTHGEN_PIN1, RPM_Change_Rate_Array[3], Test_RPM_Array[3], etpu_tcr1_freq); //set a base RPM to get started 
+    	task_wait (Test_RPM_Dwell_Array[3]);
       }//else if
       
       else{// use signal from POT to set RPM
