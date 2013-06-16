@@ -19,7 +19,7 @@
 #include "typedefs.h"
 #include "Load_OPS.h"
 #include "Base_Values_OPS.h"
-#include "Table_Lookup_JZ.h"
+#include "Table_Lookup.h"
 
 uint32_t gram_flow;
   
@@ -34,7 +34,7 @@ void Get_Reference_VE(void)
       Reference_VE = (int16_t)((TPS * MAP[1]) >> 14);
       //correct for TPS flow if used.
       if (TPS_Flow_Cal_On == 1){
-	  Reference_VE = ((Reference_VE  * (int16_t)(table_lookup_jz(RPM, TPS, TPS_Flow_Table))) >>14);
+	  Reference_VE = ((Reference_VE  * (int16_t)(table_lookup(RPM, TPS, TPS_Flow_Table))) >>14);
       }//if
       //Air temperature correction....I can't figure out how to not make this a divide at the moment
       Reference_VE = (Reference_VE << 14) / (int16_t)IAT;	

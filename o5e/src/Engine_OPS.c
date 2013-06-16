@@ -25,7 +25,7 @@
 #include "Enrichment_OPS.h"
 #include "Variable_OPS.h"
 #include "cocoos.h"
-#include "Table_Lookup_JZ.h"
+#include "Table_Lookup.h"
 #include "etpu_util.h"
 #include "etpu_spark.h"
 #include "etpu_fuel.h"
@@ -179,7 +179,7 @@ static void Set_Spark()
 
        
         // Looks up the desired spark advance in degrees before Top Dead Center (TDC)
-        Spark_Advance = (int16_t) table_lookup_jz(RPM, Reference_VE, Spark_Advance_Table);        
+        Spark_Advance = (int16_t) table_lookup(RPM, Reference_VE, Spark_Advance_Table);        
 
         Spark_Advance_eTPU = (uint24_t) (72000 - (Spark_Advance << 2));    // bin -2 to 0 for eTPU use 
         Spark_Advance_eTPU_2 = Spark_Advance_eTPU + 36000; // needed for waste spark, harmless otherwise
@@ -207,7 +207,7 @@ static void Set_Spark()
         fs_etpu_spark_set_recalc_offset_angle(Spark_Channels[0], Spark_Recalc_Angle_eTPU); // global value despite the channel param
 
         // Dwell
-           Dwell = (typeof(Dwell))((Dwell_Set * table_lookup_jz(V_Batt, 0, Dwell_Table)) >> 13);  // dwell is in usec, bin 0
+           Dwell = (typeof(Dwell))((Dwell_Set * table_lookup(V_Batt, 0, Dwell_Table)) >> 13);  // dwell is in usec, bin 0
              //the engine position is not known, of over rev limit, shut off the spark
               if (Enable_Ignition == 0 //spark disabled
                  || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC //crank position unknow
@@ -270,18 +270,18 @@ static void Set_Fuel(void)
         Pulse_Width = (Pulse_Width * Reference_VE) >> 12;
 
         // Main fuel table correction - this is used to adjust for RPM effects
-        Corr = table_lookup_jz(RPM, Reference_VE, Inj_Time_Corr_Table);
+        Corr = table_lookup(RPM, Reference_VE, Inj_Time_Corr_Table);
         Pulse_Width = (Pulse_Width * Corr) >> 14;
 
 
         // Coolant temp correction from enrichment_ops
         if (Enable_Coolant_Temp_Corr == 1){
-           Fuel_Temp_Corr = table_lookup_jz(CLT, 0, Fuel_Temp_Corr_Table);
+           Fuel_Temp_Corr = table_lookup(CLT, 0, Fuel_Temp_Corr_Table);
            Pulse_Width = (Pulse_Width * Fuel_Temp_Corr) >> 13;
         }
                 // Coolant temp correction from enrichment_ops
         if (Enable_Air_Temp_Corr == 1){
-           Fuel_Temp_Corr = table_lookup_jz(IAT, 0, IAT_Fuel_Corr_Table);
+           Fuel_Temp_Corr = table_lookup(IAT, 0, IAT_Fuel_Corr_Table);
            Pulse_Width = (Pulse_Width * Fuel_Temp_Corr) >> 13;
         }
         
@@ -304,7 +304,7 @@ static void Set_Fuel(void)
 
         // fuel dead time - extra pulse needed to open the injector
         // take user value and adjust based on battery voltage
-        Dead_Time = (Dead_Time_Set * table_lookup_jz(V_Batt, 0, Inj_Dead_Time_Table)) >> 13;
+        Dead_Time = (Dead_Time_Set * table_lookup(V_Batt, 0, Inj_Dead_Time_Table)) >> 13;
          
          //this give the tuner the current pulse width
         Injection_Time = Pulse_Width + Dead_Time;
@@ -320,7 +320,7 @@ static void Set_Fuel(void)
         
 //Injection_angle()
         // where should pulse end (injection timing)?
-        uint32_t Inj_End_Angle_eTPU = (table_lookup_jz(RPM, Reference_VE, Inj_End_Angle_Table)) << 2;   // Bin shift tuner angles from -2 to 0 for eTPU use 
+        uint32_t Inj_End_Angle_eTPU = (table_lookup(RPM, Reference_VE, Inj_End_Angle_Table));   /* Bin shift deleted as these are now FLOAT */ // Bin shift tuner angles from -2 to 0 for eTPU use 
 
         if (Inj_End_Angle_eTPU >= Drop_Dead_Angle << 2)            // clip to 1 degree before Drop_Dead
             Inj_End_Angle_eTPU = (Drop_Dead_Angle << 2) - (1 * 100);
@@ -348,7 +348,7 @@ static void Set_Fuel(void)
             while (error_code != 0)     // This tries until the channel is actually updated
      //look up trim values
          //need to make table use the "j" value before it will work
-            //Corr = table_lookup_jz(RPM, Reference_VE, Cyl_Trim_1_Table);
+            //Corr = table_lookup(RPM, Reference_VE, Cyl_Trim_1_Table);
             //Cyl_Pulse_Width=  (Pulse_Width * Corr) >> 14;
             
                 //error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Cyl_Pulse_Width);

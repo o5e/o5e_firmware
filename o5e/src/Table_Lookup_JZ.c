@@ -91,7 +91,7 @@ inline static int16_t interpolate(const unsigned fraction, const int16_t value1,
 #define value(index)   (byte_table !=0 ? (int16_t)(*(uint8_t *)(index)) : (*(int16_t *)(index)))
 
 /************************************************************************
-
+ 
 @param x value
 @param y value (optional)
 @param pointer to table structure
@@ -100,11 +100,11 @@ inline static int16_t interpolate(const unsigned fraction, const int16_t value1,
 ************************************************************************/
 int table_lookup_jz(const int x, const int y, const struct table_jz * const table)
 {
-    register uint16_t xbin;     	/* bin 8, the x value converted to an index with fraction */
-    register uint16_t ybin;     	/* bin 8, the y value converted to an index with fraction */
+    register uint16_t xbin;     		/* bin 8, the x value converted to an index with fraction */
+    register uint16_t ybin;     		/* bin 8, the y value converted to an index with fraction */
     register uint16_t x_index;     /* bin 0 index version of xbin */
     register uint16_t y_index;     /* bin 0 index version of ybin */
-    register uint8_t *ptr;      	/* caution: this pointer actually points to uint8s or int16s */
+    register uint8_t *ptr;				/* caution: this pointer actually points to uint8s or int16s */
     register int value1;
     register uint8_t entry_size;  	/* 0 or 1 for 8 bit or 16 bit lookup */
     int i;
@@ -189,7 +189,7 @@ int table_lookup_jz(const int x, const int y, const struct table_jz * const tabl
 
         if (rows == 1 || y <= table->y_axis[0]) {   /* 1D or < first */
             y_index = ybin = 0;
-            ptr = (uint8_t *) table->data + (x_index << entry_size);
+            ptr = (uint8_t *) table->data + (x_index << entry_size);		/* entry_size is either 0 or 1 from the old system were it could be 8 bit or 16 bit.
         } else if (y >= table->y_axis[rows-1]) {     /* > last */
             y_index = rows - 1;
             ybin = 0;
@@ -197,7 +197,7 @@ int table_lookup_jz(const int x, const int y, const struct table_jz * const tabl
         } else {  /* find y index and fractional index */
             y_index = bsearch_jz((int16_t) y, table->y_axis, (uint16_t) rows);
             ybin = (uint16_t)(((y - table->y_axis[y_index]) * 256) / (table->y_axis[y_index + 1] - table->y_axis[y_index]));
-            ptr = (uint8_t *) table->data + (((cols * y_index) + x_index) << entry_size);
+            ptr = (uint8_t *) table->data + (((cols * y_index) + x_index) << entry_size);		/* Simply calculates "table" index from x and y positions */
         }
     }
 
