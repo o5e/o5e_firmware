@@ -65,25 +65,25 @@ extern uint16_t const pageSize[NPAGES];
 //[Output_Channels]
 struct Outputs {
 
-float RPM;
-float Reference_VE;
-float TPS;
-float TPS_Dot;
-float CLT;
-float IAT;
-float Lambda[2];
-float MAP[2];
-float MAF[2];
-float V_Batt;
-float Injection_Time;
-float Spark_Advance;
-float Dwell;
-float Inj_End_Angle;
-float Lambda_Correction;
-float Accel_Decel_Corr;
-float Prime_Corr;
-float Fuel_Temp_Corr;
-float seconds;
+int32_t RPM;
+int32_t Reference_VE;
+int32_t TPS;
+int32_t TPS_Dot;
+int32_t CLT;
+int32_t IAT;
+int32_t Lambda[2];
+int32_t MAP[2];
+int32_t MAF[2];
+int32_t V_Batt;
+int32_t Injection_Time;
+int32_t Spark_Advance;
+int32_t Dwell;
+int32_t Inj_End_Angle;
+int32_t Lambda_Correction;
+int32_t Accel_Decel_Corr;
+int32_t Prime_Corr;
+int32_t Fuel_Temp_Corr;
+int32_t seconds;
 uint32_t Post_Start_Time;
 uint16_t Post_Start_Cycles;
 uint16_t Post_Start_Cylinders;
@@ -91,16 +91,14 @@ uint16_t Sync_Status;            // see Freescale code for values
 uint16_t Cam_Errors;             // count of errors seen
 uint16_t Crank_Errors;           // count of errors seen
 uint16_t spare1;
-uint32_t Last_Error;            // error code for last system error
-uint32_t Last_Error_Time;       // time that Last_Error or Crank or Cam error occured
-float Pot_RPM;
-float V_MAP[2];
-float V_CLT; 
-float V_IAT; 
-float V_TPS;
-float V_MAF[2]; 
-float V_O2[2]; 
-float V_P[4];
+int32_t Pot_RPM;
+int32_t V_MAP[2];
+int32_t V_CLT; 
+int32_t V_IAT; 
+int32_t V_TPS;
+int32_t V_MAF[2]; 
+int32_t V_O2[2]; 
+int32_t V_P[4];
 };
 
 // this must match the offsets in the .ini file AND must be a multiple of 4
@@ -133,8 +131,7 @@ float V_P[4];
 #define Sync_Status Output_Channels.Sync_Status
 #define Cam_Errors Output_Channels.Cam_Errors
 #define Crank_Errors Output_Channels.Crank_Errors
-#define Last_Error Output_Channels.Last_Error
-#define Last_Error_Time Output_Channels.Last_Error_Time
+
 #define Pot_RPM Output_Channels.Pot_RPM
 #define V_MAP Output_Channels.V_MAP
 #define V_CLT Output_Channels.V_CLT 
@@ -146,11 +143,12 @@ float V_P[4];
 
 //*******************************************************
 //stuff stored in ram for general use but removed from the output block
+uint32_t Last_Error; 
+uint32_t Last_Error_Time;
 
+#define Last_Error_Time Last_Error_Time
 #define Reference_VE_Dot 0.0f 
-#define RPM_Dot 0.0f
-#define MAP_Dot 0.0f
-#define MAF_Dot 0.0f 
+ 
 
 //*******************************************************
 // initialized to all zeros
@@ -213,6 +211,8 @@ extern struct Outputs Output_Channels;
 #define Prime_Decay_Table ((CONST struct table * )(&Page_Ptr[0][1024]))
 
 #define Man_Crank_Corr_Table ((CONST struct table * )(&Page_Ptr[0][1316]))
+
+#define Staged_Inj (*(CONST U08 * )(&Page_Ptr[0][1596]) & ((2<<0)-1))
 
  
 #define Test_Enable (*(CONST U08 * )(&Page_Ptr[0][1616]) & ((2<<0)-1))
