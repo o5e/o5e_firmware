@@ -65,35 +65,35 @@ extern uint16_t const pageSize[NPAGES];
 //[Output_Channels]
 struct Outputs {
 
-int32_t RPM;
-int32_t Reference_VE;
-int32_t TPS;
-int32_t TPS_Dot;
-int32_t CLT;
-int32_t IAT;
-int32_t Lambda[2];
-int32_t MAP[2];
-int32_t MAF[2];
-int32_t V_Batt;
-int32_t Injection_Time;
-int32_t Spark_Advance;
-int32_t Dwell;
-int32_t Inj_End_Angle;
-int32_t Lambda_Correction;
-int32_t Accel_Decel_Corr;
-int32_t Prime_Corr;
-int32_t Fuel_Temp_Corr;
-int32_t seconds;
-uint32_t Post_Start_Time;
-uint16_t Post_Start_Cycles;
-uint16_t Post_Start_Cylinders;
-uint16_t Sync_Status;            // see Freescale code for values 
-uint16_t Cam_Errors;             // count of errors seen
-uint16_t Crank_Errors;           // count of errors seen
-uint16_t spare1;
-int32_t Pot_RPM;
-int32_t V_MAP[2];
-int32_t V_CLT; 
+int32_t RPM; 					//engine speed in revs/min
+int32_t Reference_VE;     		//Engine load as a % of a  reference condition, basically 100% cylinder fill under the current conditions
+int32_t TPS;					//Throttle postion as a % of full open
+int32_t TPS_Dot;				//Throttle position rate of change
+int32_t CLT;					//Coolant Temp in C
+int32_t IAT;					//Inlet Air Temp in C
+int32_t Lambda[2];				//Actual Air/fuel ratio  divided by stoich Air/Fuel ratio
+int32_t MAP[2];					//Mafifold Absolute Pressure in KPa  MAp1 is external, MAP 2 isinternal and normally Barometric Pressure
+int32_t MAF[2];					//Mass Air Flow in grams/sec
+int32_t V_Batt;					//Battery voltage
+int32_t Injection_Time;			//Total injector open time in usec
+int32_t Spark_Advance;			//Igition angle before TDC in degrees
+int32_t Dwell;					//Coil charge time in msec
+int32_t Inj_End_Angle;			//Degrees after TDC normal injection pulse should end
+int32_t Lambda_Correction;		//Closed loop fuel correction applied as a % change
+int32_t Accel_Decel_Corr;		//Acceleration/Deceleration that is applied based on TPS_Dot as a % change
+int32_t Prime_Corr;				//Prime of warmup correction in usec that is added to pulse width 
+int32_t Fuel_Temp_Corr;			//Correction appied to injector pulse width as a % change based on coolant temp
+int32_t seconds;				//system time in seconds, used by TS for powercycle required warning 
+uint32_t Post_Start_Time;		//Time in seconds since crank sync was achieved
+uint16_t Post_Start_Cycles;		//engine cycles since crank sync was achieved
+uint16_t Post_Start_Cylinders;	//engine cylinder count since crank sync was achieved
+uint16_t Sync_Status;           //crank sync status,  see Freescale code for values 
+uint16_t Cam_Errors;            // count of errors seen
+uint16_t Crank_Errors;          // count of errors seen
+uint16_t spare1;				//filler
+int32_t Pot_RPM;				//0-5V input used to set test rpm
+int32_t V_MAP[2];				//0-5V singal from MAP sensors
+int32_t V_CLT;					0-5V signal from coolant sensor
 int32_t V_IAT; 
 int32_t V_TPS;
 int32_t V_MAF[2]; 
