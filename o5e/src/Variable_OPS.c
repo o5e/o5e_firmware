@@ -174,10 +174,10 @@ void Get_Slow_Op_Vars(void)
 
 void Get_Fast_Op_Vars(void)
 {
-       crank_position_status = fs_etpu_eng_pos_get_engine_position_status ();
-       // = fs_etpu_eng_pos_get_crank_error_status();
-        //TS looks at "seconds" to know ift he OS is running....we're giving it msec but that will do
-       seconds = systime;//(EMIOS.CH[MSEC_EMIOS_CHANNEL].CCNTR.R);
+	crank_position_status = fs_etpu_eng_pos_get_engine_position_status ();
+	// = fs_etpu_eng_pos_get_crank_error_status();
+	//TS looks at "seconds" to know ift he OS is running....we're giving it msec but that will do
+	seconds = systime;//(EMIOS.CH[MSEC_EMIOS_CHANNEL].CCNTR.R);
     // Code for testing
     // Test_Enable allows real time variables to be set in TunerStudio to test code
 
