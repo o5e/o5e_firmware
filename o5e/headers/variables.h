@@ -304,33 +304,13 @@ extern struct Outputs Output_Channels;
 #define Decel_Sensativity_Table ((CONST struct table * )(&Page_Ptr[2][1464]))
 
 // Page 4
-#define CLT_Table ((CONST struct table * )(&Page_Ptr[3][0]))
-#define CLT_Cal_Array ((CONST S16 * )(&Page_Ptr[3][136]))
-#define IAT_Table ((CONST struct table * )(&Page_Ptr[3][168]))
-#define IAT_Cal_Array ((CONST S16 * )(&Page_Ptr[3][304]))
-#define TPS_Table ((CONST struct table * )(&Page_Ptr[3][336]))
-#define Lambda_1_Table ((CONST struct table * )(&Page_Ptr[3][646]))
-#define Lambda_2_Table ((CONST struct table * )(&Page_Ptr[3][814]))
-#define MAF_1_Table ((CONST struct table * )(&Page_Ptr[3][982]))
-#define MAF_1_Cal_Array ((CONST S16 * )(&Page_Ptr[3][1118]))
-#define MAF_2_Table ((CONST struct table * )(&Page_Ptr[3][1150]))
-#define MAF_2_Cal_Array ((CONST S16 * )(&Page_Ptr[3][1286]))
-#define MAP_1_Table ((CONST struct table * )(&Page_Ptr[3][1318]))
-#define MAP_1_Cal_Array ((CONST S16 * )(&Page_Ptr[3][1454]))
-#define MAP_2_Table ((CONST struct table * )(&Page_Ptr[3][1486]))
-#define MAP_2_Cal_Array ((CONST S16 * )(&Page_Ptr[3][1622]))
-#define MAP_3_Table ((CONST struct table * )(&Page_Ptr[3][1654]))
-#define MAP_3_Cal_Array ((CONST S16 * )(&Page_Ptr[3][1790]))
-#define MAP_4_Table ((CONST struct table * )(&Page_Ptr[3][1822]))
-#define MAP_4_Cal_Array ((CONST S16 * )(&Page_Ptr[3][1958]))
 #define TPS_Flow_Cal_On (*(CONST U08 * )(&Page_Ptr[3][0]) & ((2<<0)-1))
 #define TPS_Flow_Table ((CONST struct table * )(&Page_Ptr[3][4]))
 
 #define CLT_Table ((CONST struct table * )(&Page_Ptr[3][520]))
-
 #define IAT_Table ((CONST struct table * )(&Page_Ptr[3][844]))
-
 #define TPS_Table ((CONST struct table * )(&Page_Ptr[3][1168]))
+
 
 #define Lambda_1_Table ((CONST struct table * )(&Page_Ptr[3][1436]))
 
@@ -365,15 +345,10 @@ extern struct Outputs Output_Channels;
 #define Cyl_Trim_7_Table ((CONST struct table * )(&Page_Ptr[10][904]))
 #define Cyl_Trim_8_Table ((CONST struct table * )(&Page_Ptr[10][1356]))
 // Page 12
-#define Cyl_Trim_9_Table ((CONST struct table * )(&Page_Ptr[11][0]))
-#define Cyl_Trim_10_Table ((CONST struct table * )(&Page_Ptr[11][452]))
-#define Cyl_Trim_11_Table ((CONST struct table * )(&Page_Ptr[11][904]))
-#define Cyl_Trim_12_Table ((CONST struct table * )(&Page_Ptr[11][1356]))
-// Page 13
-#define Coil_Trim_1_Table ((CONST struct table * )(&Page_Ptr[12][0]))
-#define Coil_Trim_2_Table ((CONST struct table * )(&Page_Ptr[12][452]))
-#define Coil_Trim_3_Table ((CONST struct table * )(&Page_Ptr[12][904]))
-#define Coil_Trim_4_Table ((CONST struct table * )(&Page_Ptr[12][1356]))
+#define Coil_Trim_1_Table ((CONST struct table * )(&Page_Ptr[11][0]))
+#define Coil_Trim_2_Table ((CONST struct table * )(&Page_Ptr[11][452]))
+#define Coil_Trim_3_Table ((CONST struct table * )(&Page_Ptr[11][904]))
+#define Coil_Trim_4_Table ((CONST struct table * )(&Page_Ptr[11][1356]))
 
 
 // ---------------------------------------------------
