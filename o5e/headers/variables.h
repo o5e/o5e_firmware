@@ -93,12 +93,12 @@ uint16_t Crank_Errors;          // count of errors seen
 uint16_t spare1;				//filler
 int32_t Pot_RPM;				//0-5V input used to set test rpm
 int32_t V_MAP[2];				//0-5V singal from MAP sensors
-int32_t V_CLT;					0-5V signal from coolant sensor
-int32_t V_IAT; 
-int32_t V_TPS;
-int32_t V_MAF[2]; 
-int32_t V_O2[2]; 
-int32_t V_P[4];
+int32_t V_CLT;					//0-5V signal from coolant sensor
+int32_t V_IAT;					//0-5V signal from the Inlet Air Temp sensor 
+int32_t V_TPS;					//0-5V signal from the Throttle Position Sensor
+int32_t V_MAF[2];				//0-5V signal from the Mass Air Flow Sensor 
+int32_t V_O2[2];				//0-1V  signal from the O2 Sensor or 0-5V a Wide Band O2 control 
+int32_t V_P[4];					//Optional 0-5V signal or 0/5V digital
 };
 
 // this must match the offsets in the .ini file AND must be a multiple of 4
