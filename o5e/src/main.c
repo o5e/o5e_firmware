@@ -136,7 +136,7 @@ static void Angle_Clock_Task(void)
                       // maintain some timers for use by enrichment
          //update + make sure the timers don't overflow  - TODO eliminate divides
         if (Post_Start_Time < 10000)
-           Post_Start_Time = (uint16_t)(systime - Start_Time) / 1000;
+           Post_Start_Time = (uint32_t)(systime - Start_Time) / 1000;
         if (Post_Start_Cycles < 10000)
             Post_Start_Cycles = (uint16_t)(Degree_Clock - Start_Degrees) / 720;
         event_signal(event);    // dummy to cause task change - all higher priority tasks will be run

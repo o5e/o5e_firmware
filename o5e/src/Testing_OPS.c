@@ -65,7 +65,7 @@ void Test_RPM_Task(void)// test routine, only run ifdef SIMULATOR (see main.c)
     for (;;) {
     
   	if (Test_RPM_Type == 0){	// simply set the RPM
-            fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM[0], etpu_tcr1_freq); //set a base RPM to get started
+            fs_etpu_toothgen_adj(TOOTHGEN_PIN1, 0xEFFFFF, Test_RPM_Array[0], etpu_tcr1_freq); //set a base RPM to get started
             task_wait (11);                           	 
     		}
 
@@ -73,7 +73,7 @@ void Test_RPM_Task(void)// test routine, only run ifdef SIMULATOR (see main.c)
 	else if(Test_RPM_Type == 1){ //use constant rpm with jitter
     
         if(jitter_previous != Jitter){
-           jitter_rpm = Test_RPM[0] * Jitter / 100;
+           jitter_rpm = Test_RPM_Array[0] * Jitter / 100;
            jitter_previous = Jitter; 
         }
          set_RPM = Test_RPM_Array[0] + jitter_rpm;

@@ -65,25 +65,25 @@ extern uint16_t const pageSize[NPAGES];
 //[Output_Channels]
 struct Outputs {
 
-int32_t RPM; 					//engine speed in revs/min
-int32_t Reference_VE;     		//Engine load as a % of a  reference condition, basically 100% cylinder fill under the current conditions
-int32_t TPS;					//Throttle postion as a % of full open
-int32_t TPS_Dot;				//Throttle position rate of change
-int32_t CLT;					//Coolant Temp in C
-int32_t IAT;					//Inlet Air Temp in C
-int32_t Lambda[2];				//Actual Air/fuel ratio  divided by stoich Air/Fuel ratio
-int32_t MAP[2];					//Mafifold Absolute Pressure in KPa  MAp1 is external, MAP 2 isinternal and normally Barometric Pressure
-int32_t MAF[2];					//Mass Air Flow in grams/sec
-int32_t V_Batt;					//Battery voltage
-int32_t Injection_Time;			//Total injector open time in usec
-int32_t Spark_Advance;			//Igition angle before TDC in degrees
-int32_t Dwell;					//Coil charge time in msec
-int32_t Inj_End_Angle;			//Degrees after TDC normal injection pulse should end
-int32_t Lambda_Correction;		//Closed loop fuel correction applied as a % change
-int32_t Accel_Decel_Corr;		//Acceleration/Deceleration that is applied based on TPS_Dot as a % change
-int32_t Prime_Corr;				//Prime of warmup correction in usec that is added to pulse width 
-int32_t Fuel_Temp_Corr;			//Correction appied to injector pulse width as a % change based on coolant temp
-int32_t seconds;				//system time in seconds, used by TS for powercycle required warning 
+float RPM; 					//engine speed in revs/min
+float Reference_VE;     		//Engine load as a % of a  reference condition, basically 100% cylinder fill under the current conditions
+float TPS;					//Throttle postion as a % of full open
+float TPS_Dot;				//Throttle position rate of change
+float CLT;					//Coolant Temp in C
+float IAT;					//Inlet Air Temp in C
+float Lambda[2];				//Actual Air/fuel ratio  divided by stoich Air/Fuel ratio
+float MAP[2];					//Mafifold Absolute Pressure in KPa  MAp1 is external, MAP 2 isinternal and normally Barometric Pressure
+float MAF[2];					//Mass Air Flow in grams/sec
+float V_Batt;					//Battery voltage
+float Injection_Time;			//Total injector open time in usec
+float Spark_Advance;			//Igition angle before TDC in degrees
+float Dwell;					//Coil charge time in msec
+float Inj_End_Angle;			//Degrees after TDC normal injection pulse should end
+float Lambda_Correction;		//Closed loop fuel correction applied as a % change
+float Accel_Decel_Corr;		//Acceleration/Deceleration that is applied based on TPS_Dot as a % change
+float Prime_Corr;				//Prime of warmup correction in usec that is added to pulse width 
+float Fuel_Temp_Corr;			//Correction appied to injector pulse width as a % change based on coolant temp
+uint32_t seconds;				//system time in seconds, used by TS for powercycle required warning 
 uint32_t Post_Start_Time;		//Time in seconds since crank sync was achieved
 uint16_t Post_Start_Cycles;		//engine cycles since crank sync was achieved
 uint16_t Post_Start_Cylinders;	//engine cylinder count since crank sync was achieved
@@ -91,14 +91,14 @@ uint16_t Sync_Status;           //crank sync status,  see Freescale code for val
 uint16_t Cam_Errors;            // count of errors seen
 uint16_t Crank_Errors;          // count of errors seen
 uint16_t spare1;				//filler
-int32_t Pot_RPM;				//0-5V input used to set test rpm
-int32_t V_MAP[2];				//0-5V singal from MAP sensors
-int32_t V_CLT;					//0-5V signal from coolant sensor
-int32_t V_IAT;					//0-5V signal from the Inlet Air Temp sensor 
-int32_t V_TPS;					//0-5V signal from the Throttle Position Sensor
-int32_t V_MAF[2];				//0-5V signal from the Mass Air Flow Sensor 
-int32_t V_O2[2];				//0-1V  signal from the O2 Sensor or 0-5V a Wide Band O2 control 
-int32_t V_P[4];					//Optional 0-5V signal or 0/5V digital
+float Pot_RPM;				//0-5V input used to set test rpm
+float V_MAP[2];				//0-5V singal from MAP sensors
+float V_CLT;					//0-5V signal from coolant sensor
+float V_IAT;					//0-5V signal from the Inlet Air Temp sensor 
+float V_TPS;					//0-5V signal from the Throttle Position Sensor
+float V_MAF[2];				//0-5V signal from the Mass Air Flow Sensor 
+float V_O2[2];				//0-1V  signal from the O2 Sensor or 0-5V a Wide Band O2 control 
+float V_P[4];					//Optional 0-5V signal or 0/5V digital
 };
 
 // this must match the offsets in the .ini file AND must be a multiple of 4

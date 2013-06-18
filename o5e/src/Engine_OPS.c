@@ -144,7 +144,7 @@ void Engine10_Task(void)
 //
         //Update_Tach(RPM)
         // Update Tach signal
-        uint32_t frequency = ((RPM * Pulses_Per_Rev) * (uint32_t) ((1 << 14) / 60 ) >> 14);
+        uint32_t frequency = (RPM * Pulses_Per_Rev) / 60 ;
            // maybe there should be 1 Update_eTPU() ???
         //Update_Tach(frequency);
 		fs_etpu_pwm_update(TACH_CHANNEL, frequency, 1000, etpu_tcr1_freq);
@@ -181,7 +181,7 @@ static void Set_Spark()
         // Looks up the desired spark advance in degrees before Top Dead Center (TDC)
         Spark_Advance = (int16_t) table_lookup(RPM, Reference_VE, Spark_Advance_Table);        
 
-        Spark_Advance_eTPU = (uint24_t) (72000 - (Spark_Advance << 2));    // bin -2 to 0 for eTPU use 
+        Spark_Advance_eTPU = (uint24_t) (72000 - Spark_Advance);
         Spark_Advance_eTPU_2 = Spark_Advance_eTPU + 36000; // needed for waste spark, harmless otherwise
           if (Spark_Advance_eTPU_2 >= 72000) // roll it over at 720 degrees
               Spark_Advance_eTPU_2 -= 72000;
@@ -196,18 +196,18 @@ static void Set_Spark()
         }
      
         // Calculate an appropriate re-calculation angle for the current Spark_Angle so the update is as close to firing time as possible
-        uint32_t Temp1 = (((RPM * Dwell) >> 14) * (uint32_t) (1.2 * (1 << 12)) >> 12);  // 1.2 is to give the processor time to do the math 
-        uint32_t Temp2 = (uint32_t) (.0006 * (1 << 12));        // conversion factor to get Temp1 into deg x 100
-        uint32_t Angle_Temp = 72000 - ((Temp1 * Temp2) >> 12);
+        float Temp1 = RPM * Dwell * 1.2;  // 1.2 is to give the processor time to do the math 
+        float Temp2 = .0006;        // conversion factor to get Temp1 into deg x 100
+        float Angle_Temp = 72000 - (Temp1 * Temp2);
 
-        Spark_Recalc_Angle_eTPU = (Spark_Advance_eTPU + Angle_Temp);
+        Spark_Recalc_Angle_eTPU = (uint24_t)(Spark_Advance_eTPU + Angle_Temp);
            if (Spark_Recalc_Angle_eTPU >= 72000) // roll it over at 720 degrees
                Spark_Recalc_Angle_eTPU -= 72000;
           //Update re-calculation angle in eTPU
         fs_etpu_spark_set_recalc_offset_angle(Spark_Channels[0], Spark_Recalc_Angle_eTPU); // global value despite the channel param
 
         // Dwell
-           Dwell = (typeof(Dwell))((Dwell_Set * table_lookup(V_Batt, 0, Dwell_Table)) >> 13);  // dwell is in usec, bin 0
+           Dwell = (Dwell_Set * table_lookup(V_Batt, 0, Dwell_Table));  //  (typeof(Dwell))
              //the engine position is not known, of over rev limit, shut off the spark
               if (Enable_Ignition == 0 //spark disabled
                  || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC //crank position unknow
@@ -267,22 +267,22 @@ static void Set_Fuel(void)
 
 
         // Reference_VE correction - assumes fuel required is roughly proportional to Reference_VE
-        Pulse_Width = (Pulse_Width * Reference_VE) >> 12;
+        Pulse_Width = Pulse_Width * Reference_VE;
 
         // Main fuel table correction - this is used to adjust for RPM effects
         Corr = table_lookup(RPM, Reference_VE, Inj_Time_Corr_Table);
-        Pulse_Width = (Pulse_Width * Corr) >> 14;
+        Pulse_Width = Pulse_Width * Corr;
 
 
         // Coolant temp correction from enrichment_ops
         if (Enable_Coolant_Temp_Corr == 1){
            Fuel_Temp_Corr = table_lookup(CLT, 0, Fuel_Temp_Corr_Table);
-           Pulse_Width = (Pulse_Width * Fuel_Temp_Corr) >> 13;
+           Pulse_Width = Pulse_Width * Fuel_Temp_Corr;
         }
                 // Coolant temp correction from enrichment_ops
         if (Enable_Air_Temp_Corr == 1){
            Fuel_Temp_Corr = table_lookup(IAT, 0, IAT_Fuel_Corr_Table);
-           Pulse_Width = (Pulse_Width * Fuel_Temp_Corr) >> 13;
+           Pulse_Width = Pulse_Width * Fuel_Temp_Corr;
         }
         
         
@@ -294,7 +294,7 @@ static void Set_Fuel(void)
         // Acel/decel correction
         Get_Accel_Decel_Corr();
         
-        Pulse_Width = (Pulse_Width + ((Pulse_Width * Accel_Decel_Corr) >> 14));
+        Pulse_Width = Pulse_Width + (Pulse_Width * Accel_Decel_Corr);
                  
         // TODO adjust based on O2 sensor data Issue #8
         // Corr = O2_Fuel();
@@ -304,7 +304,7 @@ static void Set_Fuel(void)
 
         // fuel dead time - extra pulse needed to open the injector
         // take user value and adjust based on battery voltage
-        Dead_Time = (Dead_Time_Set * table_lookup(V_Batt, 0, Inj_Dead_Time_Table)) >> 13;
+        Dead_Time = Dead_Time_Set * table_lookup(V_Batt, 0, Inj_Dead_Time_Table);
          
          //this give the tuner the current pulse width
         Injection_Time = Pulse_Width + Dead_Time;
@@ -320,7 +320,7 @@ static void Set_Fuel(void)
         
 //Injection_angle()
         // where should pulse end (injection timing)?
-        uint32_t Inj_End_Angle_eTPU = (table_lookup(RPM, Reference_VE, Inj_End_Angle_Table)) << 2;   // Bin shift tuner angles from -2 to 0 for eTPU use 
+         uint24_t Inj_End_Angle_eTPU =(uint24_t) (table_lookup(RPM, Reference_VE, Inj_End_Angle_Table));
 
         if (Inj_End_Angle_eTPU >= Drop_Dead_Angle << 2)            // clip to 1 degree before Drop_Dead
             Inj_End_Angle_eTPU = (Drop_Dead_Angle << 2) - (1 * 100);
@@ -328,10 +328,10 @@ static void Set_Fuel(void)
         // Calculate angles for eTPU use, must reference the missing tooth not TDC
 
         // Calculate an approprite re-calculation angle for the current injection Inj_End_Angle 
-        uint32_t Temp1 = ((RPM * Pulse_Width) >> 14);   //  * 1.2;       // 1.2 is to give the processor time to do the math
-        uint32_t Temp2 = (uint32_t) (.0006 * (1 << 12));        // conversion factor to get Temp1 into deg x 100
-        uint32_t Angle_Temp = 72000 - ((Temp1 * Temp2) >> 12);
-        uint32_t Fuel_Recalc_Angle_eTPU = (Inj_End_Angle_eTPU + Angle_Temp);
+        float Temp1 = RPM * Pulse_Width;
+        float Temp2 = 0.0006;        // conversion factor to get Temp1 into deg x 100
+        float Angle_Temp = 72000 - (Temp1 * Temp2) ;
+        uint24_t Fuel_Recalc_Angle_eTPU = (Inj_End_Angle_eTPU + (uint24_t)Angle_Temp);
         if (Fuel_Recalc_Angle_eTPU > 72000)
             Fuel_Recalc_Angle_eTPU -= 72000;
  

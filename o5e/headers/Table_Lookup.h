@@ -17,7 +17,7 @@ struct table
 };
 
 /* Function Declarations */
-static inline uint8_t bsearch(const float value, const float * const array, uint8_t n);
+//static inline uint8_t bsearch(const float value, const float * const array, uint8_t n);
 float table_lookup (const float x, const float y, const struct table * const t);
 
 
