@@ -99,10 +99,12 @@ float V_TPS;					//0-5V signal from the Throttle Position Sensor
 float V_MAF[2];				//0-5V signal from the Mass Air Flow Sensor 
 float V_O2[2];				//0-1V  signal from the O2 Sensor or 0-5V a Wide Band O2 control 
 float V_P[4];					//Optional 0-5V signal or 0/5V digital
+uint32_t Last_Error; 
+uint32_t Last_Error_Time;
 };
 
 // this must match the offsets in the .ini file AND must be a multiple of 4
-#define OUTPUT_CHANNELS_SIZE  160        // don't use sizeof() here
+#define OUTPUT_CHANNELS_SIZE  168        // don't use sizeof() here
 
 
 // these are for convenience and more readable code - must match above
@@ -139,15 +141,17 @@ float V_P[4];					//Optional 0-5V signal or 0/5V digital
 #define V_TPS  Output_Channels.V_TPS
 #define V_MAF Output_Channels.V_MAF 
 #define V_O2 Output_Channels.V_O2 
-#define V_P Output_Channels.V_P 
+#define V_P Output_Channels.V_P
+
+#define Last_Error Output_Channels.Last_Error 
+#define Last_Error_Time Output_Channels.Last_Error_Time
+
 
 //*******************************************************
 //stuff stored in ram for general use but removed from the output block
-uint32_t Last_Error; 
-uint32_t Last_Error_Time;
 
-#define Last_Error_Time Last_Error_Time
-#define Reference_VE_Dot 0.0f 
+
+
  
 
 //*******************************************************

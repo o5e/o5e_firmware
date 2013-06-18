@@ -100,8 +100,8 @@ void Fuel_Pump_Task(void)
 
 
 
-#define Delta_V_Crank 2 <<10 			//V_Batt is bin 10
-#define Run_Threshold 250       		// RPM below this then not running
+#define Delta_V_Crank 2.0
+#define Run_Threshold 250.0      		// RPM below this then not running
 #define Warmup_Threshold 10000  		// let warmup stuff go 10k cycles for now.  todo  - change this to end when the correction is zero
 
 
@@ -114,7 +114,7 @@ void Engine10_Task(void)
     task_wait(1);
     
 
-	static uint16_t V_Battery_Stored;
+	static float V_Battery_Stored;
 	
 	
 

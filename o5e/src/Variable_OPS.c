@@ -36,8 +36,8 @@ Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause
 
 
 /* Global Declarations  */
-#   define MAX_AD_COUNTS  16384.                /* not 4096 as you might expect */
-#   define MAX_AD_VOLTAGE 5.
+#   define MAX_AD_COUNTS  16384.0                /* not 4096 as you might expect */
+#   define MAX_AD_VOLTAGE 5.0
 
 #   define VBATT_VOLTAGE_DIVIDER (49.0/10.0)
 #   define V_Batt_AD    ADC_RsltQ0[25]
@@ -155,12 +155,12 @@ void Get_Slow_Op_Vars(void)
         V_IAT = (float)(V_IAT_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * IAT_VOLTAGE_DIVIDER));
         IAT = table_lookup(V_IAT, 0, IAT_Table);
 
-        // manifold absolute pressure - TODO - Mark, make it clear what the 3 are
+        // manifold absolute pressure 
 
         //V_MAP[2] = (float)(V_MAP_3_AD ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_3_VOLTAGE_DIVIDER));
         //MAP[2] = table_lookup(V_MAP[2], 0, MAP_3_Table);
 
-        // O2 sensors - only for pass through to tuner
+        // O2 sensors 
         V_O2[0] = (float) (V_O2_1_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_1_VOLTAGE_DIVIDER));
         Lambda[0] = table_lookup (V_O2[0],0, Lambda_1_Table); 	// convert volts to lambda
         V_O2[1] = (float) (V_O2_2_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_2_VOLTAGE_DIVIDER));
