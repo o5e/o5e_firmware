@@ -36,38 +36,38 @@ Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause
 
 
 /* Global Declarations  */
-#   define MAX_AD_COUNTS  16384.0                /* not 4096 as you might expect */
-#   define MAX_AD_VOLTAGE 5.0
+#   define MAX_AD_COUNTS  16384.0f                /* not 4096 as you might expect */
+#   define MAX_AD_VOLTAGE 5.0f
 
-#   define VBATT_VOLTAGE_DIVIDER (49.0/10.0)
+#   define VBATT_VOLTAGE_DIVIDER 49.0f/10.0f
 #   define V_Batt_AD    ADC_RsltQ0[25]
-#   define CLT_VOLTAGE_DIVIDER 1.0
+#   define CLT_VOLTAGE_DIVIDER 1.0f
 #   define V_CLT_AD    ADC_RsltQ0[39]
-#   define IAT_VOLTAGE_DIVIDER 1.0
+#   define IAT_VOLTAGE_DIVIDER 1.0f
 #   define V_IAT_AD    ADC_RsltQ0[38]
-#   define TPS_VOLTAGE_DIVIDER 1.0
+#   define TPS_VOLTAGE_DIVIDER 1.0f
 #   define V_TPS_AD    ADC_RsltQ0[31]
-#   define MAP_1_VOLTAGE_DIVIDER 1.0
+#   define MAP_1_VOLTAGE_DIVIDER 1.0f
 #   define V_MAP_1_AD    ADC_RsltQ5 [0]       
-#   define MAP_2_VOLTAGE_DIVIDER 1.0
+#   define MAP_2_VOLTAGE_DIVIDER 1.0f
 #   define V_MAP_2_AD    ADC_RsltQ0 [23]	/* TODO */
-#   define MAF_1_VOLTAGE_DIVIDER 1.0
+#   define MAF_1_VOLTAGE_DIVIDER 1.0f
 #   define V_MAF_1_AD    ADC_RsltQ0 [35]
-#   define P1_VOLTAGE_DIVIDER 1.0
+#   define P1_VOLTAGE_DIVIDER 1.0f
 #   define V_P1_AD    ADC_RsltQ0 [17]
-#   define P2_VOLTAGE_DIVIDER 1.0
+#   define P2_VOLTAGE_DIVIDER 1.0f
 #   define V_P2_AD    ADC_RsltQ0 [31]
-#   define P3_VOLTAGE_DIVIDER 1.0
+#   define P3_VOLTAGE_DIVIDER 1.0f
 #   define V_P3_AD    ADC_RsltQ0 [32]
-#   define P4_VOLTAGE_DIVIDER 1.0
+#   define P4_VOLTAGE_DIVIDER 1.0f
 #   define V_P4_AD    ADC_RsltQ0 [33]
-#   define O2_1_VOLTAGE_DIVIDER 1.0
+#   define O2_1_VOLTAGE_DIVIDER 1.0f
 #   define V_O2_1_AD    ADC_RsltQ0 [23]
-#   define O2_2_VOLTAGE_DIVIDER 1.0
+#   define O2_2_VOLTAGE_DIVIDER 1.0f
 #   define V_O2_2_AD    ADC_RsltQ0 [28]
-#   define Knock_1_VOLTAGE_DIVIDER 1.0
+#   define Knock_1_VOLTAGE_DIVIDER 1.0f
 #   define V_Knock_1_AD    ADC_RsltQ0 [0]   // TODO
-#   define Knock_2_VOLTAGE_DIVIDER 1.0
+#   define Knock_2_VOLTAGE_DIVIDER 1.0f
 #   define V_Knock_2_AD    ADC_RsltQ0 [2]   // TODO
 
 extern uint32_t etpu_a_tcr1_freq;       //Implicit Defn.in eTPU_OPS.c
@@ -147,12 +147,12 @@ void Get_Slow_Op_Vars(void)
 
         // coolant temperature
         Filter_AD(&V_CLT_AD,3);  // smooth by 8
-        V_CLT = (float)(V_CLT_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * CLT_VOLTAGE_DIVIDER));
+        V_CLT = (V_CLT_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * CLT_VOLTAGE_DIVIDER));
         CLT = table_lookup(V_CLT, 0, CLT_Table);
 
         // intake air temp
         Filter_AD(&V_IAT_AD,3);  // smooth by 8
-        V_IAT = (float)(V_IAT_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * IAT_VOLTAGE_DIVIDER));
+        V_IAT = (V_IAT_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * IAT_VOLTAGE_DIVIDER));
         IAT = table_lookup(V_IAT, 0, IAT_Table);
 
         // manifold absolute pressure 
@@ -161,9 +161,9 @@ void Get_Slow_Op_Vars(void)
         //MAP[2] = table_lookup(V_MAP[2], 0, MAP_3_Table);
 
         // O2 sensors 
-        V_O2[0] = (float) (V_O2_1_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_1_VOLTAGE_DIVIDER));
+        V_O2[0] = (V_O2_1_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_1_VOLTAGE_DIVIDER));
         Lambda[0] = table_lookup (V_O2[0],0, Lambda_1_Table); 	// convert volts to lambda
-        V_O2[1] = (float) (V_O2_2_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_2_VOLTAGE_DIVIDER));
+        V_O2[1] = (V_O2_2_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_2_VOLTAGE_DIVIDER));
         Lambda[1] = table_lookup (V_O2[0],0, Lambda_2_Table); 	// convert volts to lambda
 
     }  // if normal run mode
@@ -197,7 +197,7 @@ void Get_Fast_Op_Vars(void)
 			if (crank_position_status == 0) //if status = 0 the TCR2 clock in not valid so set rpm to 0
 			    RPM = 0;
 			else
-				RPM = (float) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);   // Read RPM from eTPU
+				RPM =  (float)fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);   // Read RPM from eTPU
 
 
             V_TPS = Test_V_TPS;
@@ -213,34 +213,34 @@ void Get_Fast_Op_Vars(void)
 
         /* On fast for now, but should be medium speed ...100hz or so */
         Filter_AD(&V_Batt_AD,3);  // smooth by 8
-        V_Batt = (float) (V_Batt_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * VBATT_VOLTAGE_DIVIDER));
+        V_Batt = (V_Batt_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * VBATT_VOLTAGE_DIVIDER));
 		if(crank_position_status == 0) //if status = 0 the TCR2 clock in not valid so set rpm to 0
 			RPM = 0;
 		else
-        	RPM = (float) fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);       // Read RPM from eTPU
+        	RPM = (float)fs_etpu_eng_pos_get_engine_speed(etpu_a_tcr1_freq);       // Read RPM from eTPU
 
         /* Fast speed stuff...1000hz or so */
         Filter_AD(&V_TPS_AD,3);  // smooth by 8
-        V_TPS = (float) (V_TPS_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * TPS_VOLTAGE_DIVIDER));
+        V_TPS = (V_TPS_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * TPS_VOLTAGE_DIVIDER));
         TPS = table_lookup(V_TPS, 0, TPS_Table);
         
         Filter_AD(&V_MAP_2_AD,3);  // smooth by 8
-        V_MAP[1] = (float) (V_MAP_2_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_2_VOLTAGE_DIVIDER));
+        V_MAP[1] = (V_MAP_2_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_2_VOLTAGE_DIVIDER));
         MAP[1] = table_lookup(V_MAP[1], 0, MAP_2_Table);
         
         Filter_AD(&V_MAF_1_AD,3);  // smooth by 8
-        V_MAF[0] = (float) (V_MAF_1_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAF_1_VOLTAGE_DIVIDER));
+        V_MAF[0] = (V_MAF_1_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAF_1_VOLTAGE_DIVIDER));
         MAF[0] = table_lookup(V_MAF[0], 0, MAF_1_Table);
 
         /* Angle based stuff */
         Filter_AD(&V_MAP_1_AD,3);  // smooth by 8
-        V_MAP[0] = (float) (V_MAP_1_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_1_VOLTAGE_DIVIDER));
+        V_MAP[0] = (V_MAP_1_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_1_VOLTAGE_DIVIDER));
         MAP[0] = table_lookup(V_MAP[0], 0, MAP_1_Table);
         
         
         /* convert P1*/
         Filter_AD(&V_P1_AD,3);  // smooth by 8
-        Pot_RPM = (float) (V_P1_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P1_VOLTAGE_DIVIDER ) ); 
+        Pot_RPM = (V_P1_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * P1_VOLTAGE_DIVIDER ) ); 
         Pot_RPM=  3000* Pot_RPM;
         
     }
