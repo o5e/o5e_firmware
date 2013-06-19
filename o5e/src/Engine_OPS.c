@@ -100,9 +100,9 @@ void Fuel_Pump_Task(void)
 
 
 
-#define Delta_V_Crank 2.0
-#define Run_Threshold 250.0      		// RPM below this then not running
-#define Warmup_Threshold 10000  		// let warmup stuff go 10k cycles for now.  todo  - change this to end when the correction is zero
+#define Delta_V_Crank 2.0f
+#define Run_Threshold 250.0f      		// RPM below this then not running
+#define Warmup_Threshold 10000.0f  		// let warmup stuff go 10k cycles for now.  todo  - change this to end when the correction is zero
 
 
 				// todo real number maybe used variable
@@ -150,7 +150,7 @@ void Engine10_Task(void)
 		fs_etpu_pwm_update(TACH_CHANNEL, frequency, 1000, etpu_tcr1_freq);
 
 		
-        // consider replacing MAP window with the minimum MAP value seen
+        
         task_wait(9);           // allow others tasks to run
     }                           // for      
     task_close();
@@ -267,34 +267,34 @@ static void Set_Fuel(void)
 
 
         // Reference_VE correction - assumes fuel required is roughly proportional to Reference_VE
-        Pulse_Width = Pulse_Width * Reference_VE;
+        Pulse_Width = Pulse_Width * Reference_VE * Inverse100;
 
         // Main fuel table correction - this is used to adjust for RPM effects
         Corr = table_lookup(RPM, Reference_VE, Inj_Time_Corr_Table);
-        Pulse_Width = Pulse_Width * Corr;
+        Pulse_Width = Pulse_Width * Corr * Inverse100;
 
 
         // Coolant temp correction from enrichment_ops
         if (Enable_Coolant_Temp_Corr == 1){
            Fuel_Temp_Corr = table_lookup(CLT, 0, Fuel_Temp_Corr_Table);
-           Pulse_Width = Pulse_Width * Fuel_Temp_Corr;
+           Pulse_Width = Pulse_Width * Fuel_Temp_Corr * Inverse100;
         }
                 // Coolant temp correction from enrichment_ops
         if (Enable_Air_Temp_Corr == 1){
-           Fuel_Temp_Corr = table_lookup(IAT, 0, IAT_Fuel_Corr_Table);
-           Pulse_Width = Pulse_Width * Fuel_Temp_Corr;
+           Air_Temp_Fuel_Corr = table_lookup(IAT, 0, IAT_Fuel_Corr_Table);
+           Pulse_Width = Pulse_Width * Air_Temp_Fuel_Corr * Inverse100;
         }
         
         
 
         // Prime/warmup correction
         Get_Prime_Corr();
-        Pulse_Width = (Pulse_Width + Prime_Corr);
+        Pulse_Width = (Pulse_Width + (Prime_Corr * Inverse100));
             
         // Acel/decel correction
         Get_Accel_Decel_Corr();
         
-        Pulse_Width = Pulse_Width + (Pulse_Width * Accel_Decel_Corr);
+        Pulse_Width = Pulse_Width + (Pulse_Width * Accel_Decel_Corr * Inverse100);
                  
         // TODO adjust based on O2 sensor data Issue #8
         // Corr = O2_Fuel();
@@ -307,7 +307,7 @@ static void Set_Fuel(void)
         Dead_Time = Dead_Time_Set * table_lookup(V_Batt, 0, Inj_Dead_Time_Table);
          
          //this give the tuner the current pulse width
-        Injection_Time = Pulse_Width + Dead_Time;
+        Injection_Time = (Pulse_Width + Dead_Time) * Inverse1000;
         
         // TODO - add code for semi-seq fuel
        
@@ -322,8 +322,8 @@ static void Set_Fuel(void)
         // where should pulse end (injection timing)?
          uint24_t Inj_End_Angle_eTPU =(uint24_t) (table_lookup(RPM, Reference_VE, Inj_End_Angle_Table));
 
-        if (Inj_End_Angle_eTPU >= Drop_Dead_Angle << 2)            // clip to 1 degree before Drop_Dead
-            Inj_End_Angle_eTPU = (Drop_Dead_Angle << 2) - (1 * 100);
+        if (Inj_End_Angle_eTPU >= Drop_Dead_Angle )            // clip to 1 degree before Drop_Dead
+            Inj_End_Angle_eTPU = (Drop_Dead_Angle ) - (1 * 100);
 
         // Calculate angles for eTPU use, must reference the missing tooth not TDC
 

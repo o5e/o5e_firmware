@@ -70,6 +70,11 @@ Portions Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> - BSD 3 Clause
 #   define Knock_2_VOLTAGE_DIVIDER 1.0f
 #   define V_Knock_2_AD    ADC_RsltQ0 [2]   // TODO
 
+float Ref_IAT;
+float Ref_MAP;
+float Ref_Baro;
+float Ref_TPS;
+
 extern uint32_t etpu_a_tcr1_freq;       //Implicit Defn.in eTPU_OPS.c
 extern uint32_t etpu_b_tcr1_freq;       //Implicit Defn.in eTPU_OPS.c
 
@@ -167,6 +172,9 @@ void Get_Slow_Op_Vars(void)
         Lambda[1] = table_lookup (V_O2[0],0, Lambda_2_Table); 	// convert volts to lambda
 
     }  // if normal run mode
+    //Convert sensor reading to a form more easily used in the corrections code
+	Ref_IAT = Reference_Temp / (IAT + 273.15f);
+
 
 }
 
@@ -244,5 +252,9 @@ void Get_Fast_Op_Vars(void)
         Pot_RPM=  3000* Pot_RPM;
         
     }
+    
+    Ref_MAP = MAP[0] * Inv_Ref_Pres;
+    Ref_Baro = MAP[2] *  Inv_Ref_Pres;
+    Ref_TPS = TPS * Inverse100;
 
 }                               // Get_Fast_Op_Vars()

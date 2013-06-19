@@ -101,10 +101,11 @@ float V_O2[2];				//0-1V  signal from the O2 Sensor or 0-5V a Wide Band O2 contr
 float V_P[4];					//Optional 0-5V signal or 0/5V digital
 uint32_t Last_Error; 
 uint32_t Last_Error_Time;
+float Air_Temp_Fuel_Corr;
 };
 
 // this must match the offsets in the .ini file AND must be a multiple of 4
-#define OUTPUT_CHANNELS_SIZE  168        // don't use sizeof() here
+#define OUTPUT_CHANNELS_SIZE  172        // don't use sizeof() here
 
 
 // these are for convenience and more readable code - must match above
@@ -145,6 +146,8 @@ uint32_t Last_Error_Time;
 
 #define Last_Error Output_Channels.Last_Error 
 #define Last_Error_Time Output_Channels.Last_Error_Time
+
+#define Air_Temp_Fuel_Corr Output_Channels.Air_Temp_Fuel_Corr
 
 
 //*******************************************************
