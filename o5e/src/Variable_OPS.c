@@ -125,6 +125,7 @@ void Get_Slow_Op_Vars(void)
             CLT = Test_CLT;
             IAT = Test_IAT;
 
+
         } else {
 
             // Test_Value = 1 allows values simulating the ADC to be input 
@@ -174,7 +175,11 @@ void Get_Slow_Op_Vars(void)
     }  // if normal run mode
     //Convert sensor reading to a form more easily used in the corrections code
 	Ref_IAT = Reference_Temp / (IAT + 273.15f);
-
+    IAT1 = (int32_t)(IAT * 4096);
+    CLT1 = (int32_t)(CLT * 4096);
+    Lambda1[0] = (int32_t)(Lambda[0] * 4096);
+    Lambda1[1] = (int32_t)(Lambda[1] * 4096);
+    
 
 }
 
@@ -186,6 +191,7 @@ void Get_Fast_Op_Vars(void)
 	// = fs_etpu_eng_pos_get_crank_error_status();
 	//TS looks at "seconds" to know ift he OS is running....we're giving it msec but that will do
 	seconds = systime;//(EMIOS.CH[MSEC_EMIOS_CHANNEL].CCNTR.R);
+	seconds1 = seconds1;
     // Code for testing
     // Test_Enable allows real time variables to be set in TunerStudio to test code
 
@@ -194,7 +200,7 @@ void Get_Fast_Op_Vars(void)
         // Test_Value = 0 allows the actual value to be input bypassing reading the ADC and the table lookup       
         if (Test_Value == 0) {
             V_Batt = Test_V_Batt;
-            RPM = Test_RPM_Array[0];
+            RPM = Test_RPM_Array[0]; 
             TPS = Test_TPS;
             MAP[0] = Test_MAP_Array[0];
             MAP[1] = Test_MAP_Array[1];
@@ -256,5 +262,9 @@ void Get_Fast_Op_Vars(void)
     Ref_MAP = MAP[0] * Inv_Ref_Pres;
     Ref_Baro = MAP[2] *  Inv_Ref_Pres;
     Ref_TPS = TPS * Inverse100;
+    RPM1 = (int32_t)(RPM * 4096);
+    TPS1 = (int32_t)(TPS * 4096);
+    MAP1[0] = (int32_t)(MAP[0] * 4096);
+    MAP1[1] = (int32_t)(MAP[1] * 4096);
 
 }                               // Get_Fast_Op_Vars()

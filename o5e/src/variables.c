@@ -20,8 +20,9 @@
 #include "FLASH_OPS.h"    /**< pickup xx_BASE #define's */
 
 struct Outputs Output_Channels;
+struct Outputs1 Output_Channels1;
 
-uint16_t const pageSize[NPAGES] = { 1768,1696,1756,1760,1620,1668,1668,1668,1668,1808,1808,1808,1808 };
+uint16_t const pageSize[NPAGES] = {1768,1664,1756,1760,1620,1668,1668,1668,1668,1808,1808,1808 };
 // Current flash or ram location of each page
 volatile uint8_t *Page_Ptr[NPAGES];
 // Ram buffer to store a single page before writing to flash
