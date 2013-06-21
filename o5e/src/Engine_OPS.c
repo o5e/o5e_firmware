@@ -271,7 +271,7 @@ static void Set_Fuel(void)
 
         // Main fuel table correction - this is used to adjust for RPM effects
         Corr = table_lookup(RPM, MAP[0] , Inj_Time_Corr_Table);//Reference_VE
-        Pulse_Width = Pulse_Width * Corr * Inverse100;
+        Pulse_Width = Pulse_Width * Corr ;//* Inverse100
         Injection_Time1 = (int32_t)(Pulse_Width * 4096);
 
 

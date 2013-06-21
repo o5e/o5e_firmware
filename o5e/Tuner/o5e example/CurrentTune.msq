@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.2.22 - EFI Analytics, Inc." tuneComment="" writeDate="Fri Jun 21 12:49:26 EDT 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.2.22 - EFI Analytics, Inc." tuneComment="" writeDate="Fri Jun 21 16:04:42 EDT 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="12" signature="MShift 2.111       "/>
 <page>
 <pcVariable name="tsCanId">"0"</pcVariable>
@@ -236,7 +236,7 @@
 <constant digits="3" name="Test_TPS" units="%">0.0</constant>
 <constant digits="2" name="Test_Lambda_1" units="lambda">0.0</constant>
 <constant digits="2" name="Test_Lambda_2" units="lambda">0.0</constant>
-<constant digits="1" name="Test_MAP_1" units="kPa">50.0</constant>
+<constant digits="1" name="Test_MAP_1" units="kPa">100.0</constant>
 <constant digits="1" name="Test_MAP_2" units="kPa">100.0</constant>
 <constant digits="4" name="Test_MAF_1" units="kg/s">0.0</constant>
 <constant digits="4" name="Test_MAF_2" units="kg/s">0.0</constant>
@@ -258,7 +258,7 @@
 <constant digits="0" name="RPM_Change_Rate_2">-1.0</constant>
 <constant digits="0" name="RPM_Change_Rate_3">-1.0</constant>
 <constant digits="0" name="RPM_Change_Rate_4">-1.0</constant>
-<constant digits="0" name="Test_RPM_1" units="rpm">1000.0</constant>
+<constant digits="0" name="Test_RPM_1" units="rpm">500.0</constant>
 <constant digits="0" name="Test_RPM_2" units="rpm">0.0</constant>
 <constant digits="0" name="Test_RPM_3" units="rpm">0.0</constant>
 <constant digits="0" name="Test_RPM_4" units="rpm">0.0</constant>
@@ -952,8 +952,8 @@
       </constant>
 </page>
 <page number="5" size="1668">
-<constant digits="0" name="Inj_Time_Corr_Cols">255.0</constant>
-<constant digits="0" name="Inj_Time_Corr_Rows">255.0</constant>
+<constant digits="0" name="Inj_Time_Corr_Rows">11.0</constant>
+<constant digits="0" name="Inj_Time_Corr_Cols">32.0</constant>
 <constant cols="1" digits="0" name="Inj_Time_Corr_x_Bins" rows="32" units="rpm">
          0.0 
          100.0 

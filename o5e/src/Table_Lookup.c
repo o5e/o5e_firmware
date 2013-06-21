@@ -137,7 +137,7 @@ float table_lookup(const float x, const float y, const struct table * const tabl
 	if (x <= table->x_axis[0])              /* < first */ 
 		x_index = 0; 
 	else if (x >= table->x_axis[cols-1])   /* > last */ 
-		x_index = cols - 1;
+		x_index = rows - 1;
 	else   /* In the table somewhere...  */
 		x_index = bsearch(x, table->x_axis, cols);	/* Find the closest x index in the table*/
 

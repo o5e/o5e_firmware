@@ -7,13 +7,17 @@
 #define MAX_COLS 32
 
 /* Structure of the data table with header information */
+
 struct table
 {
-	uint8_t rows;											/* Number of rows in the table */
-	uint8_t cols;											/* Number of columns in the table */
-	float x_axis[MAX_ROWS];							/* Vector to store variable row coordinates */
-	float y_axis[MAX_COLS];							/* Vector to store variable column coordinates */
-	float data[MAX_ROWS*MAX_COLS];   		/* rows*cols array of floats, X order, rows first */
+	uint8_t rows;									/* Number of rows in the table */
+	uint8_t cols;  									/* Number of columns in the table */
+
+	uint16_t filler;  								/*skip to put 32bit stuff on multiple of 4*/ 
+	                            	
+    float x_axis[MAX_ROWS];							/* Vector to store variable row coordinates */
+	float y_axis[MAX_COLS];							/* Vector to store variable column coordinates */										
+	float data[MAX_ROWS * MAX_COLS];   				/* rows*cols array of floats, X order, rows first */
 };
 
 /* Function Declarations */
