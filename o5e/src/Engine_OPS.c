@@ -247,7 +247,7 @@ static void Set_Spark()
 
 static void Set_Fuel(void)
 {
-    static int16_t Corr;
+    static float Corr;
     static uint32_t error_code;
     static uint32_t Dead_Time;
     static uint32_t Dead_Time_Corr;
@@ -267,11 +267,12 @@ static void Set_Fuel(void)
 
 
         // Reference_VE correction - assumes fuel required is roughly proportional to Reference_VE
-        Pulse_Width = Pulse_Width * Reference_VE * Inverse100;
+        Pulse_Width = 1;//Pulse_Width * Reference_VE * Inverse100;
 
         // Main fuel table correction - this is used to adjust for RPM effects
-        Corr = table_lookup(RPM, Reference_VE, Inj_Time_Corr_Table);
+        Corr = table_lookup(RPM, MAP[0] , Inj_Time_Corr_Table);//Reference_VE
         Pulse_Width = Pulse_Width * Corr * Inverse100;
+        Injection_Time1 = (int32_t)(Pulse_Width * 4096);
 
 
         // Coolant temp correction from enrichment_ops
@@ -308,6 +309,7 @@ static void Set_Fuel(void)
          
          //this give the tuner the current pulse width
         Injection_Time = (Pulse_Width + Dead_Time) * Inverse1000;
+        
         
         // TODO - add code for semi-seq fuel
        
