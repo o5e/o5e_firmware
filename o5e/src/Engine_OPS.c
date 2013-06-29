@@ -207,7 +207,7 @@ static void Set_Spark()
         fs_etpu_spark_set_recalc_offset_angle(Spark_Channels[0], Spark_Recalc_Angle_eTPU); // global value despite the channel param
 
         // Dwell
-           Dwell = (Dwell_Set * table_lookup(V_Batt, 0, Dwell_Table));  //  (typeof(Dwell))
+           Dwell = (Dwell_Set * table_lookup(V_Batt, 1, Dwell_Table));  //  (typeof(Dwell))
              //the engine position is not known, of over rev limit, shut off the spark
               if (Enable_Ignition == 0 //spark disabled
                  || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC //crank position unknow
@@ -277,12 +277,12 @@ static void Set_Fuel(void)
 
         // Coolant temp correction from enrichment_ops
         if (Enable_Coolant_Temp_Corr == 1){
-           Fuel_Temp_Corr = table_lookup(CLT, 0, Fuel_Temp_Corr_Table);
+           Fuel_Temp_Corr = table_lookup(CLT, 1, Fuel_Temp_Corr_Table);
            Pulse_Width = Pulse_Width * Fuel_Temp_Corr * Inverse100;
         }
                 // Coolant temp correction from enrichment_ops
         if (Enable_Air_Temp_Corr == 1){
-           Air_Temp_Fuel_Corr = table_lookup(IAT, 0, IAT_Fuel_Corr_Table);
+           Air_Temp_Fuel_Corr = table_lookup(IAT, 1, IAT_Fuel_Corr_Table);
            Pulse_Width = Pulse_Width * Air_Temp_Fuel_Corr * Inverse100;
         }
         
@@ -305,7 +305,7 @@ static void Set_Fuel(void)
 
         // fuel dead time - extra pulse needed to open the injector
         // take user value and adjust based on battery voltage
-        Dead_Time = Dead_Time_Set * table_lookup(V_Batt, 0, Inj_Dead_Time_Table);
+        Dead_Time = Dead_Time_Set * table_lookup(V_Batt, 1, Inj_Dead_Time_Table);
          
          //this give the tuner the current pulse width
         Injection_Time = (Pulse_Width + Dead_Time) * Inverse1000;

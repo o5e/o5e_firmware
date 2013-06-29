@@ -30,7 +30,7 @@ void Get_Base_Pulse_Width(void)
 	//correct injector flow rate for actual fuel pressure
 	Inverse_Injector_Pressure = 1 / Rating_Fuel_Presure;
     Injector_Flow = Fuel_Presure * Inverse_Injector_Pressure; 
-    Injector_Flow = table_lookup(Injector_Flow, 0, sqrt_Table);
+    Injector_Flow = table_lookup(Injector_Flow, 1, sqrt_Table);
     Injector_Flow = Injector_Flow * Injector_Size;// get current injector folw	
 	
     // base (max) pulse width

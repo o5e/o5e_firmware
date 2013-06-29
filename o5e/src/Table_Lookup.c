@@ -17,7 +17,7 @@
 Table entries are float (32 bit single precision IEEE 754)
 Uses a binary search for the variable axis increments (faster)
 Logs errors if desired
-Does range and error checks
+Does range and error checks.  Error codes changed to negative numbers.
 ISO C90 compatible (yuck, check with "gcc -Wall -pedantic -Wextra")
 
 To use this, you need to fill out a table structure and then pass the lookup 
@@ -28,7 +28,8 @@ stay the same as you go down (rows) or to the right (cols).
 
 ****************************************************************************************************/
 
-/* Copyright (c) 2011, 2012 Jon Zeeff */
+/* Copyright (c) 2011, 2012 Jon Zeeff 
+	 Copyright (c) 2013 Clint Corbin				*/
 
 #include <stdint.h>
 #include "Table_Lookup.h"
@@ -91,10 +92,10 @@ inline static float interpolate(const float fraction, const float value1, const 
 @return lookup value from table
 
 ************************************************************************/
-float table_lookup(const float x, const float y, const struct table * const table)
-{
-	uint8_t x_index;
-	uint8_t y_index; 
+float table_lookup(const float col_value, const float row_value, const struct table * const table)
+{	
+	uint8_t col_index;
+	uint8_t row_index; 
 	float value1;
 	float value2;
 	float value3;
@@ -114,102 +115,102 @@ float table_lookup(const float x, const float y, const struct table * const tabl
 	/* check for sane values */
 	if (table == 0 || rows < 1 || cols < 2 || rows > MAX_ROWS || cols > MAX_COLS) {     /* error check */
 		err_push( CODE_OLDJUNK_FC );
-		return 255;
+		return -255;
 	}
 	/* check for proper x axis sorting (must be ascending) */
 	for (i = 1; i < cols; ++i) {
-		if (table->x_axis[i] < table->x_axis[i - 1]) {
+		if (table->col_axis[i] > table->col_axis[i + 1]) {
 			err_push( CODE_OLDJUNK_FB );
-			return 15;
+			return -15;
 		}
 	}
 	/* check for proper y axis sorting (must be ascending) */
 	for (i = 1; i < rows; ++i) {
-		if (table->y_axis[i] < table->y_axis[i - 1]) {
+		if (table->row_axis[i] > table->row_axis[i + 1]) {
 			err_push( CODE_OLDJUNK_FA );
-			return 15;
+			return -16;
 		}
 	}
 #endif
 
 	/* find  indexes that point into the table */
 	// check for within table
-	if (x <= table->x_axis[0])              /* < first */ 
-		x_index = 0; 
-	else if (x >= table->x_axis[cols-1])   /* > last */ 
-		x_index = rows - 1;
+	if (row_value <= table->row_axis[0])            			/* < first */ 
+		row_index = 0; 
+	else if (row_value >= table->row_axis[rows-1])   /* > last */ 
+		row_index = rows - 1;
 	else   /* In the table somewhere...  */
-		x_index = bsearch(x, table->x_axis, cols);	/* Find the closest x index in the table*/
+		row_index = bsearch(row_value, table->row_axis, rows);	/* Find the closest row_value index in the table*/
 
-	/* do y axis if this is a 2D lookup */
-	if ( y <= table->y_axis[0])			/* < first value */
-		y_index = 0;
-	else if ( y >= table->y_axis[rows-1])		/* > last value */
-		y_index = rows - 1;
+	/* do col_value axis if this is a 2D lookup */
+	if ( col_value <= table->col_axis[0])						/* < first value */
+		col_index = 0;
+	else if ( col_value >= table->col_axis[cols-1])		/* > last value */
+		col_index = cols - 1;
 	else
-		y_index = bsearch(y, table->y_axis, rows);
+		col_index = bsearch(col_value, table->col_axis, cols);
 
 
 	/* Interpolate between the four nearest cells (2D) using bilinear method */
 
 	/* Make sure we are not above or below the columns */
-	if ( (x > table->x_axis[x_index] && x_index >= cols -1) || ( x < table->x_axis[x_index] && x_index == 0))
-	{		/* Left or right most column, no interpolation on x */
-		if ( (y > table->y_axis[y_index] && y_index >= rows - 1) || ( y < table->y_axis[y_index] && y_index == 0) )
-		{ /* No interprolation on y either */
+	if ( (row_value > table->row_axis[row_index] && row_index >= rows -1) || ( row_value < table->row_axis[row_index] && row_index == 0))
+	{		/* Upper or lower most row, no interpolation on row_value */
+		if ( (col_value > table->col_axis[col_index] && col_index >= cols - 1) || ( col_value < table->col_axis[col_index] && col_index == 0) )
+		{ /* No interprolation on col_value either */
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * y_index) + x_index) << float_size);
+			ptr = (float *) table->data + (((cols * row_index) + col_index) << float_size);
 			return value(ptr);
 		}
 		else
 		{
-			/* No interporlation on x, but we are interpolating on y */
-			ratio = (y - table->y_axis[y_index])/(table->y_axis[y_index + 1] - table->y_axis[y_index]);
+			/* No interporlation on row_value, but we are interpolating on col_value */
+			ratio = (col_value - table->col_axis[col_index])/(table->col_axis[col_index + 1] - table->col_axis[col_index]);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * y_index) + x_index) << float_size);
+			ptr = (float *) table->data + (((cols * row_index) + col_index) << float_size);
 			value1 = value(ptr);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * (y_index + 1)) + x_index) << float_size);
+			ptr = (float *) table->data + (((cols * (row_index + 1)) + col_index) << float_size);
 			value2 = value(ptr);
 			return interpolate(ratio, value1, value2);
 		}
 	}
-	else /* We are interpolating on x */
+	else /* We are interpolating on row_value */
 	{
-		if ( (y > table->y_axis[y_index] && y_index >= rows - 1) || ( y < table->y_axis[y_index] && y_index == 0) )
-		{ /* No interprolation on y, but we are still interpolating on x */
-			ratio = (x - table->x_axis[x_index])/(table->x_axis[x_index + 1] - table->x_axis[x_index]);
+		if ( (col_value > table->col_axis[col_index] && col_index >= cols - 1) || ( col_value < table->col_axis[col_index] && col_index == 0) )
+		{ /* No interprolation on col_value, but we are still interpolating on row_value */
+			ratio = (row_value - table->row_axis[row_index])/(table->row_axis[row_index + 1] - table->row_axis[row_index]);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * y_index) + x_index) << float_size);
+			ptr = (float *) table->data + (((cols * row_index) + col_index) << float_size);
 			value1 = value(ptr);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * y_index) + (x_index + 1)) << float_size);
+			ptr = (float *) table->data + (((cols * row_index) + (col_index + 1)) << float_size);
 			value2 = value(ptr);
 			return interpolate(ratio, value1, value2);
 		}
-		else /* Most complex case, we are interpolating on both x and y... */
+		else /* Most complex case, we are interpolating on both row_value and col_value... */
 		{
-			/* Interpolate along current y row first */
-			ratio = (x - table->x_axis[x_index])/(table->x_axis[x_index + 1] - table->x_axis[x_index]);
+			/* Interpolate along current col_value row first */
+			ratio = (row_value - table->row_axis[row_index])/(table->row_axis[row_index + 1] - table->row_axis[row_index]);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * y_index) + x_index) << float_size);
+			ptr = (float *) table->data + (((cols * row_index) + col_index) << float_size);
 			value1 = value(ptr);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * y_index) + (x_index + 1)) << float_size);
-			value2 = value(ptr);
+			ptr = (float *) table->data + (((cols * (row_index + 1)) + col_index) << float_size);
+			value2 = *ptr;
 			value3 = interpolate(ratio, value1, value2);
 
-			/* Interpolate along next y row */
+			/* Interpolate along next col_value row */
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * (y_index + 1)) + x_index) << float_size);
+			ptr = (float *) table->data + (((cols * (row_index + 1)) + col_index) << float_size);
 			value1 = value(ptr);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * (y_index + 1)) + (x_index + 1)) << float_size);
+			ptr = (float *) table->data + (((cols * (row_index + 1)) + (col_index + 1)) << float_size);
 			value2 = value(ptr);
 			value4 = interpolate(ratio, value1, value2);
 
-			/* Now we can interpolate along the x column to get our final value */
-			ratio = (y - table->y_axis[y_index])/(table->y_axis[y_index + 1] - table->y_axis[y_index]);
+			/* Now we can interpolate along the row_value column to get our final value */
+			ratio = (col_value - table->col_axis[col_index])/(table->col_axis[col_index + 1] - table->col_axis[col_index]);
 			return interpolate(ratio, value3, value4); /* Return our final result */
 		}
 	}

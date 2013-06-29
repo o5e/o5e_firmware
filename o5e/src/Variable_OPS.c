@@ -130,10 +130,10 @@ void Get_Slow_Op_Vars(void)
 
             // Test_Value = 1 allows values simulating the ADC to be input 
             V_CLT = Test_V_CLT;
-            CLT = table_lookup(V_CLT, 0, CLT_Table);
+            CLT = table_lookup(V_CLT, 1, CLT_Table);
 
             V_IAT = Test_V_IAT;
-            IAT = table_lookup(V_IAT, 0, IAT_Table);
+            IAT = table_lookup(V_IAT, 1, IAT_Table);
 
 
         } // if
@@ -154,17 +154,17 @@ void Get_Slow_Op_Vars(void)
         // coolant temperature
         Filter_AD(&V_CLT_AD,3);  // smooth by 8
         V_CLT = (V_CLT_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * CLT_VOLTAGE_DIVIDER));
-        CLT = table_lookup(V_CLT, 0, CLT_Table);
+        CLT = table_lookup(V_CLT, 1, CLT_Table);
 
         // intake air temp
         Filter_AD(&V_IAT_AD,3);  // smooth by 8
         V_IAT = (V_IAT_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * IAT_VOLTAGE_DIVIDER));
-        IAT = table_lookup(V_IAT, 0, IAT_Table);
+        IAT = table_lookup(V_IAT, 1, IAT_Table);
 
         // manifold absolute pressure 
 
         //V_MAP[2] = (float)(V_MAP_3_AD ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_3_VOLTAGE_DIVIDER));
-        //MAP[2] = table_lookup(V_MAP[2], 0, MAP_3_Table);
+        //MAP[2] = table_lookup(V_MAP[2], 1, MAP_3_Table);
 
         // O2 sensors 
         V_O2[0] = (V_O2_1_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * O2_1_VOLTAGE_DIVIDER));
@@ -219,12 +219,12 @@ void Get_Fast_Op_Vars(void)
 
 
             V_TPS = Test_V_TPS;
-            TPS = table_lookup(V_TPS, 0, TPS_Table);
+            TPS = table_lookup(V_TPS, 1, TPS_Table);
             V_MAP[1] = Test_V_MAP_Array[1];
-            MAP[1] = table_lookup(V_MAP[1], 0, MAP_2_Table);
+            MAP[1] = table_lookup(V_MAP[1], 1, MAP_2_Table);
             /* Angle based stuff */
             V_MAP[0] = Test_V_MAP_Array[0];
-            MAP[0] = table_lookup(V_MAP[0], 0, MAP_1_Table);
+            MAP[0] = table_lookup(V_MAP[0], 1, MAP_1_Table);
         }
 
     } else {                    //Run Mode, normal operation
@@ -240,20 +240,20 @@ void Get_Fast_Op_Vars(void)
         /* Fast speed stuff...1000hz or so */
         Filter_AD(&V_TPS_AD,3);  // smooth by 8
         V_TPS = (V_TPS_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * TPS_VOLTAGE_DIVIDER));
-        TPS = table_lookup(V_TPS, 0, TPS_Table);
+        TPS = table_lookup(V_TPS, 1, TPS_Table);
         
         Filter_AD(&V_MAP_2_AD,3);  // smooth by 8
         V_MAP[1] = (V_MAP_2_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_2_VOLTAGE_DIVIDER));
-        MAP[1] = table_lookup(V_MAP[1], 0, MAP_2_Table);
+        MAP[1] = table_lookup(V_MAP[1], 1, MAP_2_Table);
         
         Filter_AD(&V_MAF_1_AD,3);  // smooth by 8
         V_MAF[0] = (V_MAF_1_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAF_1_VOLTAGE_DIVIDER));
-        MAF[0] = table_lookup(V_MAF[0], 0, MAF_1_Table);
+        MAF[0] = table_lookup(V_MAF[0], 1, MAF_1_Table);
 
         /* Angle based stuff */
         Filter_AD(&V_MAP_1_AD,3);  // smooth by 8
         V_MAP[0] = (V_MAP_1_AD * ((MAX_AD_VOLTAGE / MAX_AD_COUNTS) * MAP_1_VOLTAGE_DIVIDER));
-        MAP[0] = table_lookup(V_MAP[0], 0, MAP_1_Table);
+        MAP[0] = table_lookup(V_MAP[0], 1, MAP_1_Table);
         
         
         /* convert P1*/
