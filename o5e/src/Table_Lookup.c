@@ -115,7 +115,7 @@ float table_lookup(const float col_value, const float row_value, const struct ta
 	/* check for sane values */
 	if (table == 0 || rows < 1 || cols < 2 || rows > MAX_ROWS || cols > MAX_COLS) {     /* error check */
 		err_push( CODE_OLDJUNK_FC );
-		return -255;
+		return 255;
 	}
 	/* check for proper x axis sorting (must be ascending) */
 	for (i = 1; i < cols; ++i) {
@@ -150,6 +150,25 @@ float table_lookup(const float col_value, const float row_value, const struct ta
 	else
 		col_index = bsearch(col_value, table->col_axis, cols);
 
+	/* Is this a 1D table? (1 row only) */
+	if ( rows == 1 )  /* 1D only, so we only interpolate along the single column */
+	{
+		if ( col_value == table->col_axis[col_index] || col_index == cols - 1 ) /* No need to interpolate */
+		{
+			/* Calculate the correct pointer location for our data point */
+			ptr = (float *) table->data + (col_index << float_size);
+			return value(ptr);
+		}
+		else
+		{
+			ratio = (col_value - table->col_axis[col_index])/(table->col_axis[col_index + 1] - table->col_axis[col_index]);
+			ptr = (float *) ((unsigned int) table->data + (col_index << float_size));
+			value1 = value(ptr);
+			ptr = (float *) ((unsigned int) table->data + (col_index + 1 << float_size));
+			value2 = value(ptr);
+			return interpolate(ratio, value1, value2);
+		}
+	}
 
 	/* Interpolate between the four nearest cells (2D) using bilinear method */
 
