@@ -175,16 +175,7 @@ void Get_Slow_Op_Vars(void)
     }  // if normal run mode
     //Convert sensor reading to a form more easily used in the corrections code
 	Ref_IAT = Reference_Temp / (IAT + 273.15f);
-    IAT1 = (int32_t)(IAT * 4096);
-    CLT1 = (int32_t)(CLT * 4096);
-    Lambda1[0] = (int32_t)(Lambda[0] * 4096);
-    Lambda1[1] = (int32_t)(Lambda[1] * 4096);
-    V_CLT1 = (int32_t)(V_CLT * 4096);
-    V_IAT1 = (int32_t)(V_IAT * 4096);
-    V_O21[0] = (int32_t)(V_O2[0] * 4096);
-    V_O21[1] = (int32_t)(V_O2[1] * 4096);
     
-
 }
 
 // calc variables that need updating around every 10 msec
@@ -195,7 +186,7 @@ void Get_Fast_Op_Vars(void)
 	// = fs_etpu_eng_pos_get_crank_error_status();
 	//TS looks at "seconds" to know ift he OS is running....we're giving it msec but that will do
 	seconds = systime;//(EMIOS.CH[MSEC_EMIOS_CHANNEL].CCNTR.R);
-	seconds1 = seconds;
+
     // Code for testing
     // Test_Enable allows real time variables to be set in TunerStudio to test code
 
@@ -266,13 +257,5 @@ void Get_Fast_Op_Vars(void)
     Ref_MAP = MAP[0] * Inv_Ref_Pres;
     Ref_Baro = MAP[2] *  Inv_Ref_Pres;
     Ref_TPS = TPS * Inverse100;
-    RPM1 = (int32_t)(RPM * 4096);
-    TPS1 = (int32_t)(TPS * 4096);
-    MAP1[0] = (int32_t)(MAP[0] * 4096);
-    MAP1[1] = (int32_t)(MAP[1] * 4096);
-    V_TPS1 = (int32_t)(V_TPS * 4096);
-    V_MAP1[0] = (int32_t)(V_MAP[0] * 4096);
-    V_MAP1[1]= (int32_t)(V_MAP[1] * 4096);
-    V_MAF1[0] = (int32_t)(V_MAF[0] * 4096);
 
 }                               // Get_Fast_Op_Vars()

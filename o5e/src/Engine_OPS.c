@@ -272,7 +272,7 @@ static void Set_Fuel(void)
         // Main fuel table correction - this is used to adjust for RPM effects
         Corr = table_lookup(RPM, MAP[0] , Inj_Time_Corr_Table);//Reference_VE
         Pulse_Width = Pulse_Width * Corr ;//* Inverse100
-        Injection_Time1 = (int32_t)(Pulse_Width * 4096);
+        Injection_Time = (int32_t)(Pulse_Width * 4096);
 
 
         // Coolant temp correction from enrichment_ops
@@ -308,7 +308,7 @@ static void Set_Fuel(void)
         Dead_Time = Dead_Time_Set * table_lookup(V_Batt, 1, Inj_Dead_Time_Table);
          
          //this give the tuner the current pulse width
-        Injection_Time = (Pulse_Width + Dead_Time) * Inverse1000;
+  //      Injection_Time = (Pulse_Width + Dead_Time) * Inverse1000;
         
         
         // TODO - add code for semi-seq fuel

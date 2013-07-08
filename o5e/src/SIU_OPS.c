@@ -140,12 +140,12 @@ void init_SIU(void)
         //AN18 - 
         //AN21 - V_P1
         //AN22 - V_MAP_2
-        //AN23 - V_O2_1_UA
-        //AN24 - V_O2_1_UR 
+        //AN23 - V_O2_1
+        //AN24 - V_O2_2 
         //AN25 - V_Batt
         //AN27 - MAP_1
-        //AN28 - V_O2_2_UA 
-        //AN30 - V_O2_2_UR
+        //AN28 -  
+        //AN30 - 
         //AN31 - V_TPS
         //AN32 - V_P3
         //AN33 - V_P4
@@ -158,8 +158,8 @@ void init_SIU(void)
         
         
 /*
-Fuel    eTPU21 eTPU9 eTPU10 eTPU11 eTPU12 eTPU13 eTPU18 eTPU20 eTPU22 eTPU23 eTPU24 eTPU25
-Spark   eTPU19 eTPU2 eTPU3 eTPU4 eTPU5 eTPU6 eTPU7 eTPU8
+Fuel    eTPU6 eTPU7 eTPU8 eTPU9 eTPU10 eTPU11 eTPU12 eTPU13
+Spark   eTPU2 eTPU3 eTPU4 eTPU5
 Crank   eTPU0
 Cam     eTPU1
 */

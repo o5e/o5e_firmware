@@ -62,7 +62,7 @@ extern uint16_t const pageSize[NPAGES];
 
 // This list is maintained *manually* and must match the .ini file exactly - same size, number and order
 //[Output_Channels]
-struct Outputs1 {
+struct Outputs {
 
 float RPM; 					//engine speed in revs/min
 float Reference_VE;     		//Engine load as a % of a  reference condition, basically 100% cylinder fill under the current conditions
@@ -104,152 +104,55 @@ float Air_Temp_Fuel_Corr;
 };
 
 // this must match the offsets in the .ini file AND must be a multiple of 4
-//#define OUTPUT_CHANNELS_SIZE  172        // don't use sizeof() here
-
-
-// these are for convenience and more readable code - must match above
-#define RPM Output_Channels1.RPM
-#define Reference_VE Output_Channels1.Reference_VE
-#define TPS Output_Channels1.TPS
-#define TPS_Dot Output_Channels1.TPS_Dot
-#define CLT Output_Channels1.CLT
-#define IAT Output_Channels1.IAT
-#define Lambda Output_Channels1.Lambda
-#define MAP Output_Channels1.MAP
-#define MAF Output_Channels1.MAF
-#define V_Batt Output_Channels1.V_Batt
-#define Injection_Time Output_Channels1.Injection_Time
-#define Spark_Advance Output_Channels1.Spark_Advance
-#define Dwell Output_Channels1.Dwell
-#define Inj_End_Angle Output_Channels1.Inj_End_Angle
-#define Lambda_Correction Output_Channels1.Lambda_Correction
-#define Accel_Decel_Corr Output_Channels1.Accel_Decel_Corr
-#define Prime_Corr Output_Channels1.Prime_Corr
-#define Fuel_Temp_Corr Output_Channels1.Fuel_Temp_Corr
-#define seconds Output_Channels1.seconds
-#define Post_Start_Time Output_Channels1.Post_Start_Time
-#define Post_Start_Cycles Output_Channels1.Post_Start_Cycles
-#define Post_Start_Cylinders Output_Channels1.Post_Start_Cylinders
-#define Sync_Status Output_Channels1.Sync_Status
-#define Cam_Errors Output_Channels1.Cam_Errors
-#define Crank_Errors Output_Channels1.Crank_Errors
-
-#define Pot_RPM Output_Channels1.Pot_RPM
-#define V_MAP Output_Channels1.V_MAP
-#define V_CLT Output_Channels1.V_CLT 
-#define V_IAT Output_Channels1.V_IAT 
-#define V_TPS  Output_Channels1.V_TPS
-#define V_MAF Output_Channels1.V_MAF 
-#define V_O2 Output_Channels1.V_O2 
-#define V_P Output_Channels1.V_P
-
-#define Last_Error Output_Channels1.Last_Error 
-#define Last_Error_Time Output_Channels1.Last_Error_Time
-
-#define Air_Temp_Fuel_Corr Output_Channels1.Air_Temp_Fuel_Corr
-
-
-//*******************************************************
-
-//[Output_Channels]
-struct Outputs {
-
-int32_t RPM1; 					//engine speed in revs/min
-int32_t Reference_VE1;     		//Engine load as a % of a  reference condition, basically 100% cylinder fill under the current conditions
-int32_t TPS1;					//Throttle postion as a % of full open
-int32_t TPS_Dot1;				//Throttle position rate of change
-int32_t CLT1;					//Coolant Temp in C
-int32_t IAT1;					//Inlet Air Temp in C
-int32_t Lambda1[2];				//Actual Air/fuel ratio  divided by stoich Air/Fuel ratio
-int32_t MAP1[2];					//Mafifold Absolute Pressure in KPa  MAp1 is external, MAP 2 isinternal and normally Barometric Pressure
-int32_t MAF1[2];					//Mass Air Flow in grams/sec
-int32_t V_Batt1;					//Battery voltage
-int32_t Injection_Time1;			//Total injector open time in usec
-int32_t Spark_Advance1;			//Igition angle before TDC in degrees
-int32_t Dwell1;					//Coil charge time in msec
-int32_t Inj_End_Angle1;			//Degrees after TDC normal injection pulse should end
-int32_t Lambda_Correction1;		//Closed loop fuel correction applied as a % change
-int32_t Accel_Decel_Corr1;		//Acceleration/Deceleration that is applied based on TPS_Dot as a % change
-int32_t Prime_Corr1;				//Prime of warmup correction in usec that is added to pulse width 
-int32_t Fuel_Temp_Corr1;			//Correction appied to injector pulse width as a % change based on coolant temp
-uint32_t seconds1;				//system time in seconds, used by TS for powercycle required warning 
-uint32_t Post_Start_Time1;		//Time in seconds since crank sync was achieved
-uint16_t Post_Start_Cycles1;		//engine cycles since crank sync was achieved
-uint16_t Post_Start_Cylinders1;	//engine cylinder count since crank sync was achieved
-uint16_t Sync_Status1;           //crank sync status,  see Freescale code for values 
-uint16_t Cam_Errors1;            // count of errors seen
-uint16_t Crank_Errors1;          // count of errors seen
-uint16_t spare1;				//filler
-int32_t Pot_RPM1;				//0-5V input used to set test rpm
-int32_t V_MAP1[2];				//0-5V singal from MAP sensors
-int32_t V_CLT1;					//0-5V signal from coolant sensor
-int32_t V_IAT1;					//0-5V signal from the Inlet Air Temp sensor 
-int32_t V_TPS1;					//0-5V signal from the Throttle Position Sensor
-int32_t V_MAF1[2];				//0-5V signal from the Mass Air Flow Sensor 
-int32_t V_O21[2];				//0-1V  signal from the O2 Sensor or 0-5V a Wide Band O2 control 
-int32_t V_P1[4];					//Optional 0-5V signal or 0/5V digital
-uint32_t Last_Error1; 
-uint32_t Last_Error_Time1;
-int32_t Air_Temp_Fuel_Corr1;
-};
-
-// this must match the offsets in the .ini file AND must be a multiple of 4
 #define OUTPUT_CHANNELS_SIZE  172        // don't use sizeof() here
 
 
 // these are for convenience and more readable code - must match above
-#define RPM1 Output_Channels.RPM1
-#define Reference_VE1 Output_Channels.Reference_VE1
-#define TPS1 Output_Channels.TPS1
-#define TPS_Dot1 Output_Channels.TPS_Dot1
-#define CLT1 Output_Channels.CLT1
-#define IAT1 Output_Channels.IAT1
-#define Lambda1 Output_Channels.Lambda1
-#define MAP1 Output_Channels.MAP1
-#define MAF1 Output_Channels.MAF1
-#define V_Batt1 Output_Channels.V_Batt1
-#define Injection_Time1 Output_Channels.Injection_Time1
-#define Spark_Advance1 Output_Channels.Spark_Advance1
-#define Dwell1 Output_Channels.Dwell1
-#define Inj_End_Angle1 Output_Channels.Inj_End_Angle1
-#define Lambda_Correction1 Output_Channels.Lambda_Correction1
-#define Accel_Decel_Corr1 Output_Channels.Accel_Decel_Corr1
-#define Prime_Corr1 Output_Channels.Prime_Corr1
-#define Fuel_Temp_Corr1 Output_Channels.Fuel_Temp_Corr1
-#define seconds1 Output_Channels.seconds1
-#define Post_Start_Time1 Output_Channels.Post_Start_Time1
-#define Post_Start_Cycles1 Output_Channels.Post_Start_Cycles1
-#define Post_Start_Cylinders1 Output_Channels.Post_Start_Cylinders1
-#define Sync_Status1 Output_Channels.Sync_Status1
-#define Cam_Errors1 Output_Channels.Cam_Errors1
-#define Crank_Errors1 Output_Channels.Crank_Errors1
+#define RPM Output_Channels.RPM
+#define Reference_VE Output_Channels.Reference_VE
+#define TPS Output_Channels.TPS
+#define TPS_Dot Output_Channels.TPS_Dot
+#define CLT Output_Channels.CLT
+#define IAT Output_Channels.IAT
+#define Lambda Output_Channels.Lambda
+#define MAP Output_Channels.MAP
+#define MAF Output_Channels.MAF
+#define V_Batt Output_Channels.V_Batt
+#define Injection_Time Output_Channels.Injection_Time
+#define Spark_Advance Output_Channels.Spark_Advance
+#define Dwell Output_Channels.Dwell
+#define Inj_End_Angle Output_Channels.Inj_End_Angle
+#define Lambda_Correction Output_Channels.Lambda_Correction
+#define Accel_Decel_Corr Output_Channels.Accel_Decel_Corr
+#define Prime_Corr Output_Channels.Prime_Corr
+#define Fuel_Temp_Corr Output_Channels.Fuel_Temp_Corr
+#define seconds Output_Channels.seconds
+#define Post_Start_Time Output_Channels.Post_Start_Time
+#define Post_Start_Cycles Output_Channels.Post_Start_Cycles
+#define Post_Start_Cylinders Output_Channels.Post_Start_Cylinders
+#define Sync_Status Output_Channels.Sync_Status
+#define Cam_Errors Output_Channels.Cam_Errors
+#define Crank_Errors Output_Channels.Crank_Errors
 
-#define Pot_RPM1 Output_Channels.Pot_RPM1
-#define V_MAP1 Output_Channels.V_MAP1
-#define V_CLT1 Output_Channels.V_CLT1 
-#define V_IAT1 Output_Channels.V_IAT1 
-#define V_TPS1  Output_Channels.V_TPS1
-#define V_MAF1 Output_Channels.V_MAF1 
-#define V_O21 Output_Channels.V_O21 
-#define V_P1 Output_Channels.V_P1
+#define Pot_RPM Output_Channels.Pot_RPM
+#define V_MAP Output_Channels.V_MAP
+#define V_CLT Output_Channels.V_CLT 
+#define V_IAT Output_Channels.V_IAT 
+#define V_TPS  Output_Channels.V_TPS
+#define V_MAF Output_Channels.V_MAF 
+#define V_O2 Output_Channels.V_O2 
+#define V_P Output_Channels.V_P
 
-#define Last_Error1 Output_Channels1.Last_Error1 
-#define Last_Error_Time1 Output_Channels1.Last_Error_Time1
+#define Last_Error Output_Channels.Last_Error 
+#define Last_Error_Time Output_Channels.Last_Error_Time
 
-#define Air_Temp_Fuel_Corr1 Output_Channels1.Air_Temp_Fuel_Corr1
+#define Air_Temp_Fuel_Corr Output_Channels.Air_Temp_Fuel_Corr
 
 
 //*******************************************************
-//stuff stored in ram for general use but removed from the output block
 
-
-
- 
-
-//*******************************************************
 // initialized to all zeros
 extern struct Outputs Output_Channels;
-extern struct Outputs1 Output_Channels1;
 
 // allow writing to config variables for testing - see variables.c
 #define CONST   /**< TODO: rip out FAST! - this needs to be checked though */
