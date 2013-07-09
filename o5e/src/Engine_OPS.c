@@ -270,9 +270,9 @@ static void Set_Fuel(void)
         Pulse_Width = 1;//Pulse_Width * Reference_VE * Inverse100;
 
         // Main fuel table correction - this is used to adjust for RPM effects
-        Corr = table_lookup(RPM, MAP[0] , Inj_Time_Corr_Table);//Reference_VE
+        Corr = table_lookup(RPM, MAP[0], Inj_Time_Corr_Table);//Reference_VE
         Pulse_Width = Pulse_Width * Corr ;//* Inverse100
-        Injection_Time = (int32_t)(Pulse_Width * 4096);
+        Injection_Time = Pulse_Width;
 
 
         // Coolant temp correction from enrichment_ops
@@ -372,7 +372,7 @@ static void Set_Fuel(void)
            int i;
            for (i = 0; i < N_Cyl; ++i) {
              fs_etpu_fuel_switch_off(Fuel_Channels[i]);
-             Injection_Time = 0;
+//             Injection_Time = 0;
            } // for
          }//if
 }                               // Set_Fuel()

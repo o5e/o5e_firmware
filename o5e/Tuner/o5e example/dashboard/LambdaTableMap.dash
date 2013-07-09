@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <dsh xmlns="http://www.EFIAnalytics.com/:dsh">
-<bibliography author="TunerStudio 2.2.22 - EFI Analytics - philip.tobin@yahoo.com" company="EFI Analytics, © 2007 - 2012, All Rights Reserved." writeDate="Sat Jun 29 11:09:02 MDT 2013"/>
+<bibliography author="TunerStudio 2.2.22 - EFI Analytics - philip.tobin@yahoo.com" company="EFI Analytics, © 2007 - 2012, All Rights Reserved." writeDate="Thu Jun 20 14:39:03 EDT 2013"/>
 <versionInfo fileFormat="2.0" firmwareSignature="MShift 2.111       "/>
 <gaugeCluster antiAliasing="true" backgroundDitherColor="-8355712" clusterBackgroundColor="-16777216" clusterBackgroundImageFileName="" clusterBackgroundImageStyle="Tile">
 <dashComp type="com.efiAnalytics.tunerStudio.Gauge">
 <BorderWidth type="int">6</BorderWidth>
+<BackgroundImageFileName type="String">null</BackgroundImageFileName>
+<FontSizeAdjustment type="int">0</FontSizeAdjustment>
+<HistoricalPeakValue type="double">0.0</HistoricalPeakValue>
+<RelativeBorderWidth type="int">6</RelativeBorderWidth>
+<ShapeLockedToAspect type="boolean">true</ShapeLockedToAspect>
 <Max type="double">10000.0</Max>
 <Min type="double">0.0</Min>
 <Units type="String">RPM</Units>
@@ -16,11 +21,6 @@
 <FontColor alpha="255" blue="0" green="0" red="0" type="Color">-16777216</FontColor>
 <TrimColor alpha="255" blue="122" green="105" red="105" type="Color">-9868934</TrimColor>
 <WarnColor alpha="255" blue="0" green="255" red="255" type="Color">-256</WarnColor>
-<BackgroundImageFileName type="String">null</BackgroundImageFileName>
-<FontSizeAdjustment type="int">0</FontSizeAdjustment>
-<HistoricalPeakValue type="double">0.0</HistoricalPeakValue>
-<RelativeBorderWidth type="int">6</RelativeBorderWidth>
-<ShapeLockedToAspect type="boolean">true</ShapeLockedToAspect>
 <CriticalColor alpha="255" blue="0" green="0" red="255" type="Color">-65536</CriticalColor>
 <DisplayValue type="String">0</DisplayValue>
 <GaugePainter type="com.efiAnalytics.tunerStudio.renderers.GaugePainter">com.efiAnalytics.tunerStudio.renderers.RoundAnalogGaugePainter</GaugePainter>
@@ -62,6 +62,11 @@
 </dashComp>
 <dashComp type="com.efiAnalytics.tunerStudio.Gauge">
 <BorderWidth type="int">6</BorderWidth>
+<BackgroundImageFileName type="String">null</BackgroundImageFileName>
+<FontSizeAdjustment type="int">0</FontSizeAdjustment>
+<HistoricalPeakValue type="double">0.0</HistoricalPeakValue>
+<RelativeBorderWidth type="int">6</RelativeBorderWidth>
+<ShapeLockedToAspect type="boolean">true</ShapeLockedToAspect>
 <Max type="double">120.0</Max>
 <Min type="double">0.0</Min>
 <Units type="String">%</Units>
@@ -73,11 +78,6 @@
 <FontColor alpha="255" blue="0" green="0" red="0" type="Color">-16777216</FontColor>
 <TrimColor alpha="255" blue="122" green="105" red="105" type="Color">-9868934</TrimColor>
 <WarnColor alpha="255" blue="0" green="255" red="255" type="Color">-256</WarnColor>
-<BackgroundImageFileName type="String">null</BackgroundImageFileName>
-<FontSizeAdjustment type="int">0</FontSizeAdjustment>
-<HistoricalPeakValue type="double">0.0</HistoricalPeakValue>
-<RelativeBorderWidth type="int">6</RelativeBorderWidth>
-<ShapeLockedToAspect type="boolean">true</ShapeLockedToAspect>
 <CriticalColor alpha="255" blue="0" green="0" red="255" type="Color">-65536</CriticalColor>
 <DisplayValue type="String">0.0</DisplayValue>
 <GaugePainter type="com.efiAnalytics.tunerStudio.renderers.GaugePainter">com.efiAnalytics.tunerStudio.renderers.RoundAnalogGaugePainter</GaugePainter>
@@ -119,10 +119,15 @@
 </dashComp>
 <dashComp type="com.efiAnalytics.tunerStudio.Gauge">
 <BorderWidth type="int">6</BorderWidth>
+<BackgroundImageFileName type="String">null</BackgroundImageFileName>
+<FontSizeAdjustment type="int">0</FontSizeAdjustment>
+<HistoricalPeakValue type="double">0.0</HistoricalPeakValue>
+<RelativeBorderWidth type="int">6</RelativeBorderWidth>
+<ShapeLockedToAspect type="boolean">true</ShapeLockedToAspect>
 <Max type="double">2.0</Max>
 <Min type="double">0.0</Min>
 <Units type="String"/>
-<GoingDead type="boolean">false</GoingDead>
+<GoingDead type="boolean">true</GoingDead>
 <MustPaint type="boolean">false</MustPaint>
 <RunDemo type="boolean">false</RunDemo>
 <BackColor alpha="255" blue="255" green="255" red="255" type="Color">-1</BackColor>
@@ -130,11 +135,6 @@
 <FontColor alpha="255" blue="0" green="0" red="0" type="Color">-16777216</FontColor>
 <TrimColor alpha="255" blue="122" green="105" red="105" type="Color">-9868934</TrimColor>
 <WarnColor alpha="255" blue="0" green="255" red="255" type="Color">-256</WarnColor>
-<BackgroundImageFileName type="String">null</BackgroundImageFileName>
-<FontSizeAdjustment type="int">0</FontSizeAdjustment>
-<HistoricalPeakValue type="double">0.0</HistoricalPeakValue>
-<RelativeBorderWidth type="int">6</RelativeBorderWidth>
-<ShapeLockedToAspect type="boolean">true</ShapeLockedToAspect>
 <CriticalColor alpha="255" blue="0" green="0" red="255" type="Color">-65536</CriticalColor>
 <DisplayValue type="String">0.0000</DisplayValue>
 <GaugePainter type="com.efiAnalytics.tunerStudio.renderers.GaugePainter">com.efiAnalytics.tunerStudio.renderers.RoundAnalogGaugePainter</GaugePainter>
@@ -147,7 +147,7 @@
 <MajorTicks type="double">-1.0</MajorTicks>
 <NeedleColor alpha="255" blue="102" green="0" red="0" type="Color">-16777114</NeedleColor>
 <NeedleSmoothing type="int">1</NeedleSmoothing>
-<SmoothedValue type="double">0.0</SmoothedValue>
+<SmoothedValue type="double">0.8308487273079659</SmoothedValue>
 <StartAngle type="int">0</StartAngle>
 <SweepAngle type="int">300</SweepAngle>
 <SweepBeginDegree type="int">300</SweepBeginDegree>
@@ -176,10 +176,15 @@
 </dashComp>
 <dashComp type="com.efiAnalytics.tunerStudio.Gauge">
 <BorderWidth type="int">6</BorderWidth>
+<BackgroundImageFileName type="String">null</BackgroundImageFileName>
+<FontSizeAdjustment type="int">0</FontSizeAdjustment>
+<HistoricalPeakValue type="double">-20.0</HistoricalPeakValue>
+<RelativeBorderWidth type="int">6</RelativeBorderWidth>
+<ShapeLockedToAspect type="boolean">true</ShapeLockedToAspect>
 <Max type="double">70.0</Max>
 <Min type="double">-20.0</Min>
 <Units type="String">degrees</Units>
-<GoingDead type="boolean">false</GoingDead>
+<GoingDead type="boolean">true</GoingDead>
 <MustPaint type="boolean">false</MustPaint>
 <RunDemo type="boolean">false</RunDemo>
 <BackColor alpha="255" blue="255" green="255" red="255" type="Color">-1</BackColor>
@@ -187,11 +192,6 @@
 <FontColor alpha="255" blue="0" green="0" red="0" type="Color">-16777216</FontColor>
 <TrimColor alpha="255" blue="122" green="105" red="105" type="Color">-9868934</TrimColor>
 <WarnColor alpha="255" blue="0" green="255" red="255" type="Color">-256</WarnColor>
-<BackgroundImageFileName type="String">null</BackgroundImageFileName>
-<FontSizeAdjustment type="int">0</FontSizeAdjustment>
-<HistoricalPeakValue type="double">-20.0</HistoricalPeakValue>
-<RelativeBorderWidth type="int">6</RelativeBorderWidth>
-<ShapeLockedToAspect type="boolean">true</ShapeLockedToAspect>
 <CriticalColor alpha="255" blue="0" green="0" red="255" type="Color">-65536</CriticalColor>
 <DisplayValue type="String">-20.0</DisplayValue>
 <GaugePainter type="com.efiAnalytics.tunerStudio.renderers.GaugePainter">com.efiAnalytics.tunerStudio.renderers.RoundAnalogGaugePainter</GaugePainter>

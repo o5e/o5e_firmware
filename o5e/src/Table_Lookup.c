@@ -92,7 +92,7 @@ inline static float interpolate(const float fraction, const float value1, const 
 @return lookup value from table
 
 ************************************************************************/
-float table_lookup(const float col_value, const float row_value, const struct table * const table)
+float table_lookup(const float row_value, const float col_value, const struct table * const table)
 {	
 	uint8_t col_index;
 	uint8_t row_index; 
@@ -119,16 +119,16 @@ float table_lookup(const float col_value, const float row_value, const struct ta
 	}
 	/* check for proper x axis sorting (must be ascending) */
 	for (i = 1; i < cols; ++i) {
-		if (table->col_axis[i] > table->col_axis[i + 1]) {
+		if (table->col_axis[i] < table->col_axis[i - 1]) {
 			err_push( CODE_OLDJUNK_FB );
-			return -15;
+			return 15;
 		}
 	}
 	/* check for proper y axis sorting (must be ascending) */
 	for (i = 1; i < rows; ++i) {
-		if (table->row_axis[i] > table->row_axis[i + 1]) {
+		if (table->row_axis[i] < table->row_axis[i - 1]) {
 			err_push( CODE_OLDJUNK_FA );
-			return -16;
+			return 16;
 		}
 	}
 #endif
@@ -156,8 +156,9 @@ float table_lookup(const float col_value, const float row_value, const struct ta
 		if ( col_value == table->col_axis[col_index] || col_index == cols - 1 ) /* No need to interpolate */
 		{
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (col_index << float_size);
-			return value(ptr);
+            ptr = (float *) table->data + (col_index << float_size);
+            return value(ptr);
+			 
 		}
 		else
 		{
