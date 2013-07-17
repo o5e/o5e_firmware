@@ -39,7 +39,8 @@
 
 
 uint32_t *fs_free_param;
-uint32_t Pulse_Width;
+float Pulse_Width;
+uint32_t etpu_Pulse_Width;
 //uint32_t Injector_Flow;
 static void Check_Engine(void);
 
@@ -267,12 +268,12 @@ static void Set_Fuel(void)
 
 
         // Reference_VE correction - assumes fuel required is roughly proportional to Reference_VE
-        Pulse_Width = 1;//Pulse_Width * Reference_VE * Inverse100;
+        Pulse_Width = Pulse_Width * Reference_VE * Inverse100;
 
         // Main fuel table correction - this is used to adjust for RPM effects
         Corr = table_lookup(RPM, MAP[0], Inj_Time_Corr_Table);//Reference_VE
-        Pulse_Width = Pulse_Width * Corr ;//* Inverse100
-        Injection_Time = Pulse_Width;
+        Pulse_Width = Pulse_Width * Corr * Inverse100;
+        Injection_Time = Corr;
 
 
         // Coolant temp correction from enrichment_ops
@@ -318,7 +319,8 @@ static void Set_Fuel(void)
             err_push( CODE_OLDJUNK_E1 );
         }
 
-        // Fuel pulse width calc is done
+        // Fuel pulse width calc is done convert to etpu type
+        etpu_Pulse_Width = (uint32_t) Pulse_Width;
         
 //Injection_angle()
         // where should pulse end (injection timing)?
@@ -355,7 +357,7 @@ static void Set_Fuel(void)
             
                 //error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Cyl_Pulse_Width);
                 //this goes away once cyl trim is working
-                error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], Pulse_Width);
+                error_code = fs_etpu_fuel_set_injection_time(Fuel_Channels[j], etpu_Pulse_Width);
 
         }                       // for
 

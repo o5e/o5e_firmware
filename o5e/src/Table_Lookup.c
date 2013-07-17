@@ -93,6 +93,8 @@ inline static float interpolate(const float fraction, const float value1, const 
 @return lookup value from table
 
 ************************************************************************/
+
+
 float table_lookup(const float col_value, const float row_value, const struct table * const table)
 {	
 	uint8_t col_index;
@@ -129,7 +131,7 @@ float table_lookup(const float col_value, const float row_value, const struct ta
 	for (i = 1; i < rows; ++i) {
 		if (table->row_axis[i] < table->row_axis[i - 1]) {
 			err_push( CODE_OLDJUNK_FA );
-			return (float)16.2;
+			return 300;
 		}
 	}
 #endif

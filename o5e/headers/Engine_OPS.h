@@ -1,7 +1,8 @@
 #ifndef Engine_OPS_H
 #define Engine_OPS_H
 
-extern uint32_t Pulse_Width;
+extern float Pulse_Width;
+extern uint32_t etpu_Pulse_Width;
 
 void Slow_Vars_Task(void);
 void Fuel_Pump_Task(void);
