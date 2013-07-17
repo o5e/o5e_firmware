@@ -29,7 +29,8 @@ stay the same as you go down (rows) or to the right (cols).
 ****************************************************************************************************/
 
 /* Copyright (c) 2011, 2012 Jon Zeeff 
-	 Copyright (c) 2013 Clint Corbin				*/
+   Copyright (c) 2013 Clint Corbin
+   Copyright (c) 2013 Mark Eberhardt				*/
 
 #include <stdint.h>
 #include "Table_Lookup.h"
@@ -103,7 +104,7 @@ float table_lookup(const float col_value, const float row_value, const struct ta
 	float ratio;
 	uint8_t i;
 	float *ptr;
-#define float_size	0  	/* Shifts required to correct for 4 byte long 32bit float data	*/
+
 
 	/* for readability */
 #define rows (table->rows)
@@ -157,16 +158,16 @@ float table_lookup(const float col_value, const float row_value, const struct ta
 		if ( col_value == table->col_axis[col_index] || col_index == cols - 1 ) /* No need to interpolate */
 		{
 			/* Calculate the correct pointer location for our data point */
-            ptr = (float *) table->data + (col_index << float_size);
+            ptr = (float *) table->data + col_index ;
             return value(ptr);
 			 
 		}
 		else
 		{
 			ratio = (col_value - table->col_axis[col_index])/(table->col_axis[col_index + 1] - table->col_axis[col_index]);
-			ptr = (float *) ((unsigned int) table->data + (col_index << float_size));
+			ptr = (float *) ((unsigned int) table->data + col_index );
 			value1 = value(ptr);
-			ptr = (float *) ((unsigned int) table->data + (col_index + 1 << float_size));
+			ptr = (float *) ((unsigned int) table->data + col_index + 1);
 			value2 = value(ptr);
 			return interpolate(ratio, value1, value2);
 		}
@@ -180,7 +181,7 @@ float table_lookup(const float col_value, const float row_value, const struct ta
 		if ( (col_value > table->col_axis[col_index] && col_index >= cols - 1) || ( col_value < table->col_axis[col_index] && col_index == 0) )
 		{ /* No interprolation on col_value either */
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * row_index) + col_index) << float_size);
+			ptr = (float *) table->data + ((cols * row_index) + col_index) ;
 			return value(ptr);
 		}
 		else
@@ -188,10 +189,10 @@ float table_lookup(const float col_value, const float row_value, const struct ta
 			/* No interporlation on row_value, but we are interpolating on col_value */
 			ratio = (col_value - table->col_axis[col_index])/(table->col_axis[col_index + 1] - table->col_axis[col_index]);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * row_index) + col_index) << float_size);
+			ptr = (float *) table->data + ((cols * row_index) + col_index);
 			value1 = value(ptr);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * (row_index + 1)) + col_index) << float_size);
+			ptr = (float *) table->data + ((cols * (row_index + 1)) + col_index);
 			value2 = value(ptr);
 			return interpolate(ratio, value1, value2);
 		}
@@ -202,10 +203,10 @@ float table_lookup(const float col_value, const float row_value, const struct ta
 		{ /* No interprolation on col_value, but we are still interpolating on row_value */
 			ratio = (row_value - table->row_axis[row_index])/(table->row_axis[row_index + 1] - table->row_axis[row_index]);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * row_index) + col_index) << float_size);
+			ptr = (float *) table->data + ((cols * row_index) + col_index);
 			value1 = value(ptr);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * row_index) + (col_index + 1)) << float_size);
+			ptr = (float *) table->data + ((cols * row_index) + (col_index + 1));
 			value2 = value(ptr);
 			return interpolate(ratio, value1, value2);
 		}
@@ -214,19 +215,19 @@ float table_lookup(const float col_value, const float row_value, const struct ta
 			/* Interpolate along current col_value row first */
 			ratio = (row_value - table->row_axis[row_index])/(table->row_axis[row_index + 1] - table->row_axis[row_index]);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * row_index) + col_index) << float_size);
+			ptr = (float *) table->data + ((cols * row_index) + col_index) ;
 			value1 = value(ptr);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * (row_index + 1)) + col_index) << float_size);
+			ptr = (float *) table->data + ((cols * (row_index + 1)) + col_index);
 			value2 = *ptr;
 			value3 = interpolate(ratio, value1, value2);
 
 			/* Interpolate along next col_value row */
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * (row_index + 1)) + col_index) << float_size);
+			ptr = (float *) table->data + ((cols * (row_index + 1)) + col_index);
 			value1 = value(ptr);
 			/* Calculate the correct pointer location for our data point */
-			ptr = (float *) table->data + (((cols * (row_index + 1)) + (col_index + 1)) << float_size);
+			ptr = (float *) table->data + ((cols * (row_index + 1)) + (col_index + 1));
 			value2 = value(ptr);
 			value4 = interpolate(ratio, value1, value2);
 
