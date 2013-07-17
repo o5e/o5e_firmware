@@ -92,7 +92,7 @@ inline static float interpolate(const float fraction, const float value1, const 
 @return lookup value from table
 
 ************************************************************************/
-float table_lookup(const float row_value, const float col_value, const struct table * const table)
+float table_lookup(const float col_value, const float row_value, const struct table * const table)
 {	
 	uint8_t col_index;
 	uint8_t row_index; 
@@ -103,7 +103,7 @@ float table_lookup(const float row_value, const float col_value, const struct ta
 	float ratio;
 	uint8_t i;
 	float *ptr;
-#define float_size	2  	/* Shifts required to correct for 4 byte long 32bit float data	*/
+#define float_size	0  	/* Shifts required to correct for 4 byte long 32bit float data	*/
 
 	/* for readability */
 #define rows (table->rows)
@@ -128,13 +128,14 @@ float table_lookup(const float row_value, const float col_value, const struct ta
 	for (i = 1; i < rows; ++i) {
 		if (table->row_axis[i] < table->row_axis[i - 1]) {
 			err_push( CODE_OLDJUNK_FA );
-			return 16;
+			return (float)16.2;
 		}
 	}
 #endif
 
 	/* find  indexes that point into the table */
 	// check for within table
+	
 	if (row_value <= table->row_axis[0])            			/* < first */ 
 		row_index = 0; 
 	else if (row_value >= table->row_axis[rows-1])   /* > last */ 
@@ -150,8 +151,8 @@ float table_lookup(const float row_value, const float col_value, const struct ta
 	else
 		col_index = bsearch(col_value, table->col_axis, cols);
 
-	/* Is this a 1D table? (1 row only) */
-	if ( rows == 1 )  /* 1D only, so we only interpolate along the single column */
+	/* Is this a 1D table? (1 col only) */
+	if ( rows == 1 )  /* 1D only, so we only interpolate along the single row */
 	{
 		if ( col_value == table->col_axis[col_index] || col_index == cols - 1 ) /* No need to interpolate */
 		{
