@@ -10,8 +10,8 @@
 									
 struct table
 {
-	uint8_t rows; 			/* Number of rows in the table */
 	uint8_t cols;  			/* Number of columns in the table */
+	uint8_t rows; 			/* Number of rows in the table */
 	uint16_t filler;   			/*filler to put 32bit stuff on multiple of 4*/
 	float col_axis[MAX_COLS];   /* Vector to store variable column coordinates */  
 	float row_axis[MAX_ROWS]; 	/* Vector to store variable row coordinates */ 	                       
