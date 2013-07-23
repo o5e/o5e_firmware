@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.2.31 - EFI Analytics, Inc." tuneComment="" writeDate="Tue Jul 23 16:01:57 EDT 2013"/>
+<bibliography author="TunerStudio MS(Beta) 2.2.31 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;" writeDate="Tue Jul 23 15:46:36 EDT 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="" nPages="12" signature="MShift 2.111       "/>
 <page>
 <pcVariable name="tsCanId">"0"</pcVariable>
@@ -86,14 +86,14 @@
 <constant name="Config_Input_4">"Generic Input"</constant>
 <constant digits="0" name="sqrt_Rows">32.0</constant>
 <constant digits="0" name="sqrt_Cols">1.0</constant>
-<constant cols="1" digits="4" name="sqrt_x_Bins" rows="30">
+<constant cols="1" digits="4" name="sqrt_x_Bins" rows="32">
          0.0332 
          0.0693002 
          0.1073999 
          0.1484003 
          0.1924 
          0.2402 
-         0.2919998 
+         0.2901993 
          0.3477001 
          0.4092007 
          0.4766006 
@@ -117,9 +117,11 @@
          9.3330078 
          14.5 
          30.0 
+         0.0 
+         0.0 
       </constant>
-<constant cols="1" digits="4" name="sqrt_Cal" rows="30">
-         0.1826 
+<constant cols="1" digits="4" name="sqrt_Cal" rows="32">
+         0.1829004 
          0.2626991 
          0.3271008 
          0.3848 
@@ -149,6 +151,8 @@
          3.0546875 
          3.8075867 
          5.477478 
+         0.0 
+         0.0 
       </constant>
 <constant name="Enable_Prime">"off"</constant>
 <constant digits="0" name="Prime_Corr_Rows">16.0</constant>
