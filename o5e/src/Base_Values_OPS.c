@@ -28,10 +28,10 @@ void Get_Base_Pulse_Width(void)
 {  
      
 	//correct injector flow rate for actual fuel pressure
-	Inverse_Injector_Pressure = 1 / Rating_Fuel_Presure;
+	Inverse_Injector_Pressure = 1.0f / Rating_Fuel_Presure;
     Injector_Flow = Fuel_Presure * Inverse_Injector_Pressure; 
     Injector_Flow = table_lookup(Injector_Flow, 1, sqrt_Table);
-    Injector_Flow = Injector_Flow * Injector_Size;// get current injector folw	
+    Injector_Flow = Injector_Flow * Injector_Size;// get current injector flow	
 	
     // base (max) pulse width
      Base_Pulse_Width = Displacement / ((float)N_Cyl);
@@ -41,7 +41,7 @@ void Get_Base_Pulse_Width(void)
      Base_Pulse_Width = Base_Pulse_Width * Gasoline_SG; //get volumetric fuel required
      Base_Pulse_Width = Base_Pulse_Width / Injector_Flow;
      //Max_Inj_Time
-     Base_Pulse_Width = Base_Pulse_Width * 1000000 * 60 ; //convert to usec         	    		 
+     Base_Pulse_Width = Base_Pulse_Width * 1000 * 60 ; //convert to msec         	    		 
 }//Get_Base_Pulse_Width
 
 

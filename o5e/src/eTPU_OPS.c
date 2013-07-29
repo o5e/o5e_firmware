@@ -165,7 +165,7 @@ int32_t init_eTPU()
     uint24_t crank_gap_ratio_set = 0xffffff;
     
     #define Fake_Cam_Window_Width 72000 // Use 120*100 for the width of the cam window when Fake cam is used
-	#define Fake_Cam_Lobe_Position 54000 // Use 540 8 100 as athe location of fake cam
+	#define Fake_Cam_Lobe_Position 54000 // Use 540 * 100 as athe location of fake cam
     // Load firmware into eTPU
     error_code = (int32_t)
         fs_etpu_init(my_etpu_config, (uint32_t *) etpu_code, sizeof(etpu_code), (uint32_t *) etpu_globals, sizeof(etpu_globals));
@@ -176,9 +176,9 @@ int32_t init_eTPU()
     if (N_Cyl > 12)
         err_push( CODE_OLDJUNK_DF );
         // The goal here is to open a cam window that that will work with the cam position
-    Engine_Position_eTPU = (72000 - ((uint32_t)Engine_Position << 2));   // adjust bin -2 to bin 0
-    Cam_Lode_Position_eTPU = (72000-((uint32_t)Cam_Lobe_Pos<< 2));   // adjust bin -2 to bin 0
-    Cam_Window_Width = Cam_Window_Width_Set <<2; //adjust bin -2 to bin 0
+    Engine_Position_eTPU = (72000 - (uint32_t)Engine_Position );   //
+    Cam_Lode_Position_eTPU = (72000-(uint32_t)Cam_Lobe_Pos);   //
+    Cam_Window_Width = Cam_Window_Width_Set; //
     Cam_Edge_Select_eTPU = Cam_Edge_Select; //for normal operation allow user setting
 
           // set the cam window correctly for semi-sequentail mode   
@@ -293,15 +293,15 @@ int32_t init_eTPU()
        N_Coils = (N_Coils + 1) / 2;
 
     // Calculate the cylinder angles from user inputs
-    Engine_Position_eTPU = (72000 - ((uint32_t)Engine_Position << 2));   // adjust bin -2 to bin 0
+    Engine_Position_eTPU = 72000 - Engine_Position; 
 
     for (i = 0; i < N_Cyl; ++i) {
-        Cyl_Angle_eTPU[i] = (((int32_t)Cyl_Offset_Array[i] << 2 ) + Engine_Position_eTPU) % 72000;  // << to convert bin -2 to bin 0
+        Cyl_Angle_eTPU[i] = (((int32_t)Cyl_Offset_Array[i]  ) + Engine_Position_eTPU) % 72000;  // 
         //if (Staged_Inj) 
         //   Cyl_Angle_eTPU[i+N_Cyl] = Cyl_Angle_eTPU[i];
     }
 
-    Drop_Dead_Angle_eTPU = ((Drop_Dead_Angle  << 2 ) + Engine_Position_eTPU) % 72000;   // << to convert bin -2 x100 to bin 0 x100
+    Drop_Dead_Angle_eTPU = (Drop_Dead_Angle  + Engine_Position_eTPU) % 72000;
 
     for (i = 0; i <  N_Injectors; ++i) {
 
@@ -309,13 +309,13 @@ int32_t init_eTPU()
         error_code = fs_etpu_fuel_init_cylinder(Fuel_Channels[i],
                                               1,                        // CAM in engine: A; channel: 1 
                                               FS_ETPU_PRIORITY_MIDDLE, 
-                                              FS_ETPU_FUEL_FM0_ACTIVE_HIGH,       // 
+                                              FS_ETPU_FUEL_FM0_ACTIVE_LOW,       //FS_ETPU_FUEL_FM0_ACTIVE_HIGH 
                                               Cyl_Angle_eTPU[i],        // 
                                               Drop_Dead_Angle_eTPU,     // drop dead angle*100 
-                                              70000,                    // normal end angle*100 relative to ??
+                                              45000,                    // normal end angle*100 relative to ??
                                               1500,                     // recalc offset ANGLE*100
-                                              0,                        // injection time, usec
-                                              100,                      // comp time, usec
+                                              10000,                        // injection time, usec
+                                              0,                      // comp time, usec
                                               100,                      // min inject time, usec
                                               100                       // min injector off time, usec
             );
@@ -332,7 +332,7 @@ int32_t init_eTPU()
         error_code = fs_etpu_spark_init_cylinder(Spark_Channels[i],     // 
                                                1,                       // CAM in engine: A; channel: 1
                                                Cyl_Angle_eTPU[i],       // offset angles*100
-                                               FS_ETPU_PRIORITY_HIGH, 
+                                               FS_ETPU_PRIORITY_LOW, //FS_ETPU_PRIORITY_HIGH,
                                                Ignition_Invert, 
                                                500,                     // min_coil_dur, usec 
                                                15000,                   // max_coil_dur, usec 
@@ -342,7 +342,7 @@ int32_t init_eTPU()
                                                9000,                    // recalc offset angles*100
                                                3000,                    // init dwell time 1, usec 
                                                0,                       // init dwell time 2, usec, 0 if direct fire
-                                               70000,                   // init end angle 1*100
+                                               34000,                   // init end angle 1*100
                                                70000                    // init end angle 2*100                                           
         );
         if (error_code != 0) 

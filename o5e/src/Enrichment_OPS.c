@@ -34,12 +34,12 @@
    uint32_t Degree_Clock_Last = 0;
    
    
-   #define TPS_Dot_Dead 2000
+   #define TPS_Dot_Dead 0.01f
    
    //prime variables
    uint32_t Prime_Post_Start_Last = 1;
-   uint32_t Prime_Decay = (1 << 14);
-   uint32_t Prime_Decay_Last = (1 << 14);
+   float Prime_Decay = 1.0f;
+   float Prime_Decay_Last = 1.0f;
    
    
    #define Enrich_Threshold 6000
@@ -103,43 +103,45 @@ void Get_Accel_Decel_Corr(void)
           if ((RPM == 0) ||(Accel_Decel_Flag == 0)) {	
               // set the accel/deccel variables to current conditions
             TPS_Last = TPS;
-            TPS_Dot_Limit = 1 << 14;
-            TPS_Dot_Corr = 0;
+            TPS_Dot_Limit = 1.0f;
+            TPS_Dot_Corr = 0.0f;
             TPS_Dot = 0;
-            TPS_Dot_Last = 0;
-            TPS_Dot_Sign = 0;
+            TPS_Dot_Last = 0.0f;
+            TPS_Dot_Sign = 0.0f;
             Accel_Decel_Flag = 1;
             Degree_Clock_Last = Degree_Clock;
 		  }//if
             //get a TPS change         
           TPS_Dot_Temp = (TPS_Last - TPS);
           //smooth by 4
-          TPS_Last = (3 * TPS_Last + TPS) / 4;
+          TPS_Last = (3 * TPS_Last + TPS) / 4.0f;
             //get           
-          TPS_Dot = TPS_Dot_Temp / 8;
+          TPS_Dot = TPS_Dot_Temp / 8.0f;
           TPS_Dot_Degree = (Degree_Clock - Degree_Clock_Last);
             // check if acceleration enrich required
           if (TPS_Dot >= TPS_Dot_Dead && TPS_Dot > TPS_Dot_Last) {
               TPS_Dot_Limit = table_lookup(RPM, 1, Accel_Limit_Table);
               TPS_Dot_Corr = table_lookup(RPM, 1, Accel_Sensativity_Table);
               TPS_Dot_Decay_Rate = table_lookup(RPM, 1, Accel_Decay_Table);
+              TPS_Dot_Decay_Rate = 1 + (TPS_Dot_Decay_Rate *  Inverse100);
               TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot - TPS_Dot_Dead));
 
               // update the last clock
               Degree_Clock_Last = Degree_Clock;
               TPS_Dot_Degree = 0;
-              TPS_Dot_Decay_Last = 1.0;
+              TPS_Dot_Decay_Last = 1.0f;
               TPS_Dot_Sign = 1;
                 // decel required 
           } else if (TPS_Dot <= (-TPS_Dot_Dead) && TPS_Dot < TPS_Dot_Last) {
               TPS_Dot_Limit = table_lookup(RPM, 1, Decel_Limit_Table);
               TPS_Dot_Corr = table_lookup(RPM, 1, Decel_Sensativity_Table);
               TPS_Dot_Decay_Rate = table_lookup(RPM, 1, Decel_Decay_Table);
+              TPS_Dot_Decay_Rate = 1 + (TPS_Dot_Decay_Rate *  Inverse100);
               TPS_Dot_Corr = (TPS_Dot_Corr * (TPS_Dot_Dead - TPS_Dot));
               // update the last clock
               Degree_Clock_Last = Degree_Clock;
               TPS_Dot_Degree = 0;
-              TPS_Dot_Decay_Last = 1.0;
+              TPS_Dot_Decay_Last = 1.0f;
               TPS_Dot_Sign = -1;
           }
           TPS_Dot_Last = TPS_Dot;
@@ -156,6 +158,7 @@ void Get_Accel_Decel_Corr(void)
               Accel_Decel_Corr = -TPS_Dot_Corr ;
           else
               Accel_Decel_Corr = TPS_Dot_Corr;
+          Accel_Decel_Corr = 1.0f + (Accel_Decel_Corr * Inverse100);
     }            
 
 }// Get_Accel_Decel_Corr
@@ -171,9 +174,7 @@ void Get_Prime_Corr(void)
             // check if in prime needed conditions   
             if (Post_Start_Cycles < Prime_Cycles_Threshold) {
 
-                Prime_Corr = table_lookup(CLT, 1, Prime_Corr_Table);
-                // scale the correction to the pusle width
-                Prime_Corr = ((Pulse_Width * Prime_Corr) - Pulse_Width);
+                Prime_Corr = table_lookup(CLT, 1, Prime_Corr_Table) * Inverse100;
 
                 // Update Prime decay each cycle - this is a log decay of the prime pulse
                 if (Post_Start_Cycles > Prime_Post_Start_Last) {
@@ -181,18 +182,22 @@ void Get_Prime_Corr(void)
                     Prime_Post_Start_Last = Post_Start_Cycles;
                     // Get the decay rate for current conditions
                     Prime_Decay = table_lookup(RPM, 1, Prime_Decay_Table);
+                    
+                   Prime_Decay = 1.0f + (Prime_Decay * Inverse100);
                     // decrease decay by the new value
                     Prime_Decay = Prime_Decay_Last * Prime_Decay;
                     // reset last
                     Prime_Decay_Last = Prime_Decay;
                 }
                 // apply the decay
-                Prime_Corr = Prime_Corr * Prime_Decay;
+                Prime_Corr = 1+ (Prime_Corr * Prime_Decay);
+               
                 // Reduce the Prime correction by the decay rate and add to pulse_width            
             }
+         
         }
         else
-           Prime_Corr = 0;
+           Prime_Corr = 1;
 }//Get_Prime_Corr
 
 #if __CWCC__

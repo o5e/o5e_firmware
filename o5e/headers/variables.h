@@ -29,6 +29,10 @@
 #define S32 int32_t
 #define F32 float
 
+//used thoughout code
+#define Inverse100 1.0f/100.0f // conversion for getting 100 base % stuff into decimal based correction factor
+#define Inverse1000 1.0f/1000.0f //Converion for usec to msec
+
 // subroutines related to this file
 void init_variables(void);
 void Set_Page_Locations(uint8_t block);

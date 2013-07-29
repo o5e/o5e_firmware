@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.2.31 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;" writeDate="Tue Jul 23 16:01:56 EDT 2013"/>
-<versionInfo fileFormat="4.0" firmwareInfo="" nPages="12" signature="MShift 2.111       "/>
+<bibliography author="TunerStudio MS(Beta) 2.2.31 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;" writeDate="Mon Jul 29 12:54:47 EDT 2013"/>
+<versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="12" signature="MShift 2.111       "/>
 <page>
 <pcVariable name="tsCanId">"0"</pcVariable>
 </page>
@@ -33,7 +33,7 @@
 <constant digits="0" name="N_Teeth">58.0</constant>
 <constant name="Missing_Teeth">"2"</constant>
 <constant name="Load_Sense">"MAP - 2 atm"</constant>
-<constant digits="1" name="Cam_Lobe_Pos">48.0</constant>
+<constant digits="1" name="Cam_Lobe_Pos">90.0</constant>
 <constant digits="1" name="Cyl_Offset_1">0.0</constant>
 <constant digits="1" name="Cyl_Offset_2">540.0</constant>
 <constant digits="1" name="Cyl_Offset_3">180.0</constant>
@@ -42,7 +42,7 @@
 <constant digits="1" name="Cyl_Offset_6">630.0</constant>
 <constant digits="1" name="Cyl_Offset_7">270.0</constant>
 <constant digits="1" name="Cyl_Offset_8">450.0</constant>
-<constant digits="1" name="Engine_Position">66.0</constant>
+<constant digits="1" name="Engine_Position">0.0</constant>
 <constant digits="1" name="Drop_Dead_Angle">470.0</constant>
 <constant name="Ignition_Type">"Waste Spark"</constant>
 <constant name="Pulses_Per_Rev">"2"</constant>
@@ -50,7 +50,7 @@
 <constant name="Cam_Edge_Select">"falling edge"</constant>
 <constant name="Sync_Mode_Select">"full sync (720 degree)"</constant>
 <constant name="Engine_Type_Select">"4 stroke"</constant>
-<constant name="Ignition_Invert">"Fire HIGH"</constant>
+<constant name="Ignition_Invert">"Fire LOW"</constant>
 <constant name="N_Coils_Per_Cylinder">"= 1/2 cylinders"</constant>
 <constant digits="1" name="Cam_Window_Open_Set">-0.01</constant>
 <constant digits="1" name="Cam_Window_Width_Set">120.0</constant>
@@ -84,70 +84,74 @@
 <constant name="Config_Input_2">"Generic Input"</constant>
 <constant name="Config_Input_3">"Generic Input"</constant>
 <constant name="Config_Input_4">"Generic Input"</constant>
-<constant digits="0" name="sqrt_Rows">32.0</constant>
+<constant digits="0" name="sqrt_Rows">30.0</constant>
 <constant digits="0" name="sqrt_Cols">1.0</constant>
-<constant cols="1" digits="4" name="sqrt_x_Bins" rows="30">
+<constant cols="1" digits="4" name="sqrt_x_Bins" rows="32">
          0.0332 
-         0.0693002 
-         0.1073999 
-         0.1484003 
-         0.1924 
-         0.2402 
-         0.2919998 
-         0.3477001 
-         0.4092007 
-         0.4766006 
-         0.5498009 
-         0.6318016 
-         0.7226982 
-         0.8232002 
-         0.9375 
-         1.0663986 
-         1.2138977 
-         1.3847961 
-         1.5830002 
-         1.8183975 
-         2.0996094 
-         2.4443054 
-         2.875 
-         3.4287109 
-         4.1669922 
-         5.2001953 
-         6.75 
-         9.3330078 
-         14.5 
+         0.0669713 
+         0.1024837 
+         0.1404648 
+         0.1810455 
+         0.224781 
+         0.2719479 
+         0.322546 
+         0.3774586 
+         0.4374657 
+         0.5025749 
+         0.5736084 
+         0.6523285 
+         0.7389069 
+         0.8342628 
+         0.941658 
+         1.0622406 
+         1.1996231 
+         1.3572311 
+         1.5382462 
+         1.7500534 
+         1.9998245 
+         2.2997437 
+         2.6665955 
+         3.125061 
+         3.7145081 
+         4.5003052 
+         5.6001587 
+         7.249939 
+         9.9997559 
+         15.5 
          30.0 
       </constant>
-<constant cols="1" digits="4" name="sqrt_Cal" rows="30">
+<constant cols="1" digits="4" name="sqrt_Cal" rows="32">
          0.1826 
-         0.2626991 
-         0.3271008 
-         0.3848 
-         0.4384995 
-         0.4902 
-         0.5400009 
-         0.5898018 
-         0.6395988 
-         0.6903992 
-         0.7411995 
-         0.794899 
-         0.8496017 
-         0.9071999 
-         0.9678001 
-         1.0332031 
-         1.1016006 
-         1.1768036 
-         1.2577972 
-         1.3486023 
-         1.4492035 
-         1.5634995 
-         1.6952972 
-         1.8516006 
-         2.0409851 
-         2.280304 
-         2.5976868 
-         3.0546875 
-         3.8075867 
+         0.2575321 
+         0.3187904 
+         0.3736324 
+         0.4246407 
+         0.4735222 
+         0.5207214 
+         0.5673103 
+         0.6138954 
+         0.6609039 
+         0.7084236 
+         0.7567902 
+         0.807251 
+         0.8588905 
+         0.913063 
+         0.9699097 
+         1.0310898 
+         1.0949783 
+         1.1646729 
+         1.2395096 
+         1.3222427 
+         1.4135056 
+         1.5155716 
+         1.6315231 
+         1.7658844 
+         1.9249115 
+         2.1181946 
+         2.3622131 
+         2.6861267 
+         3.151825 
+         3.9153137 
          5.477478 
       </constant>
 <constant name="Enable_Prime">"off"</constant>
@@ -189,11 +193,11 @@
          10.0 
          10.0 
       </constant>
-<constant digits="0" name="Prime_Decay_Rows">255.0</constant>
-<constant digits="0" name="Prime_Decay_Cols">255.0</constant>
+<constant digits="0" name="Prime_Decay_Rows">8.0</constant>
+<constant digits="0" name="Prime_Decay_Cols">1.0</constant>
 <constant cols="1" digits="0" name="Prime_Decay_x_Bins" rows="8" units="rpm">
          0.0 
-         500.0 
+         600.0 
          1000.0 
          1500.0 
          2000.0 
@@ -228,20 +232,20 @@
          -100.0 
       </constant>
 <constant name="Test_Enable">"Test Mode!"</constant>
-<constant name="Test_Value">"sensor voltage"</constant>
+<constant name="Test_Value">"Sensor Value"</constant>
 <constant digits="0" name="Test_RPM" units="rpm">0.0</constant>
-<constant digits="3" name="Test_TPS" units="%">50.0</constant>
+<constant digits="3" name="Test_TPS" units="%">70.0</constant>
 <constant digits="2" name="Test_Lambda_1" units="lambda">2.0</constant>
 <constant digits="2" name="Test_Lambda_2" units="lambda">2.0</constant>
-<constant digits="1" name="Test_MAP_1" units="kPa">5.0</constant>
-<constant digits="1" name="Test_MAP_2" units="kPa">40.0</constant>
+<constant digits="1" name="Test_MAP_1" units="kPa">100.0</constant>
+<constant digits="1" name="Test_MAP_2" units="kPa">100.0</constant>
 <constant digits="4" name="Test_MAF_1" units="kg/s">0.0</constant>
 <constant digits="4" name="Test_MAF_2" units="kg/s">0.0</constant>
-<constant digits="1" name="Test_CLT" units="C">20.0</constant>
-<constant digits="1" name="Test_IAT" units="C">0.0</constant>
+<constant digits="1" name="Test_CLT" units="C">0.0</constant>
+<constant digits="1" name="Test_IAT" units="C">20.0</constant>
 <constant digits="2" name="Test_V_MAP_1" units="V">0.0</constant>
 <constant digits="2" name="Test_V_MAP_2" units="V">0.0</constant>
-<constant digits="2" name="Test_V_Batt" units="V">0.0</constant>
+<constant digits="2" name="Test_V_Batt" units="V">14.0</constant>
 <constant digits="2" name="Test_V_CLT" units="V">4.7999878</constant>
 <constant digits="2" name="Test_V_IAT" units="V">0.0</constant>
 <constant digits="2" name="Test_V_TPS" units="V">2.0</constant>
@@ -255,7 +259,7 @@
 <constant digits="0" name="RPM_Change_Rate_2">-1.0</constant>
 <constant digits="0" name="RPM_Change_Rate_3">-1.0</constant>
 <constant digits="0" name="RPM_Change_Rate_4">-1.0</constant>
-<constant digits="0" name="Test_RPM_1" units="rpm">500.0</constant>
+<constant digits="0" name="Test_RPM_1" units="rpm">1000.0</constant>
 <constant digits="0" name="Test_RPM_2" units="rpm">0.0</constant>
 <constant digits="0" name="Test_RPM_3" units="rpm">0.0</constant>
 <constant digits="0" name="Test_RPM_4" units="rpm">0.0</constant>
@@ -369,10 +373,10 @@
          0.0 
          -18.0 
       </constant>
-<constant digits="3" name="Dwell_Set" units="msec">3.0</constant>
+<constant digits="3" name="Dwell_Set" units="msec">4.0</constant>
 <constant digits="3" name="Dwell_Min" units="msec">2.0</constant>
-<constant digits="3" name="Dwell_Max" units="msec">6.0</constant>
-<constant digits="3" name="Dead_Time_Set" units="msec">0.9049988</constant>
+<constant digits="3" name="Dwell_Max" units="msec">15.0</constant>
+<constant digits="3" name="Dead_Time_Set" units="msec">5.0</constant>
 <constant digits="0" name="Rev_Limit" units="rpm">0.0</constant>
 <constant digits="0" name="Soft_Rev_Limit" units="rpm">0.0</constant>
 <constant digits="0" name="Inj_Dead_Time_Rows">8.0</constant>
@@ -463,7 +467,7 @@
 <constant digits="0" name="Fuel_Pump_Prime_Time" units="sec">-0.001</constant>
 </page>
 <page number="2" size="1756">
-<constant name="Enable_Accel_Decel">"off"</constant>
+<constant name="Enable_Accel_Decel">"On"</constant>
 <constant digits="0" name="Accel_Limit_Rows">8.0</constant>
 <constant digits="0" name="Accel_Limit_Cols">1.0</constant>
 <constant cols="1" digits="0" name="Accel_Limit_x_Bins" rows="8" units="rpm">
@@ -543,12 +547,12 @@
          5000.0 
       </constant>
 <constant cols="1" digits="1" name="Decel_Limit_Cal" rows="8" units="%">
-         0.0 
-         0.0 
-         0.0 
-         0.0 
-         0.0 
-         0.0 
+         50.0 
+         47.0 
+         40.0 
+         30.0 
+         20.0 
+         5.0 
          0.0 
          0.0 
       </constant>
@@ -565,14 +569,14 @@
          5000.0 
       </constant>
 <constant cols="1" digits="1" name="Decel_Decay_Cal" rows="8" units="%/cycle">
-         0.0 
-         0.0 
-         0.0 
-         0.0 
-         0.0 
-         0.0 
-         0.0 
-         0.0 
+         -1.0 
+         -3.0 
+         -5.0 
+         -6.0 
+         -7.0 
+         -9.0 
+         -10.0 
+         -10.0 
       </constant>
 <constant digits="0" name="Decel_Sensativity_Rows">8.0</constant>
 <constant digits="0" name="Decel_Sensativity_Cols">1.0</constant>
@@ -587,12 +591,12 @@
          5000.0 
       </constant>
 <constant cols="1" digits="0" name="Decel_Sensativity_Cal" rows="8" units="%/sec">
-         0.0 
-         0.0 
-         0.0 
-         0.0 
-         0.0 
-         0.0 
+         60.0 
+         50.0 
+         40.0 
+         30.0 
+         20.0 
+         10.0 
          0.0 
          0.0 
       </constant>
@@ -707,11 +711,11 @@
          -10.0 
          -40.0 
       </constant>
-<constant digits="0" name="TPS_Rows">16.0</constant>
+<constant digits="0" name="TPS_Rows">2.0</constant>
 <constant digits="0" name="TPS_Cols">1.0</constant>
 <constant cols="1" digits="3" name="TPS_x_Bins" rows="2" units="V">
-         0.5 
-         4.5 
+         0.0 
+         5.0 
       </constant>
 <constant cols="1" digits="3" name="TPS_Cal" rows="2" units="%">
          0.0 
@@ -964,17 +968,17 @@
          1300.0 
          1400.0 
          1600.0 
-         1200.0 
-         1300.0 
-         1400.0 
-         1600.0 
          1800.0 
          2000.0 
          2250.0 
          2500.0 
+         2750.0 
          3000.0 
+         3250.0 
          3500.0 
+         3750.0 
          4000.0 
+         4250.0 
          4500.0 
          5000.0 
          5500.0 
@@ -1004,7 +1008,7 @@
          -20.0012207 -19.0 -18.0 -17.0 -16.0 -15.5 -15.0 -14.5 -14.0 -13.5 -13.0 -14.5018921 -14.0014038 -13.5009155 -13.0004272 -12.0 -11.0 -10.0 -9.0 -8.0 -6.0 -4.0 -1.0 2.0 3.6000061 4.5999756 5.4000244 5.7999878 6.0999756 6.5 6.7999878 7.0 
          -20.0012207 -19.0 -18.0 -17.0 -16.0 -15.5 -15.0 -14.5 -14.0 -13.5 -13.0 -14.5018921 -14.0014038 -13.5009155 -13.0004272 -12.0 -11.0 -10.0 -9.0 -8.0 -6.0 -4.0 -1.0 2.0 3.6000061 4.5999756 5.4000244 5.7999878 6.0999756 6.5 6.7999878 7.0 
          -20.0012207 -19.0 -18.0 -17.0 -16.0 -15.5 -15.0 -14.5 -14.0 -13.5 -13.0 -14.5018921 -14.0014038 -13.5009155 -13.0004272 -12.0 -11.0 -10.0 -9.0 -8.0 -6.0 -4.0 -1.0 2.0 3.6000061 4.5999756 5.4000244 5.7999878 6.0999756 6.5 6.7999878 7.0 
-         -20.0012207 -19.0 -18.0 -17.0 -16.0 -15.5 -15.0 -14.5 -14.0 -13.5 -13.0 -14.5018921 -14.0014038 -13.5009155 -13.0004272 -12.0 -11.0 -10.0 -9.0 -8.0 -6.0 -4.0 -1.0 2.0 3.6000061 4.5999756 5.4000244 5.7999878 6.0999756 6.5 6.7999878 7.0 
+         -20.0012207 -19.0 -18.0 -17.0 -16.0 -15.5 -15.0 -14.5 -14.0 -13.5 -13.0 -14.5018921 -14.0014038 -13.5 -13.0004272 -12.0 -11.0 -10.0 -9.0 -8.0 -6.0 -4.0 -1.0 2.0 3.6000061 4.5999756 5.4000244 5.7999878 6.0999756 6.5 6.7999878 7.0 
          -20.0012207 -19.0 -18.0 -17.0 -16.0 -15.5 -15.0 -14.5 -14.0 -13.5 -13.0 -14.5018921 -14.0014038 -13.5009155 -13.0004272 -12.0 -11.0 -10.0 -9.0 -8.0 -6.0 -4.0 -1.0 2.0 3.6000061 4.5999756 5.4000244 5.7999878 6.0999756 6.5 6.7999878 7.0 
          -20.0012207 -19.0 -18.0 -17.0 -16.0 -15.5 -15.0 -14.5 -14.0 -13.5 -13.0 -14.5018921 -14.0014038 -13.5009155 -13.0004272 -12.0 -11.0 -10.0 -9.0 -8.0 -6.0 -4.0 -1.0 2.0 3.6000061 4.5999756 5.4000244 5.7999878 6.0999756 6.5 6.7999878 7.0 
          -20.0012207 -19.0 -18.0 -17.0 -16.0 -15.5 -15.0 -14.5 -14.0 -13.5 -13.0 -14.5018921 -14.0014038 -13.5009155 -13.0004272 -12.0 -11.0 -10.0 -9.0 -8.0 -6.0 -4.0 -1.0 2.0 3.6000061 4.5999756 5.4000244 5.7999878 6.0999756 6.5 6.7999878 7.0 
@@ -1028,17 +1032,17 @@
          1300.0 
          1400.0 
          1600.0 
-         1200.0 
-         1300.0 
-         1400.0 
-         1600.0 
          1800.0 
          2000.0 
          2250.0 
          2500.0 
+         2750.0 
          3000.0 
+         3250.0 
          3500.0 
+         3750.0 
          4000.0 
+         4250.0 
          4500.0 
          5000.0 
          5500.0 
@@ -1092,17 +1096,17 @@
          1300.0 
          1400.0 
          1600.0 
-         1200.0 
-         1300.0 
-         1400.0 
-         1600.0 
          1800.0 
          2000.0 
          2250.0 
          2500.0 
+         2750.0 
          3000.0 
+         3250.0 
          3500.0 
+         3750.0 
          4000.0 
+         4250.0 
          4500.0 
          5000.0 
          5500.0 

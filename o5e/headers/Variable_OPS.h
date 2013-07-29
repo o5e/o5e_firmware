@@ -32,8 +32,7 @@ extern "C"
 
 #define Reference_Temp 293.15f  //use 293.15K (20C) as our refence state
 #define Inv_Ref_Pres 1.0f/100.0f  //use 100kpa as a reference and invert to allow multiplication i real time code
-#define Inverse100 1.0f/100.0f // conversion for getting 100 base % stuff into decimal based correction factor
-#define Inverse1000 1.0f/1000.0f //Converion for usec to msec
+
 
 extern float Ref_IAT;
 extern float Ref_MAP;

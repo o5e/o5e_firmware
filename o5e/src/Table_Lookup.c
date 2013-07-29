@@ -124,14 +124,14 @@ float table_lookup(const float col_value, const float row_value, const struct ta
 	for (i = 1; i < cols; ++i) {
 		if (table->col_axis[i] < table->col_axis[i - 1]) {
 			err_push( CODE_OLDJUNK_FB );
-			return 15;
+			return 15123;
 		}
 	}
 	/* check for proper y axis sorting (must be ascending) */
 	for (i = 1; i < rows; ++i) {
 		if (table->row_axis[i] < table->row_axis[i - 1]) {
 			err_push( CODE_OLDJUNK_FA );
-			return 16;
+			return 16123;
 		}
 	}
 #endif
