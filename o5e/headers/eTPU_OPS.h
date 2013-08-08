@@ -24,9 +24,8 @@ extern "C"
 #define Total_Teeth (N_Teeth + Missing_Teeth)
 #define Degrees_Per_Tooth_x100 (36000 / Total_Teeth)
 // note: Cam_Lobe_Pos must always be in the latter half of the engine cycle - 360-720
-#define Start_Tooth (1 + ((72000 - ((uint32_t)Cam_Lobe_Pos << 2)) / Degrees_Per_Tooth_x100) - Total_Teeth)
-//#define Start_Tooth (1 + (((uint32_t)Cam_Lobe_Pos << 2) / Degrees_Per_Tooth_x100) - Total_Teeth) 
-//#define Start_Tooth (1 + (((7200-(uint32_t)Cam_Lobe_Pos << 2)) / Degrees_Per_Tooth_x100) - Total_Teeth) // adjust x100 bin -2 value to x100 bin 0 before using
+#define Start_Tooth (1 + ((72000 - (uint32_t)Cam_Lobe_Pos ) / Degrees_Per_Tooth_x100) - Total_Teeth)
+
 // See FreeScale documentation for selection of this value
 #define PRESCALER 64UL
 #define etpu_tcr1_freq (uint32_t)((CPU_CLOCK / PRESCALER)/2)

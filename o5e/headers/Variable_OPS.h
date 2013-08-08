@@ -30,6 +30,15 @@ extern "C"
 /* 1.0    P. Schlein    12/Sep/11     Initial version.                    */
 /**************************************************************************/
 
+#define Reference_Temp 293.15f  //use 293.15K (20C) as our refence state
+#define Inv_Ref_Pres 1.0f/100.0f  //use 100kpa as a reference and invert to allow multiplication i real time code
+
+
+extern float Ref_IAT;
+extern float Ref_MAP;
+extern float Ref_Baro;
+extern float Ref_TPS;
+
 void Get_Slow_Op_Vars(void);
 void Get_Fast_Op_Vars(void);
 uint16_t Filter_AD(vuint16_t * Value, uint16_t Strength);

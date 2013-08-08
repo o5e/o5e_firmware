@@ -74,7 +74,6 @@ void init_ADC(void)
     ADC_CmdQ4[0] = ADC(1) | RFIFO(4) | CHANNEL(17) | PAUSE;     // Convert POT
 
     // Q5 is triggered by the eTPU knock window for MAP
-    // IMO, replace this with "min MAP seen over last 720 degrees"
     ADC_CmdQ5[0] = ADC(1) | LST(1) | RFIFO(5) | CHANNEL(27) | PAUSE;     // Convert POT, AN17.  TODO change
 
     // Angle triggered Queue-On ADC2=B/N=1, RFIFO2=Msg Tag=1 , eMIOS 14 trigger

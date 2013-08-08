@@ -19,29 +19,30 @@
 #include "typedefs.h"
 #include "Load_OPS.h"
 #include "Base_Values_OPS.h"
-#include "Table_Lookup_JZ.h"
+#include "Table_Lookup.h"
+#include "Variable_OPS.h"
 
-uint32_t gram_flow;
+float gram_flow;
   
 void Get_Reference_VE(void)
 {  
      
   if (Load_Sense <= 3){
-      Reference_VE = (int16_t)MAP[1];//  using MAP 2 until angle reading fixed on MAP1 (MAP[0])
-      // Air temperature correction....I can't figure out how to not make this a divide at the moment
-      Reference_VE = (Reference_VE << 14) / (int16_t)IAT;	
+      Reference_VE = MAP[1];//  using MAP 2 until angle reading fixed on MAP1 (MAP[0])
+      // Air temperature correction.
+      Reference_VE = Reference_VE  * Ref_IAT;	
   }else if (Load_Sense == 4){
-      Reference_VE = (int16_t)((TPS * MAP[1]) >> 14);
+      Reference_VE = TPS * Ref_Baro;
       //correct for TPS flow if used.
       if (TPS_Flow_Cal_On == 1){
-	  Reference_VE = ((Reference_VE  * (int16_t)(table_lookup_jz(RPM, TPS, TPS_Flow_Table))) >>14);
+	  Reference_VE = Reference_VE  * table_lookup(RPM, TPS, TPS_Flow_Table);
       }//if
-      //Air temperature correction....I can't figure out how to not make this a divide at the moment
-      Reference_VE = (Reference_VE << 14) / (int16_t)IAT;	
+      //Air temperature correction.
+      Reference_VE = Reference_VE  * Ref_IAT;	
   }else{	//(Load_Sense == 5, use MAF 
-      gram_flow = ((gram_STP_Air_Per_cc *(uint32_t) Displacement)  >> 12); //convert displacement in cc to g and convert bin 24 to bin 12
-      gram_flow = gram_flow * (RPM / 2)>>12; // get g/min and convert bin12 to  bin 0 
-      Reference_VE = (int16_t)(((MAF[0] * 60)<<4) / gram_flow) ; //get %VE and convert back to bin 12
+      gram_flow = gram_STP_Air_Per_cc * Displacement ; //convert displacement in cc to g
+      gram_flow = gram_flow * (RPM / 2); // get g/min 
+      Reference_VE = (MAF[0] * 60) / gram_flow ; //get %VE 
 
   }//if   	    		 
 }//Get_Reference_VE

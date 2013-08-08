@@ -11,7 +11,8 @@
 *************************************************************************************/
 
 /* Copyright(c) 2011 Jon Zeeff
-   Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> */
+   Copyright 2012, Sean Stasiak <sstasiak at gmail dot com> 
+   Copyright 2011, 2012, 2013, Mark Eberhardt */
 
 #include <stdint.h>
 #include "variables.h"
@@ -20,7 +21,7 @@
 
 struct Outputs Output_Channels;
 
-uint16_t const pageSize[NPAGES] = { 234, 1824, 1810, 1990, 1672, 1672, 1672, 1672, 1952, 1952, 1952, 1952, 1952, 1952, 1388 };//, 1388, 1388, 1388,  1388, 1388, 264
+uint16_t const pageSize[NPAGES] = {1768,1664,1756,1760,1620,1668,1668,1668,1668,1808,1808,1808 };
 // Current flash or ram location of each page
 volatile uint8_t *Page_Ptr[NPAGES];
 // Ram buffer to store a single page before writing to flash

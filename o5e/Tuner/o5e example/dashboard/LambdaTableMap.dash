@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <dsh xmlns="http://www.EFIAnalytics.com/:dsh">
-<bibliography author="TunerStudio 2.2.30 - EFI Analytics - philip.tobin@yahoo.com" company="EFI Analytics, © 2007 - 2012, All Rights Reserved." writeDate="Thu Jul 18 14:18:09 EDT 2013"/>
+<bibliography author="TunerStudio 2.2.22 - EFI Analytics - philip.tobin@yahoo.com" company="EFI Analytics, © 2007 - 2012, All Rights Reserved." writeDate="Thu Jun 20 14:39:03 EDT 2013"/>
 <versionInfo fileFormat="2.0" firmwareSignature="MShift 2.111       "/>
 <gaugeCluster antiAliasing="true" backgroundDitherColor="-8355712" clusterBackgroundColor="-16777216" clusterBackgroundImageFileName="" clusterBackgroundImageStyle="Tile">
 <dashComp type="com.efiAnalytics.tunerStudio.Gauge">
 <BorderWidth type="int">6</BorderWidth>
 <BackgroundImageFileName type="String">null</BackgroundImageFileName>
 <FontSizeAdjustment type="int">0</FontSizeAdjustment>
-<HistoricalPeakValue type="double">3100.0</HistoricalPeakValue>
+<HistoricalPeakValue type="double">0.0</HistoricalPeakValue>
 <RelativeBorderWidth type="int">6</RelativeBorderWidth>
 <ShapeLockedToAspect type="boolean">true</ShapeLockedToAspect>
 <Max type="double">10000.0</Max>
@@ -28,12 +28,12 @@
 <HighWarning type="double">9000.0</HighWarning>
 <HistoryDelay type="int">15000</HistoryDelay>
 <LabelDigits type="int">0</LabelDigits>
-<LowCritical type="double">4.9E-324</LowCritical>
+<LowCritical type="double">0.0</LowCritical>
 <LowWarning type="double">0.0</LowWarning>
 <MajorTicks type="double">-1.0</MajorTicks>
 <NeedleColor alpha="255" blue="102" green="0" red="0" type="Color">-16777114</NeedleColor>
 <NeedleSmoothing type="int">1</NeedleSmoothing>
-<SmoothedValue type="double">3100.178974986958</SmoothedValue>
+<SmoothedValue type="double">0.0</SmoothedValue>
 <StartAngle type="int">0</StartAngle>
 <SweepAngle type="int">300</SweepAngle>
 <SweepBeginDegree type="int">300</SweepBeginDegree>
@@ -64,7 +64,7 @@
 <BorderWidth type="int">6</BorderWidth>
 <BackgroundImageFileName type="String">null</BackgroundImageFileName>
 <FontSizeAdjustment type="int">0</FontSizeAdjustment>
-<HistoricalPeakValue type="double">42.928794860839844</HistoricalPeakValue>
+<HistoricalPeakValue type="double">0.0</HistoricalPeakValue>
 <RelativeBorderWidth type="int">6</RelativeBorderWidth>
 <ShapeLockedToAspect type="boolean">true</ShapeLockedToAspect>
 <Max type="double">120.0</Max>
@@ -85,12 +85,12 @@
 <HighWarning type="double">100.0</HighWarning>
 <HistoryDelay type="int">15000</HistoryDelay>
 <LabelDigits type="int">0</LabelDigits>
-<LowCritical type="double">4.9E-324</LowCritical>
+<LowCritical type="double">0.0</LowCritical>
 <LowWarning type="double">0.0</LowWarning>
 <MajorTicks type="double">-1.0</MajorTicks>
 <NeedleColor alpha="255" blue="102" green="0" red="0" type="Color">-16777114</NeedleColor>
 <NeedleSmoothing type="int">1</NeedleSmoothing>
-<SmoothedValue type="double">42.93078385731676</SmoothedValue>
+<SmoothedValue type="double">0.0</SmoothedValue>
 <StartAngle type="int">0</StartAngle>
 <SweepAngle type="int">300</SweepAngle>
 <SweepBeginDegree type="int">300</SweepBeginDegree>
@@ -127,7 +127,7 @@
 <Max type="double">2.0</Max>
 <Min type="double">0.0</Min>
 <Units type="String"/>
-<GoingDead type="boolean">false</GoingDead>
+<GoingDead type="boolean">true</GoingDead>
 <MustPaint type="boolean">false</MustPaint>
 <RunDemo type="boolean">false</RunDemo>
 <BackColor alpha="255" blue="255" green="255" red="255" type="Color">-1</BackColor>
@@ -142,19 +142,19 @@
 <HighWarning type="double">1.25</HighWarning>
 <HistoryDelay type="int">15000</HistoryDelay>
 <LabelDigits type="int">4</LabelDigits>
-<LowCritical type="double">4.9E-324</LowCritical>
+<LowCritical type="double">0.5</LowCritical>
 <LowWarning type="double">0.75</LowWarning>
 <MajorTicks type="double">-1.0</MajorTicks>
 <NeedleColor alpha="255" blue="102" green="0" red="0" type="Color">-16777114</NeedleColor>
 <NeedleSmoothing type="int">1</NeedleSmoothing>
-<SmoothedValue type="double">0.0</SmoothedValue>
+<SmoothedValue type="double">0.8308487273079659</SmoothedValue>
 <StartAngle type="int">0</StartAngle>
 <SweepAngle type="int">300</SweepAngle>
 <SweepBeginDegree type="int">300</SweepBeginDegree>
 <ValueDigits type="int">4</ValueDigits>
 <CounterClockwise type="boolean">false</CounterClockwise>
 <DisplayValueAt180 type="boolean">true</DisplayValueAt180>
-<ShowHistory type="boolean">true</ShowHistory>
+<ShowHistory type="boolean">false</ShowHistory>
 <Value type="double">0.0</Value>
 <Title type="String">Lambda 1</Title>
 <Dirty type="boolean">true</Dirty>
@@ -178,13 +178,13 @@
 <BorderWidth type="int">6</BorderWidth>
 <BackgroundImageFileName type="String">null</BackgroundImageFileName>
 <FontSizeAdjustment type="int">0</FontSizeAdjustment>
-<HistoricalPeakValue type="double">255.0</HistoricalPeakValue>
+<HistoricalPeakValue type="double">-20.0</HistoricalPeakValue>
 <RelativeBorderWidth type="int">6</RelativeBorderWidth>
 <ShapeLockedToAspect type="boolean">true</ShapeLockedToAspect>
 <Max type="double">70.0</Max>
 <Min type="double">-20.0</Min>
 <Units type="String">degrees</Units>
-<GoingDead type="boolean">false</GoingDead>
+<GoingDead type="boolean">true</GoingDead>
 <MustPaint type="boolean">false</MustPaint>
 <RunDemo type="boolean">false</RunDemo>
 <BackColor alpha="255" blue="255" green="255" red="255" type="Color">-1</BackColor>
@@ -199,12 +199,12 @@
 <HighWarning type="double">40.0</HighWarning>
 <HistoryDelay type="int">15000</HistoryDelay>
 <LabelDigits type="int">0</LabelDigits>
-<LowCritical type="double">4.9E-324</LowCritical>
+<LowCritical type="double">0.0</LowCritical>
 <LowWarning type="double">15.0</LowWarning>
 <MajorTicks type="double">-1.0</MajorTicks>
 <NeedleColor alpha="255" blue="102" green="0" red="0" type="Color">-16777114</NeedleColor>
 <NeedleSmoothing type="int">1</NeedleSmoothing>
-<SmoothedValue type="double">254.99492678165205</SmoothedValue>
+<SmoothedValue type="double">-20.0</SmoothedValue>
 <StartAngle type="int">0</StartAngle>
 <SweepAngle type="int">300</SweepAngle>
 <SweepBeginDegree type="int">300</SweepBeginDegree>
