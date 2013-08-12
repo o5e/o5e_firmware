@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.2.31 - EFI Analytics, Inc." tuneComment="" writeDate="Mon Jul 29 12:54:48 EDT 2013"/>
-<versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="12" signature="MShift 2.111       "/>
+<bibliography author="TunerStudio MS(Beta) 2.2.31 - EFI Analytics, Inc." tuneComment="" writeDate="Mon Aug 12 10:23:51 EDT 2013"/>
+<versionInfo fileFormat="4.0" firmwareInfo="" nPages="12" signature="MShift 2.111       "/>
 <page>
 <pcVariable name="tsCanId">"0"</pcVariable>
 </page>
@@ -72,18 +72,6 @@
 <constant digits="3" name="Inj_Dead_10" units="msec">0.0</constant>
 <constant digits="3" name="Inj_Dead_11" units="msec">0.0</constant>
 <constant digits="3" name="Inj_Dead_12" units="msec">0.0</constant>
-<constant name="Config_Ign_1">"on"</constant>
-<constant name="Config_Inj_1">"on"</constant>
-<constant name="Config_LS_1">"malfunction light"</constant>
-<constant name="Config_LS_2">"Tach"</constant>
-<constant name="Config_LS_5">"PWM"</constant>
-<constant name="Config_LS_6">"PWM"</constant>
-<constant name="Config_LS_7">"PWM"</constant>
-<constant name="Config_LS_8">"PWM"</constant>
-<constant name="Config_Input_1">"Generic Input"</constant>
-<constant name="Config_Input_2">"Generic Input"</constant>
-<constant name="Config_Input_3">"Generic Input"</constant>
-<constant name="Config_Input_4">"Generic Input"</constant>
 <constant digits="0" name="sqrt_Rows">30.0</constant>
 <constant digits="0" name="sqrt_Cols">1.0</constant>
 <constant cols="1" digits="4" name="sqrt_x_Bins" rows="32">
