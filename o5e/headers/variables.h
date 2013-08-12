@@ -200,11 +200,7 @@ extern struct Outputs Output_Channels;
 
 #define Inj_Dead_Array ((CONST F32 * )(&Page_Ptr[0][128]))
 
-#define Config_Ign_Array ((CONST U08 * )(&Page_Ptr[0][224]))
-
-#define Config_Inj_Array ((CONST U08 * )(&Page_Ptr[0][236]))
-
-#define Config_LS_Array ((CONST U08 * )(&Page_Ptr[0][260]))
+#define Config_Output_Array ((CONST U08 * )(&Page_Ptr[0][224]) & ((2<<3)-1))
 
 #define Config_Input_Array ((CONST U08 * )(&Page_Ptr[0][280]))
 
