@@ -21,7 +21,7 @@
 
 struct Outputs Output_Channels;
 
-uint16_t const pageSize[NPAGES] = {1768,1664,1756,1760,1620,1668,1668,1668,1668,1808,1808,1808 };
+uint16_t const pageSize[NPAGES] = {1768,1664,1756,1760,1620,1668,1668,1668,1668,1808,1808,1808,1652, 1544, 1544, 1544, 1544,512 };
 // Current flash or ram location of each page
 volatile uint8_t *Page_Ptr[NPAGES];
 // Ram buffer to store a single page before writing to flash
