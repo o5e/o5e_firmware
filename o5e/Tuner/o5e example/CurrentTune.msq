@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS(Beta) 2.2.31 - EFI Analytics, Inc." tuneComment="" writeDate="Mon Aug 12 10:23:51 EDT 2013"/>
-<versionInfo fileFormat="4.0" firmwareInfo="" nPages="12" signature="MShift 2.111       "/>
+<bibliography author="TunerStudio MS(Beta) 2.2.31 - EFI Analytics, Inc." tuneComment="" writeDate="Mon Aug 12 14:51:41 EDT 2013"/>
+<versionInfo fileFormat="4.0" firmwareInfo="" nPages="18" signature="MShift 2.111       "/>
 <page>
 <pcVariable name="tsCanId">"0"</pcVariable>
 </page>
@@ -1540,6 +1540,12 @@
          0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
       </constant>
 </page>
+<page number="12" size="1652"/>
+<page number="13" size="1548"/>
+<page number="14" size="1548"/>
+<page number="15" size="1548"/>
+<page number="16" size="1548"/>
+<page number="17" size="516"/>
 <settings Comment="These setting are only used if this msq is opened without a project.">
 <setting name="CELSIUS" value="CELSIUS"/>
 </settings>

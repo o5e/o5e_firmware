@@ -379,20 +379,20 @@ extern struct Outputs Output_Channels;
 #define Output_PWM_Table_1 ((CONST struct table * )(&Page_Ptr[12][1136]))
 //page14
 #define Output_PWM_Table_2 ((CONST struct table * )(&Page_Ptr[13][0]))
-#define Output_PWM_Table_3 ((CONST struct table * )(&Page_Ptr[13][512]))
-#define Output_PWM_Table_5 ((CONST struct table * )(&Page_Ptr[13][1028]))
+#define Output_PWM_Table_3 ((CONST struct table * )(&Page_Ptr[13][516]))
+#define Output_PWM_Table_5 ((CONST struct table * )(&Page_Ptr[13][1032]))
 //page15
 #define Output_PWM_Table_6 ((CONST struct table * )(&Page_Ptr[14][0]))
-#define Output_PWM_Table_7 ((CONST struct table * )(&Page_Ptr[14][512]))
-#define Output_PWM_Table_8 ((CONST struct table * )(&Page_Ptr[14][1028]))
+#define Output_PWM_Table_7 ((CONST struct table * )(&Page_Ptr[14][516]))
+#define Output_PWM_Table_8 ((CONST struct table * )(&Page_Ptr[14][1032]))
 //page16
 #define Output_PWM_Table_9 ((CONST struct table * )(&Page_Ptr[15][0]))
-#define Output_PWM_Table_10 ((CONST struct table * )(&Page_Ptr[15][512]))
-#define Output_PWM_Table_11 ((CONST struct table * )(&Page_Ptr[15][1028]))
+#define Output_PWM_Table_10 ((CONST struct table * )(&Page_Ptr[15][516]))
+#define Output_PWM_Table_11 ((CONST struct table * )(&Page_Ptr[15][1032]))
 //page17
 #define Output_PWM_Table_12 ((CONST struct table * )(&Page_Ptr[16][0]))
-#define Output_PWM_Table_13 ((CONST struct table * )(&Page_Ptr[16][512]))
-#define Output_PWM_Table_14 ((CONST struct table * )(&Page_Ptr[16][1028]))
+#define Output_PWM_Table_13 ((CONST struct table * )(&Page_Ptr[16][516]))
+#define Output_PWM_Table_14 ((CONST struct table * )(&Page_Ptr[16][1032]))
 //page18
 #define Output_PWM_Table_15 ((CONST struct table * )(&Page_Ptr[17][0]))
 
