@@ -231,6 +231,15 @@ static void Set_Spark()
 //#define Run_Threshold 250       // RPM below this then not running
 
 
+static float Get_Air_Temp_Fuel_Corr(void)
+{
+    if (Enable_Air_Temp_Corr == 1){
+       Air_Temp_Fuel_Corr = table_lookup(IAT, 1, IAT_Fuel_Corr_Table);
+       Air_Temp_Fuel_Corr = 1.0f + (Air_Temp_Fuel_Corr * Inverse100);
+       return Air_Temp_Fuel_Corr;
+    }
+    return 1;
+}
 
 // Primary purpose is to set the fuel pulse width/injection time
 
@@ -274,19 +283,13 @@ static void Set_Fuel(void)
         }
 
                 // Coolant temp correction from enrichment_ops
-        if (Enable_Air_Temp_Corr == 1){
-           Air_Temp_Fuel_Corr = table_lookup(IAT, 1, IAT_Fuel_Corr_Table);
-           Air_Temp_Fuel_Corr = 1.0f + (Air_Temp_Fuel_Corr * Inverse100);
-           Pulse_Width = Pulse_Width * Air_Temp_Fuel_Corr;
-        }
+        Pulse_Width = Pulse_Width * Get_Air_Temp_Fuel_Corr();
                 
         // Prime/warmup correction
         Pulse_Width = Pulse_Width * Get_Prime_Corr();
          
         // Acel/decel correction
-        Get_Accel_Decel_Corr();
-        
-        Pulse_Width = Pulse_Width * Accel_Decel_Corr;
+        Pulse_Width = Pulse_Width * Get_Accel_Decel_Corr();
 
                  
         // TODO adjust based on O2 sensor data Issue #8
