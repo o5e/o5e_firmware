@@ -39,7 +39,7 @@
 
 
 uint32_t *fs_free_param;
-float Pulse_Width;
+
 uint32_t etpu_Pulse_Width;
 //uint32_t Injector_Flow;
 static void Check_Engine(void);
@@ -156,6 +156,12 @@ void Engine10_Task(void)
     }                           // for      
     task_close();
 }                               // Engine10_Task()
+
+static float Get_Dwell(float v_batt) {
+	float table_value = (table_lookup(v_batt, 1, Dwell_Table )) * Inverse100;
+	return Dwell_Set * (1 + table_value);
+}
+
 /***************************************************************************************/
 // All spark calcs go here
 
@@ -196,10 +202,7 @@ static void Set_Spark()
           //Update re-calculation angle in eTPU
         fs_etpu_spark_set_recalc_offset_angle(Spark_Channels[0], Spark_Recalc_Angle_eTPU); // global value despite the channel param
 
-        // Dwell
-           Dwell = (table_lookup(V_Batt, 1, Dwell_Table)) * Inverse100;  //
-           Dwell = Dwell_Set * (1+ Dwell);
-           
+        Dwell = Get_Dwell(V_Batt);
              //the engine position is not known, of over rev limit, shut off the spark
               if (Enable_Ignition == 0 //spark disabled
                  || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC //crank position unknow
@@ -264,6 +267,26 @@ static float Get_Main_Fuel_Corr(float rpm, float reference_ve) {
 	return 1.0f + (table_value * Inverse100);
 }
 
+static float Get_Pulse_Width() {
+// calc fuel pulse width
+	//Set to a base value
+	float width = Base_Pulse_Width;
+
+	// apply various multiplier adjustments
+	// Reference_VE correction - assumes fuel required is roughly proportional to Reference_VE
+	width *= Reference_VE * Inverse100;
+
+	width *= Get_Main_Fuel_Corr(RPM, Reference_VE);
+	width *= Get_Fuel_Temp_Corr(CLT);
+    // Coolant temp correction from enrichment_ops
+	width *= Get_Air_Temp_Fuel_Corr();
+    // Prime/warmup correction
+	width *= Get_Prime_Corr();
+    // Acel/decel correction
+	width *= Get_Accel_Decel_Corr();
+	return width;
+}
+
 // Primary purpose is to set the fuel pulse width/injection time
 
 static void Set_Fuel(void)
@@ -277,33 +300,8 @@ static void Set_Fuel(void)
     // if the engine is not turning, the engine position is not known, or over reving, shut off the fuel channels
 
 
+    	float Pulse_Width = Get_Pulse_Width();
 
-
-        // calc fuel pulse width
-        //Set to a base value
-        Pulse_Width = Base_Pulse_Width;
-
-
-        // apply various multiplier adjustments
-
-
-        // Reference_VE correction - assumes fuel required is roughly proportional to Reference_VE
-        Pulse_Width = Pulse_Width * Reference_VE * Inverse100;
-
-        Pulse_Width = Pulse_Width * Get_Main_Fuel_Corr(RPM, Reference_VE);
-
-        Pulse_Width = Pulse_Width * Get_Fuel_Temp_Corr(CLT);
-
-                // Coolant temp correction from enrichment_ops
-        Pulse_Width = Pulse_Width * Get_Air_Temp_Fuel_Corr();
-                
-        // Prime/warmup correction
-        Pulse_Width = Pulse_Width * Get_Prime_Corr();
-         
-        // Acel/decel correction
-        Pulse_Width = Pulse_Width * Get_Accel_Decel_Corr();
-
-                 
         // TODO adjust based on O2 sensor data Issue #8
         // Corr = O2_Fuel();
         // Pulse_Width = (Pulse_Width * Corr) >> 14;
