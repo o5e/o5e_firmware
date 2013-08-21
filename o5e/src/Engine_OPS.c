@@ -241,6 +241,13 @@ static float Get_Air_Temp_Fuel_Corr(void)
     return 1;
 }
 
+static float Get_Dead_Time() {
+	// fuel dead time - extra pulse needed to open the injector
+	// take user value and adjust based on battery voltage
+	float table_value = table_lookup(V_Batt, 1, Inj_Dead_Time_Table );
+	return Dead_Time_Set * (1 + (table_value * Inverse100));
+}
+
 // Primary purpose is to set the fuel pulse width/injection time
 
 static void Set_Fuel(void)
@@ -298,10 +305,7 @@ static void Set_Fuel(void)
         
         // Assume fuel pressure is constant
 
-        // fuel dead time - extra pulse needed to open the injector
-        // take user value and adjust based on battery voltage
-        Dead_Time = table_lookup(V_Batt, 1, Inj_Dead_Time_Table);
-        Dead_Time = Dead_Time_Set *  (1+ (Dead_Time * Inverse100));     
+        Dead_Time = Get_Dead_Time();
         Dead_Time_etpu = (uint32_t)(Dead_Time * 1000);//etpu wants usec
          
          //this give the tuner the current pulse width
