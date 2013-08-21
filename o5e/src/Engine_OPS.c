@@ -281,8 +281,7 @@ static void Set_Fuel(void)
         }
                 
         // Prime/warmup correction
-        Get_Prime_Corr();
-        Pulse_Width = Pulse_Width * Prime_Corr;
+        Pulse_Width = Pulse_Width * Get_Prime_Corr();
          
         // Acel/decel correction
         Get_Accel_Decel_Corr();

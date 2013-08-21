@@ -180,7 +180,7 @@ static float Get_Prime_Decay() {
 	return Prime_Decay;
 }
 
-void Get_Prime_Corr(void)    
+float Get_Prime_Corr(void)
 {
 	
                 // check if enrichment cals shold be done - this might want to be a % of redline
@@ -191,10 +191,10 @@ void Get_Prime_Corr(void)
             // check if in prime needed conditions   
             if (Post_Start_Cycles < Prime_Cycles_Threshold) {
 
-                Prime_Corr = table_lookup(CLT, 1, Prime_Corr_Table) * Inverse100;
+                float table_value = table_lookup(CLT, 1, Prime_Corr_Table) * Inverse100;
 
                 // apply the decay
-                Prime_Corr = 1+ (Prime_Corr * Get_Prime_Decay());
+                Prime_Corr = 1+ (table_value * Get_Prime_Decay());
                
                 // Reduce the Prime correction by the decay rate and add to pulse_width            
             }
@@ -202,6 +202,7 @@ void Get_Prime_Corr(void)
         }
         else
            Prime_Corr = 1;
+        return Prime_Corr;
 }//Get_Prime_Corr
 
 #if __CWCC__
