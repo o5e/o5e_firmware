@@ -241,11 +241,21 @@ static float Get_Air_Temp_Fuel_Corr(void)
     return 1;
 }
 
-static float Get_Dead_Time() {
+static float Get_Dead_Time(float v_batt) {
 	// fuel dead time - extra pulse needed to open the injector
 	// take user value and adjust based on battery voltage
-	float table_value = table_lookup(V_Batt, 1, Inj_Dead_Time_Table );
+	float table_value = table_lookup(v_batt, 1, Inj_Dead_Time_Table );
 	return Dead_Time_Set * (1 + (table_value * Inverse100));
+}
+
+static float Get_Fuel_Temp_Corr(float clt) {
+	// Coolant temp correction from enrichment_ops
+	if (Enable_Coolant_Temp_Corr == 1) {
+		float table_value = table_lookup(clt, 1, Fuel_Temp_Corr_Table );
+		Fuel_Temp_Corr = 1.0f + (table_value * Inverse100);
+		return Fuel_Temp_Corr;
+	}
+	return 1;
 }
 
 // Primary purpose is to set the fuel pulse width/injection time
@@ -281,13 +291,7 @@ static void Set_Fuel(void)
         Corr = 1.0f + (Corr * Inverse100);
         Pulse_Width = Pulse_Width * Corr;
 
-
-        // Coolant temp correction from enrichment_ops
-        if (Enable_Coolant_Temp_Corr == 1){
-           Fuel_Temp_Corr = table_lookup(CLT, 1, Fuel_Temp_Corr_Table);
-           Fuel_Temp_Corr = 1.0f + (Fuel_Temp_Corr * Inverse100);
-           Pulse_Width = Pulse_Width * Fuel_Temp_Corr;
-        }
+        Pulse_Width = Pulse_Width * Get_Fuel_Temp_Corr(CLT);
 
                 // Coolant temp correction from enrichment_ops
         Pulse_Width = Pulse_Width * Get_Air_Temp_Fuel_Corr();
@@ -305,7 +309,7 @@ static void Set_Fuel(void)
         
         // Assume fuel pressure is constant
 
-        Dead_Time = Get_Dead_Time();
+        Dead_Time = Get_Dead_Time(V_Batt);
         Dead_Time_etpu = (uint32_t)(Dead_Time * 1000);//etpu wants usec
          
          //this give the tuner the current pulse width
