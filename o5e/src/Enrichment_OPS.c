@@ -162,7 +162,24 @@ void Get_Accel_Decel_Corr(void)
     }            
 
 }// Get_Accel_Decel_Corr
-        
+
+static float Get_Prime_Decay() {
+	// Update Prime decay each cycle - this is a log decay of the prime pulse
+	if (Post_Start_Cycles > Prime_Post_Start_Last) {
+		// reset cycle number
+		Prime_Post_Start_Last = Post_Start_Cycles;
+		// Get the decay rate for current conditions
+		Prime_Decay = table_lookup(RPM, 1, Prime_Decay_Table );
+
+		Prime_Decay = 1.0f + (Prime_Decay * Inverse100);
+		// decrease decay by the new value
+		Prime_Decay = Prime_Decay_Last * Prime_Decay;
+		// reset last
+		Prime_Decay_Last = Prime_Decay;
+	}
+	return Prime_Decay;
+}
+
 void Get_Prime_Corr(void)    
 {
 	
@@ -176,21 +193,8 @@ void Get_Prime_Corr(void)
 
                 Prime_Corr = table_lookup(CLT, 1, Prime_Corr_Table) * Inverse100;
 
-                // Update Prime decay each cycle - this is a log decay of the prime pulse
-                if (Post_Start_Cycles > Prime_Post_Start_Last) {
-                    // reset cycle number
-                    Prime_Post_Start_Last = Post_Start_Cycles;
-                    // Get the decay rate for current conditions
-                    Prime_Decay = table_lookup(RPM, 1, Prime_Decay_Table);
-                    
-                   Prime_Decay = 1.0f + (Prime_Decay * Inverse100);
-                    // decrease decay by the new value
-                    Prime_Decay = Prime_Decay_Last * Prime_Decay;
-                    // reset last
-                    Prime_Decay_Last = Prime_Decay;
-                }
                 // apply the decay
-                Prime_Corr = 1+ (Prime_Corr * Prime_Decay);
+                Prime_Corr = 1+ (Prime_Corr * Get_Prime_Decay());
                
                 // Reduce the Prime correction by the decay rate and add to pulse_width            
             }
