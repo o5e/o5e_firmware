@@ -6,7 +6,7 @@ extern "C"
 {
 #endif
 
-void Get_Accel_Decel_Corr(void);
+float Get_Accel_Decel_Corr(void);
 float Get_Prime_Corr(void);
 
 #ifdef __cplusplus

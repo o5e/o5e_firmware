@@ -52,7 +52,7 @@
 #endif
 
 
-void Get_Accel_Decel_Corr(void)
+float Get_Accel_Decel_Corr(void)
 {
 
 
@@ -160,7 +160,7 @@ void Get_Accel_Decel_Corr(void)
               Accel_Decel_Corr = TPS_Dot_Corr;
           Accel_Decel_Corr = 1.0f + (Accel_Decel_Corr * Inverse100);
     }            
-
+    return Accel_Decel_Corr;
 }// Get_Accel_Decel_Corr
 
 static float Get_Prime_Decay() {
