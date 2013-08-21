@@ -258,11 +258,16 @@ static float Get_Fuel_Temp_Corr(float clt) {
 	return 1;
 }
 
+static float Get_Main_Fuel_Corr(float rpm, float reference_ve) {
+	// Main fuel table correction - this is used to adjust for RPM effects
+	float table_value = table_lookup(rpm, reference_ve, Inj_Time_Corr_Table);
+	return 1.0f + (table_value * Inverse100);
+}
+
 // Primary purpose is to set the fuel pulse width/injection time
 
 static void Set_Fuel(void)
 {
-    static float Corr;
     static uint32_t error_code;
     static float Dead_Time;
     static uint32_t Dead_Time_etpu;
@@ -285,11 +290,7 @@ static void Set_Fuel(void)
         // Reference_VE correction - assumes fuel required is roughly proportional to Reference_VE
         Pulse_Width = Pulse_Width * Reference_VE * Inverse100;
 
-
-        // Main fuel table correction - this is used to adjust for RPM effects
-        Corr = table_lookup(RPM, Reference_VE, Inj_Time_Corr_Table);
-        Corr = 1.0f + (Corr * Inverse100);
-        Pulse_Width = Pulse_Width * Corr;
+        Pulse_Width = Pulse_Width * Get_Main_Fuel_Corr(RPM, Reference_VE);
 
         Pulse_Width = Pulse_Width * Get_Fuel_Temp_Corr(CLT);
 
