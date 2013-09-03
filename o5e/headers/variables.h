@@ -52,7 +52,7 @@ void Set_Page_Locations(uint8_t block);
 #define PROTOCOL  "001"
 //
 
-#define  NPAGES  	18
+#define  NPAGES  	15
 
 extern uint16_t const pageSize[NPAGES];
 
@@ -350,17 +350,17 @@ extern struct Outputs Output_Channels;
 #define Coil_Trim_3_Table ((CONST struct table * )(&Page_Ptr[11][904]))
 #define Coil_Trim_4_Table ((CONST struct table * )(&Page_Ptr[11][1356]))
 //Page13
-#define Output_Link_1_Array (*(CONST U08 * )(&Page_Ptr[12][0]) & ((2<<3)-1))
-#define Output_Link_2_Array (*(CONST U08 * )(&Page_Ptr[12][16]) & ((2<<3)-1))
-#define Output_Link_3_Array (*(CONST U08 * )(&Page_Ptr[12][32]) & ((2<<3)-1))
-#define Output_Link_4_Array (*(CONST U08 * )(&Page_Ptr[12][48]) & ((2<<3)-1))
-#define Output_Link_1_on_Array (*(CONST U08 * )(&Page_Ptr[12][64]) & ((2<<0)-1))
-#define Output_Link_2_on_Array (*(CONST U08 * )(&Page_Ptr[12][80]) & ((2<<0)-1))
-#define Output_Link_3_on_Array (*(CONST U08 * )(&Page_Ptr[12][96]) & ((2<<0)-1))
-#define Output_Link_4_on_Array (*(CONST U08 * )(&Page_Ptr[12][112]) & ((2<<0)-1))
-#define Output_Link_2_logic_Array (*(CONST U08 * )(&Page_Ptr[12][128]) & ((2<<0)-1))
-#define Output_Link_3_logic_Array (*(CONST U08 * )(&Page_Ptr[12][144]) & ((2<<0)-1))
-#define Output_Link_4_logic_Array (*(CONST U08 * )(&Page_Ptr[12][160]) & ((2<<0)-1))
+#define Output_Link_1_Array (*(CONST U08 * )(&Page_Ptr[12][0])
+#define Output_Link_2_Array (*(CONST U08 * )(&Page_Ptr[12][16])
+#define Output_Link_3_Array (*(CONST U08 * )(&Page_Ptr[12][32])
+#define Output_Link_4_Array (*(CONST U08 * )(&Page_Ptr[12][48])
+#define Output_Link_1_on_Array (*(CONST U08 * )(&Page_Ptr[12][64])
+#define Output_Link_2_on_Array (*(CONST U08 * )(&Page_Ptr[12][80])
+#define Output_Link_3_on_Array (*(CONST U08 * )(&Page_Ptr[12][96])
+#define Output_Link_4_on_Array (*(CONST U08 * )(&Page_Ptr[12][112])
+#define Output_Link_2_logic_Array (*(CONST U08 * )(&Page_Ptr[12][128])
+#define Output_Link_3_logic_Array (*(CONST U08 * )(&Page_Ptr[12][144])
+#define Output_Link_4_logic_Array (*(CONST U08 * )(&Page_Ptr[12][160])
 #define Output_Link_1_on_set_Array (*(CONST F32 * )(&Page_Ptr[12][176])
 #define Output_Link_2_on_set_Array (*(CONST F32 * )(&Page_Ptr[12][240])
 #define Output_Link_3_on_set_Array (*(CONST F32 * )(&Page_Ptr[12][304])
@@ -386,7 +386,7 @@ extern struct Outputs Output_Channels;
 #define Output_PWM_Table_7 ((CONST struct table * )(&Page_Ptr[14][516]))
 #define Output_PWM_Table_8 ((CONST struct table * )(&Page_Ptr[14][1032]))
 //page16
-#define Output_PWM_Table_9 ((CONST struct table * )(&Page_Ptr[15][0]))
+/*#define Output_PWM_Table_9 ((CONST struct table * )(&Page_Ptr[15][0]))
 #define Output_PWM_Table_10 ((CONST struct table * )(&Page_Ptr[15][516]))
 #define Output_PWM_Table_11 ((CONST struct table * )(&Page_Ptr[15][1032]))
 //page17
@@ -394,7 +394,7 @@ extern struct Outputs Output_Channels;
 #define Output_PWM_Table_13 ((CONST struct table * )(&Page_Ptr[16][516]))
 #define Output_PWM_Table_14 ((CONST struct table * )(&Page_Ptr[16][1032]))
 //page18
-#define Output_PWM_Table_15 ((CONST struct table * )(&Page_Ptr[17][0]))
+#define Output_PWM_Table_15 ((CONST struct table * )(&Page_Ptr[17][0]))*/
 
 
 
