@@ -170,6 +170,7 @@ static void Set_Spark()
        
         // Looks up the desired spark advance in degrees before Top Dead Center (TDC)
         Spark_Advance = table_lookup(RPM, Reference_VE, Spark_Advance_Table);
+
         
         // TODO Knock_Retard(); Issue #7
         // TODO  Air Temp retard                
@@ -252,7 +253,6 @@ static void Set_Fuel(void)
         //Set to a base value
         Pulse_Width = Base_Pulse_Width;
 
-
         // apply various multiplier adjustments
 
 
@@ -261,10 +261,9 @@ static void Set_Fuel(void)
 
 
         // Main fuel table correction - this is used to adjust for RPM effects
-        Corr = table_lookup(RPM, Reference_VE, Inj_Time_Corr_Table);
+        Corr = table_lookup(RPM, Reference_VE, Inj_Time_Corr_Table);        
         Corr = 1.0f + (Corr * Inverse100);
         Pulse_Width = Pulse_Width * Corr;
-
 
         // Coolant temp correction from enrichment_ops
         if (Enable_Coolant_Temp_Corr == 1){
@@ -302,8 +301,8 @@ static void Set_Fuel(void)
         Dead_Time = Dead_Time_Set *  (1+ (Dead_Time * Inverse100));     
         Dead_Time_etpu = (uint32_t)(Dead_Time * 1000);//etpu wants usec
          
-         //this give the tuner the current pulse width
-       Injection_Time = (Pulse_Width + Dead_Time);
+         //this gives the tuner the current pulse width
+        Injection_Time = (Pulse_Width + Dead_Time);
         
         
         // TODO - add code for semi-seq fuel

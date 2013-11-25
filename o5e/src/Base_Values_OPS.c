@@ -41,7 +41,8 @@ void Get_Base_Pulse_Width(void)
      Base_Pulse_Width = Base_Pulse_Width * Gasoline_SG; //get volumetric fuel required
      Base_Pulse_Width = Base_Pulse_Width / Injector_Flow;
      //Max_Inj_Time
-     Base_Pulse_Width = Base_Pulse_Width * 1000 * 60 ; //convert to msec         	    		 
+     Base_Pulse_Width = Base_Pulse_Width * 1000 * 60 ; //convert to msec 
+                  	    		 
 }//Get_Base_Pulse_Width
 
 

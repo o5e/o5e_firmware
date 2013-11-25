@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS 2.5.00 - EFI Analytics, Inc." tuneComment="" writeDate="Mon Nov 25 13:07:04 EST 2013"/>
+<bibliography author="TunerStudio MS 2.5.00 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;" writeDate="Mon Nov 25 13:07:04 EST 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page>
 <pcVariable name="tsCanId">"0"</pcVariable>

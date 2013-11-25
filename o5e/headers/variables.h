@@ -6,7 +6,7 @@
         @date           December, 2011
         @brief          System variables that the tuner will read or write
         @copyright      MIT license
-        @warning        needs more testing - send results to jon at zeeff.com
+        @warning        needs more testing 
         @version        1.2
         
         @note 		parts of this are created from a TunerStudio .ini file with the program format_ini.c
@@ -79,7 +79,7 @@ float MAP[2];					//Mafifold Absolute Pressure in KPa  MAp1 is external, MAP 2 i
 float MAF[2];					//Mass Air Flow in grams/sec
 float V_Batt;					//Battery voltage
 float Injection_Time;			//Total injector open time in usec
-float Spark_Advance;			//Igition angle before TDC in degrees
+float Spark_Advance;			//Ignition angle before TDC in degrees
 float Dwell;					//Coil charge time in msec
 float Inj_End_Angle;			//Degrees after TDC normal injection pulse should end
 float Lambda_Correction;		//Closed loop fuel correction applied as a % change
@@ -155,6 +155,7 @@ float Air_Temp_Fuel_Corr;
 
 //*******************************************************
 
+
 // initialized to all zeros
 extern struct Outputs Output_Channels;
 
@@ -167,25 +168,25 @@ extern struct Outputs Output_Channels;
 //--------------------------------------------------------
 #define Password (*(CONST U32 * )(&Page_Ptr[0][0]))
 #define Version_Array ((CONST U08 * )(&Page_Ptr[0][4]))
-#define N_Cyl (*(CONST U08 * )(&Page_Ptr[0][24]) & ((2<<3)-1))
+#define N_Cyl (*(CONST U08 * )(&Page_Ptr[0][24]))
 #define N_Teeth (*(CONST U08 * )(&Page_Ptr[0][25]))
-#define Missing_Teeth (*(CONST U08 * )(&Page_Ptr[0][26]) & ((2<<2)-1))
-#define Load_Sense (*(CONST U08 * )(&Page_Ptr[0][27]) & ((2<<2)-1))
+#define Missing_Teeth (*(CONST U08 * )(&Page_Ptr[0][26]))
+#define Load_Sense (*(CONST U08 * )(&Page_Ptr[0][27]))
 #define Cam_Lobe_Pos (*(CONST U32 * )(&Page_Ptr[0][28]))
 
 #define Cyl_Offset_Array ((CONST U32 * )(&Page_Ptr[0][32]))
 
 #define Engine_Position (*(CONST S32 * )(&Page_Ptr[0][80]))
 #define Drop_Dead_Angle (*(CONST S32 * )(&Page_Ptr[0][84]))
-#define Ignition_Type (*(CONST U08 * )(&Page_Ptr[0][88]) & ((2<<0)-1))
+#define Ignition_Type (*(CONST U08 * )(&Page_Ptr[0][88]))
 
-#define Pulses_Per_Rev (*(CONST U08 * )(&Page_Ptr[0][89]) & ((2<<3)-1))
-#define Crank_Edge_Select (*(CONST U08 * )(&Page_Ptr[0][90]) & ((2<<0)-1))
-#define Cam_Edge_Select (*(CONST U08 * )(&Page_Ptr[0][91]) & ((2<<0)-1))
-#define Sync_Mode_Select (*(CONST U08 * )(&Page_Ptr[0][92]) & ((2<<0)-1))
-#define Engine_Type_Select (*(CONST U08 * )(&Page_Ptr[0][93]) & ((2<<1)-1))
-#define Ignition_Invert (*(CONST U08 * )(&Page_Ptr[0][94]) & ((2<<0)-1))
-#define N_Coils_Per_Cylinder (*(CONST U08 * )(&Page_Ptr[0][95]) & ((2<<0)-1))
+#define Pulses_Per_Rev (*(CONST U08 * )(&Page_Ptr[0][89]))
+#define Crank_Edge_Select (*(CONST U08 * )(&Page_Ptr[0][90]))
+#define Cam_Edge_Select (*(CONST U08 * )(&Page_Ptr[0][91]))
+#define Sync_Mode_Select (*(CONST U08 * )(&Page_Ptr[0][92]))
+#define Engine_Type_Select (*(CONST U08 * )(&Page_Ptr[0][93]))
+#define Ignition_Invert (*(CONST U08 * )(&Page_Ptr[0][94]))
+#define N_Coils_Per_Cylinder (*(CONST U08 * )(&Page_Ptr[0][95]))
 #define Cam_Window_Open_Set (*(CONST S32 * )(&Page_Ptr[0][96]))
 #define Cam_Window_Width_Set (*(CONST S32 * )(&Page_Ptr[0][100]))
 #define Odd_Fire_Sync_Threshold (*(CONST F32 * )(&Page_Ptr[0][104]))
@@ -200,23 +201,23 @@ extern struct Outputs Output_Channels;
 
 #define Inj_Dead_Array ((CONST F32 * )(&Page_Ptr[0][128]))
 
-#define Config_Output_Array ((CONST U08 * )(&Page_Ptr[0][224]) & ((2<<3)-1))
+#define Config_Output_Array ((CONST U08 * )(&Page_Ptr[0][224]))
 
 #define Config_Input_Array ((CONST U08 * )(&Page_Ptr[0][280]))
 
 #define sqrt_Table ((CONST struct table * )(&Page_Ptr[0][308]))
 
-#define Enable_Prime (*(CONST U08 * )(&Page_Ptr[0][696]) & ((2<<0)-1))
+#define Enable_Prime (*(CONST U08 * )(&Page_Ptr[0][696]))
 #define Prime_Corr_Table ((CONST struct table * )(&Page_Ptr[0][700]))
 #define Prime_Decay_Table ((CONST struct table * )(&Page_Ptr[0][1024]))
 
 #define Man_Crank_Corr_Table ((CONST struct table * )(&Page_Ptr[0][1316]))
 
-#define Staged_Inj (*(CONST U08 * )(&Page_Ptr[0][1596]) & ((2<<0)-1))
+#define Staged_Inj (*(CONST U08 * )(&Page_Ptr[0][1596]))
 
  
-#define Test_Enable (*(CONST U08 * )(&Page_Ptr[0][1616]) & ((2<<0)-1))
-#define Test_Value (*(CONST U08 * )(&Page_Ptr[0][1617]) & ((2<<0)-1))
+#define Test_Enable (*(CONST U08 * )(&Page_Ptr[0][1616]))
+#define Test_Value (*(CONST U08 * )(&Page_Ptr[0][1617]))
 #define Test_RPM (*(CONST F32 * )(&Page_Ptr[0][1620]))
 #define Test_TPS (*(CONST F32 * )(&Page_Ptr[0][1624]))
 
@@ -250,7 +251,7 @@ extern struct Outputs Output_Channels;
 
 #define Test_RPM_Dwell_Array  ((CONST S16 * )(&Page_Ptr[0][1756]))
 
-#define Test_RPM_Type (*(CONST U08 * )(&Page_Ptr[0][1764]) & ((2<<1)-1))
+#define Test_RPM_Type (*(CONST U08 * )(&Page_Ptr[0][1764]))
  
 
 
@@ -350,32 +351,32 @@ extern struct Outputs Output_Channels;
 #define Coil_Trim_3_Table ((CONST struct table * )(&Page_Ptr[11][904]))
 #define Coil_Trim_4_Table ((CONST struct table * )(&Page_Ptr[11][1356]))
 //Page13
-#define Output_Link_1_Array (*(CONST U08 * )(&Page_Ptr[12][0])
-#define Output_Link_2_Array (*(CONST U08 * )(&Page_Ptr[12][16])
-#define Output_Link_3_Array (*(CONST U08 * )(&Page_Ptr[12][32])
-#define Output_Link_4_Array (*(CONST U08 * )(&Page_Ptr[12][48])
-#define Output_Link_1_on_Array (*(CONST U08 * )(&Page_Ptr[12][64])
-#define Output_Link_2_on_Array (*(CONST U08 * )(&Page_Ptr[12][80])
-#define Output_Link_3_on_Array (*(CONST U08 * )(&Page_Ptr[12][96])
-#define Output_Link_4_on_Array (*(CONST U08 * )(&Page_Ptr[12][112])
-#define Output_Link_2_logic_Array (*(CONST U08 * )(&Page_Ptr[12][128])
-#define Output_Link_3_logic_Array (*(CONST U08 * )(&Page_Ptr[12][144])
-#define Output_Link_4_logic_Array (*(CONST U08 * )(&Page_Ptr[12][160])
-#define Output_Link_1_on_set_Array (*(CONST F32 * )(&Page_Ptr[12][176])
-#define Output_Link_2_on_set_Array (*(CONST F32 * )(&Page_Ptr[12][240])
-#define Output_Link_3_on_set_Array (*(CONST F32 * )(&Page_Ptr[12][304])
-#define Output_Link_4_on_set_Array (*(CONST F32 * )(&Page_Ptr[12][368])
-#define Output_Link_1_off_set_Array (*(CONST F32 * )(&Page_Ptr[12][432])
-#define Output_Link_2_off_set_Array (*(CONST F32 * )(&Page_Ptr[12][496])
-#define Output_Link_3_off_set_Array (*(CONST F32 * )(&Page_Ptr[12][560])
-#define Output_Link_4_off_set_Array (*(CONST F32 * )(&Page_Ptr[12][624])
-#define Output_Link_PWM_Frequencyt_Array (*(CONST F32 * )(&Page_Ptr[12][688])
-#define Output_Link_PWM_Dutycycle_Array (*(CONST F32 * )(&Page_Ptr[12][752])
-#define Output_Link_PWM_setpoint_Array (*(CONST F32 * )(&Page_Ptr[12][816])
-#define Output_Link_PWM_proportional_Array (*(CONST F32 * )(&Page_Ptr[12][880])
-#define Output_Link_PWM_integral_Array (*(CONST F32 * )(&Page_Ptr[12][944])
-#define Output_Link_PWM_differential_Array (*(CONST F32 * )(&Page_Ptr[12][1008])
-#define Output_Link_PWM_hysteresis_Array (*(CONST F32 * )(&Page_Ptr[12][1072])
+#define Output_Link_1_Array ((CONST U08 * )(&Page_Ptr[12][0]))
+#define Output_Link_2_Array ((CONST U08 * )(&Page_Ptr[12][16]))
+#define Output_Link_3_Array ((CONST U08 * )(&Page_Ptr[12][32]))
+#define Output_Link_4_Array ((CONST U08 * )(&Page_Ptr[12][48]))
+#define Output_Link_1_on_Array ((CONST U08 * )(&Page_Ptr[12][64]))
+#define Output_Link_2_on_Array ((CONST U08 * )(&Page_Ptr[12][80]))
+#define Output_Link_3_on_Array ((CONST U08 * )(&Page_Ptr[12][96]))
+#define Output_Link_4_on_Array ((CONST U08 * )(&Page_Ptr[12][112]))
+#define Output_Link_2_logic_Array ((CONST U08 * )(&Page_Ptr[12][128]))
+#define Output_Link_3_logic_Array ((CONST U08 * )(&Page_Ptr[12][144]))
+#define Output_Link_4_logic_Array ((CONST U08 * )(&Page_Ptr[12][160]))
+#define Output_Link_1_on_set_Array ((CONST F32 * )(&Page_Ptr[12][176]))
+#define Output_Link_2_on_set_Array ((CONST F32 * )(&Page_Ptr[12][240]))
+#define Output_Link_3_on_set_Array ((CONST F32 * )(&Page_Ptr[12][304]))
+#define Output_Link_4_on_set_Array ((CONST F32 * )(&Page_Ptr[12][368]))
+#define Output_Link_1_off_set_Array ((CONST F32 * )(&Page_Ptr[12][432]))
+#define Output_Link_2_off_set_Array ((CONST F32 * )(&Page_Ptr[12][496]))
+#define Output_Link_3_off_set_Array ((CONST F32 * )(&Page_Ptr[12][560]))
+#define Output_Link_4_off_set_Array ((CONST F32 * )(&Page_Ptr[12][624]))
+#define Output_Link_PWM_Frequencyt_Array ((CONST F32 * )(&Page_Ptr[12][688]))
+#define Output_Link_PWM_Dutycycle_Array ((CONST F32 * )(&Page_Ptr[12][752]))
+#define Output_Link_PWM_setpoint_Array ((CONST F32 * )(&Page_Ptr[12][816]))
+#define Output_Link_PWM_proportional_Array ((CONST F32 * )(&Page_Ptr[12][880]))
+#define Output_Link_PWM_integral_Array ((CONST F32 * )(&Page_Ptr[12][944]))
+#define Output_Link_PWM_differential_Array ((CONST F32 * )(&Page_Ptr[12][1008]))
+#define Output_Link_PWM_hysteresis_Array ((CONST F32 * )(&Page_Ptr[12][1072]))
 #define Output_PWM_Table_1 ((CONST struct table * )(&Page_Ptr[12][1136]))
 //page14
 #define Output_PWM_Table_2 ((CONST struct table * )(&Page_Ptr[13][0]))
@@ -400,6 +401,9 @@ extern struct Outputs Output_Channels;
 
 // ---------------------------------------------------
 // Below here does not come from the .ini file
+//Other Ram stuff
+
+
 
 // A page is 2048 bytes, a block is 128K.  
 // Only one block is in use at a time. This allows a flip/flop use/erase & burn strategy

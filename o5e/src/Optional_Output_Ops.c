@@ -25,389 +25,278 @@
 #include "Optional_Output_Ops.h"
 #include "Table_Lookup.h"
 
-
-int16_t Generic_Output_Scale;
-int16_t Generic_Output_Translate;
-uint8_t Generic_Output_1_Condition_1 = 0;
-uint8_t Generic_Output_1_Condition_2 = 0;
-uint8_t Generic_Output_1_Condition_3 = 0;
-uint8_t Generic_Output_1_Condition_4 = 0;
-uint8_t Generic_Output_1;
-int16_t Generic_Output_1_Link_1_on_ecu;
-int16_t Generic_Output_1_Link_1_off_ecu;
-int16_t Generic_Output_1_Link_2_on_ecu;
-int16_t Generic_Output_1_Link_2_off_ecu;
-int16_t Generic_Output_1_Link_3_on_ecu;
-int16_t Generic_Output_1_Link_3_off_ecu;
-int16_t Generic_Output_1_Link_4_on_ecu;
-int16_t Generic_Output_1_Link_4_off_ecu;
-
-int16_t Generic_Output_1_Link_1_value;
-int16_t Generic_Output_1_Link_2_value;
-int16_t Generic_Output_1_Link_3_value;
-int16_t Generic_Output_1_Link_4_value;
+#define Number_Outputs 15
 
 
-void Generic_Output_1_Task(void)
-    {
-        task_open();                // standard OS entry
-        task_wait(1);
+U08 Turn_It_On;
+U08 i;
+U08 LINK1[16];
+U08 LINK2[16];
+U08 LINK3[16];
+U08 LINK4[16];
+float Ref;
+float Link_Variables[16];
 
 
-//convert setpoints to correct bin point/translate point
-/*Generic_Output_Scale =  (int16_t) table_lookup(Generic_Output_1_Link_1, 0, Generic_Output_Link_Shift_Table);
-Generic_Output_Translate = (int16_t) table_lookup(Generic_Output_1_Link_1, 1, Generic_Output_Link_Shift_Table);      
-Generic_Output_1_Link_1_on_ecu = (Generic_Output_1_Link_1_on_set *Generic_Output_Scale) - Generic_Output_Translate;
-Generic_Output_1_Link_1_off_ecu=  (Generic_Output_1_Link_1_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
-
-Generic_Output_Scale =  (int16_t) table_lookup(Generic_Output_1_Link_2, 0, Generic_Output_Link_Shift_Table);
-Generic_Output_Translate = (int16_t) table_lookup(Generic_Output_1_Link_2, 1, Generic_Output_Link_Shift_Table);      
-Generic_Output_1_Link_2_on_ecu = (Generic_Output_1_Link_1_on_set *Generic_Output_Scale) - Generic_Output_Translate;
-Generic_Output_1_Link_2_off_ecu=  (Generic_Output_1_Link_1_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
-
-Generic_Output_Scale =  (int16_t) table_lookup(Generic_Output_1_Link_3, 0, Generic_Output_Link_Shift_Table);
-Generic_Output_Translate = (int16_t) table_lookup(Generic_Output_1_Link_3, 1, Generic_Output_Link_Shift_Table);      
-Generic_Output_1_Link_3_on_ecu = (Generic_Output_1_Link_1_on_set *Generic_Output_Scale) - Generic_Output_Translate;
-Generic_Output_1_Link_3_off_ecu=  (Generic_Output_1_Link_1_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
-
-Generic_Output_Scale =  (int16_t) table_lookup(Generic_Output_1_Link_4, 0, Generic_Output_Link_Shift_Table);
-Generic_Output_Translate = (int16_t) table_lookup(Generic_Output_1_Link_4, 1, Generic_Output_Link_Shift_Table);      
-Generic_Output_1_Link_4_on_ecu = (Generic_Output_1_Link_4_on_set *Generic_Output_Scale) - Generic_Output_Translate;
-Generic_Output_1_Link_4_off_ecu=  (Generic_Output_1_Link_4_off_set *Generic_Output_Scale) - Generic_Output_Translate; 
-
-
-//set link 1
-if (Generic_Output_1_Link_1 == 0)
-    Generic_Output_1_Link_1_value = RPM;
-else if(Generic_Output_1_Link_1 == 1)
-    Generic_Output_1_Link_1_value = Reference_VE;
-else if (Generic_Output_1_Link_1 == 2)
-    Generic_Output_1_Link_1_value = IAT;
-else if (Generic_Output_1_Link_1 == 3)
-    Generic_Output_1_Link_1_value = CLT;
-else if (Generic_Output_1_Link_1 == 4)
-    Generic_Output_1_Link_1_value = TPS;
-else if (Generic_Output_1_Link_1 == 6)
-    Generic_Output_1_Link_1_value = MAP[0];
-else if (Generic_Output_1_Link_1 == 6)
-    Generic_Output_1_Link_1_value = MAP[1];
-else
-    Generic_Output_1_Link_1_value = 0;
-//set link 2
-if (Generic_Output_1_Link_2 == 0)
-    Generic_Output_1_Link_2_value = RPM;
-else if(Generic_Output_1_Link_1 == 1)
-    Generic_Output_1_Link_2_value = Reference_VE;
-else if (Generic_Output_1_Link_2 == 2)
-    Generic_Output_1_Link_2_value = IAT;
-else if (Generic_Output_1_Link_2 == 3)
-    Generic_Output_1_Link_2_value = CLT;
-else if (Generic_Output_1_Link_2 == 4)
-    Generic_Output_1_Link_2_value = TPS;
-else if (Generic_Output_1_Link_2 == 6)
-    Generic_Output_1_Link_2_value = MAP[0];
-else if (Generic_Output_1_Link_2 == 6)
-    Generic_Output_1_Link_2_value = MAP[1];
-else
-    Generic_Output_1_Link_2_value = 0;
-//set link 3
-if (Generic_Output_1_Link_3 == 0)
-    Generic_Output_1_Link_3_value = RPM;
-else if(Generic_Output_1_Link_3 == 1)
-    Generic_Output_1_Link_3_value = Reference_VE;
-else if (Generic_Output_1_Link_3 == 2)
-    Generic_Output_1_Link_3_value = IAT;
-else if (Generic_Output_1_Link_3 == 3)
-    Generic_Output_1_Link_3_value = CLT;
-else if (Generic_Output_1_Link_3 == 4)
-    Generic_Output_1_Link_3_value = TPS;
-else if (Generic_Output_1_Link_3 == 6)
-    Generic_Output_1_Link_3_value = MAP[0];
-else if (Generic_Output_1_Link_3 == 6)
-    Generic_Output_1_Link_3_value = MAP[1];
-else
-    Generic_Output_1_Link_3_value = 0;
-//set link 4
-if (Generic_Output_1_Link_4 == 0)
-    Generic_Output_1_Link_4_value = RPM;
-else if(Generic_Output_1_Link_4 == 1)
-    Generic_Output_1_Link_4_value = Reference_VE;
-else if (Generic_Output_1_Link_4 == 2)
-    Generic_Output_1_Link_4_value = IAT;
-else if (Generic_Output_1_Link_4 == 3)
-    Generic_Output_1_Link_4_value = CLT;
-else if (Generic_Output_1_Link_4 == 4)
-    Generic_Output_1_Link_4_value = TPS;
-else if (Generic_Output_1_Link_4 == 6)
-    Generic_Output_1_Link_4_value = MAP[0];
-else if (Generic_Output_1_Link_4 == 6)
-    Generic_Output_1_Link_4_value = MAP[1];
-else
-    Generic_Output_1_Link_4_value = 0;
-
-*/
-
-       
-        for (;;) {
-        /*
-          if(Generic_Output_1_type > 0){ //if output enablebed
-
-	            //link 1 switch condition
-			if (Generic_Output_1_type <= 4){ //Switch with 1 link
-			   //link 1
-			   //on condition
-			   if (Generic_Output_1_Link_1_on == 0){
-			       // on below
-			       if (Generic_Output_1_Link_1_value <= Generic_Output_1_Link_1_on_set ) 
-			           Generic_Output_1_Condition_1 = 1;
-			       //off above
-			       else if(Generic_Output_1_Link_1_value >= Generic_Output_1_Link_1_on_set ) 
-			           Generic_Output_1_Condition_1 = 0; 
-			       
-			   }
-			            //todo - the bin points need to be sorted here!!!
-				//on above
-			   else { 
-			      if (Generic_Output_1_Link_1_value <= Generic_Output_1_Link_1_on_set )
-			          Generic_Output_1_Condition_1 = 1;
-			      // off below
-			      else if (Generic_Output_1_Link_1_value <= Generic_Output_1_Link_1_on_set ) 
-			           Generic_Output_1_Condition_1 = 0;			   	
-			   }
-			          //todo - the bin points need to be sorted here!!! 
-               
-               Generic_Output_1 = Generic_Output_1_Condition_1;
-
-	            //link 2 switch condition
-			   if (Generic_Output_1_type >= 2){ //Switch with 2 links
-			      //link 1
-			      //on condition
-			      if (Generic_Output_1_Link_2_on == 0){
-			          // on below
-			          if (Generic_Output_1_Link_2_value <= Generic_Output_1_Link_2_on_set ) 
-			              Generic_Output_1_Condition_2 = 1;
-			          //off above
-			          else if(Generic_Output_1_Link_2_value >= Generic_Output_1_Link_2_on_set ) 
-			              Generic_Output_1_Condition_2 = 0; 
-			       
-			   	  }
-			            //todo - the bin points need to be sorted here!!!
-				  //on above
-			  	  else { 
-			      	if (Generic_Output_1_Link_2_value <= Generic_Output_1_Link_2_on_set )
-			      	    Generic_Output_1_Condition_2 = 1;
-			     	 // off below
-			     	 else if (Generic_Output_1_Link_2_value <= Generic_Output_1_Link_2_on_set ) 
-			           Generic_Output_1_Condition_2 = 0;			   	
-			  	  }
-			          //todo - the bin points need to be sorted here!!!
-			      if (Generic_Output_1_Link_2_logic == 0)    
-			         Generic_Output_1 = Generic_Output_1 + Generic_Output_1_Condition_2;
-			      else
-			         Generic_Output_1 = Generic_Output_1 * Generic_Output_1_Condition_2;
-
-
-	              //link 3 switch condition
-				  if (Generic_Output_1_type == 3){ //Switch with 3 links
-			  	     //link 1
-			  	     //on condition
-			  	     if (Generic_Output_1_Link_3_on == 0){
-			     	      // on below
-			    	    if (Generic_Output_1_Link_3_value <= Generic_Output_1_Link_3_on_set ) 
-			     	      Generic_Output_1_Condition_3 = 1;
-			     	    //off above
-			      	    else if(Generic_Output_1_Link_3_value >= Generic_Output_1_Link_3_on_set ) 
-			      	       Generic_Output_1_Condition_3 = 0; 
-			       
-			  	     }
-			            //todo - the bin points need to be sorted here!!!
-					//on above
-			      	 else { 
-			   	        if (Generic_Output_1_Link_3_value <= Generic_Output_1_Link_3_on_set )
-			               Generic_Output_1_Condition_3 = 1;
-			   	        // off below
-			    	    else if (Generic_Output_1_Link_3_value <= Generic_Output_1_Link_3_on_set ) 
-			               Generic_Output_1_Condition_3 = 0;			   	
-			   	     }
-			          //todo - the bin points need to be sorted here!!! 
-			         if (Generic_Output_1_Link_2_logic == 0)    
-			            Generic_Output_1 = Generic_Output_1 + Generic_Output_1_Condition_3;
-			         else
-			            Generic_Output_1 = Generic_Output_1 * Generic_Output_1_Condition_3;
-
-	                  //link 4 switch condition
-				     if (Generic_Output_1_type == 4){ //Switch with 4 links
-			  	        //link 1
-			  	        //on condition
-			  	        if (Generic_Output_1_Link_4_on == 0){
-			   	           // on below
-			   	           if (Generic_Output_1_Link_4_value <= Generic_Output_1_Link_4_on_set ) 
-			                  Generic_Output_1_Condition_4 = 1;
-			   	           //off above
-			    	       else if(Generic_Output_1_Link_4_value >= Generic_Output_1_Link_4_on_set ) 
-			                  Generic_Output_1_Condition_4 = 0; 
-			       
-			  	        }
-			            //todo - the bin points need to be sorted here!!!
-				        //on above
-			   	        else { 
-			    	       if (Generic_Output_1_Link_4_value <= Generic_Output_1_Link_4_on_set )
-			    	          Generic_Output_1_Condition_4 = 1;
-			    	       // off below
-			    	       else if (Generic_Output_1_Link_4_value <= Generic_Output_1_Link_4_on_set ) 
-			                  Generic_Output_1_Condition_4 = 0;			   	
-			  	        }
-			          //todo - the bin points need to be sorted here!!! 
-			            if (Generic_Output_1_Link_2_logic == 0)    
-			               Generic_Output_1 = Generic_Output_1 + Generic_Output_1_Condition_4;
-			            else
-			               Generic_Output_1 = Generic_Output_1 * Generic_Output_1_Condition_4;
+void Output_Task(void)
+{
 	
-			     	 }//link 4 switch condition
-		          }//link 3 switch condition
-		       }//link 2 switch condition
-		       if (Generic_Output_1 > 1)
-		           Generic_Output_1 = 1;
-		       Set_Pin(GENERIC_OUPUT_1, Generic_Output_1);
+   task_open();                // standard OS entry
+   task_wait(1);
 
-		       
-		    			
-			}//link 1 switch condition
-			*/
-/*	
-			//Fan switch
-			if( CLT >= Generic_Output_1_Link_1_on_set)
-		       Set_Pin(GENERIC_OUPUT_1, 1);
-			else if (CLT <= Generic_Output_1_Link_1_off_set)
-		 	   Set_Pin(GENERIC_OUPUT_1, 0);
-			
-			
-			//Water injectiojn switch
-			if( RPM >= Generic_Output_2_Link_1_on_set || Reference_VE >= Generic_Output_2_Link_2_on_set || IAT >= Generic_Output_2_Link_3_on_set)
-		       Set_Pin(GENERIC_OUPUT_2, 1);
-			else if ( RPM <= Generic_Output_2_Link_1_off_set && Reference_VE <= Generic_Output_2_Link_2_off_set && IAT <= Generic_Output_2_Link_3_off_set)
-		 	   Set_Pin(GENERIC_OUPUT_2, 0);			
-			
-*/	
-						
-//			}else if(Generic_Output_1_type == 5){ //PWM Fixed
-//			}else if(Generic_Output_1_type == 6){ //PWM Fixed Frequency w/dutycycle Table
-//			}else if(Generic_Output_1_type == 7){ //PWM Fixed DutyCycle w/frequency Table
-//			}else if(Generic_Output_1_type == 8){ //PWM Fixed Frequency w/dutycycle contol
-//			}else if(Generic_Output_1_type == 9){ //PWM Fixed DutyCycle w/frequeny contol
-			
-//			}else{ //off	Generic_Output_1_type == 0		
-//			
-//			}
-
-         // }//if output enabled
-   
-           task_wait(97);    
-        } // for
-
-    task_close();     
-
-} // Cam_Pulse_Task()
-
-void Generic_Output_2_Task(void)
-    {
-        task_open();                // standard OS entry
-        task_wait(1);
-
-        //static uint_fast8_t tooth;
-
-/*       
-        for (;;) {
-			if (Generic_Output_2_type == 0)	{ //off
-				
-			}else if(Generic_Output_2_type == 1){ //Switch w/1 link
-				
-			}else if(Generic_Output_2_type == 2){ //Switch w/2 links
-				
-			}else if(Generic_Output_2_type == 3){ //Switch w/3 links
-			}else if(Generic_Output_2_type == 4){ //Switch w/4 links
-			}else if(Generic_Output_2_type == 5){ //PWM FIxed
-			}else if(Generic_Output_2_type == 6){ //PWM Fixed Frequency w/dutycycle Table
-			}else if(Generic_Output_2_type == 7){ //PWM Fixed DutyCycle w/frequency Table
-			}else if(Generic_Output_2_type == 8){ //PWM Fixed Frequency w/dutycycle contol
-			}else if(Generic_Output_2_type == 9){ //PWM Fixed DutyCycle w/frequeny contol
-			
-			}
-
-
-   
-            
-        } // for
-*/
-    task_close();     
-
-} // Cam_Pulse_Task()
-/*
-void Generic_Output_3_Task(void)
-    {
-        task_open();                // standard OS entry
-        task_wait(1);
-
-        //static uint_fast8_t tooth;
+       //set all outputs to off
+       for (i = 0; i < Number_Outputs; ++i)       
+          
+          LINK1[i]=0;
+          LINK2[i]=0;
+          LINK3[i]=0;
+          LINK4[i]=0;
 
        
-        for (;;) {
-			if (Generic_Output_3_type == 0)	{ //off
-				
-			}else if(Generic_Output_3_type == 1){ //Switch w/1 link
-				
-			}else if(Generic_Output_3_type == 2){ //Switch w/2 links
-				
-			}else if(Generic_Output_3_type == 3){ //Switch w/3 links
-			}else if(Generic_Output_3_type == 4){ //Switch w/4 links
-			}else if(Generic_Output_3_type == 5){ //PWM FIxed
-			}else if(Generic_Output_3_type == 6){ //PWM Fixed Frequency w/dutycycle Table
-			}else if(Generic_Output_3_type == 7){ //PWM Fixed DutyCycle w/frequency Table
-			}else if(Generic_Output_3_type == 8){ //PWM Fixed Frequency w/dutycycle contol
-			}else if(Generic_Output_3_type == 9){ //PWM Fixed DutyCycle w/frequeny contol
-			
-			}
-
-
-   
-            
-        } // for
-
-    task_close();     
-
-} // Cam_Pulse_Task()
-
-void Generic_Output_4_Task(void)
-    {
-        task_open();                // standard OS entry
-        task_wait(1);
-
-        //static uint_fast8_t tooth;
-
+    for (;;) {
+    
+       //Update the values of the link option variables
+       Link_Variables[1] = RPM;
+       Link_Variables[2] = Reference_VE;
+       Link_Variables[3] = IAT;
+       Link_Variables[4] = CLT;
+       Link_Variables[5] = TPS;
+       Link_Variables[6] = MAP[0];
+       Link_Variables[7] = MAP[1];
+       Link_Variables[8] = MAF[0];
+       Link_Variables[9] = Lambda[0];
+       Link_Variables[10] = V_Batt;
+       Link_Variables[11] = V_P[0];
+       Link_Variables[12] = V_P[1];
+       Link_Variables[13] = V_P[2];
+       Link_Variables[14] = V_P[3]; 
        
-        for (;;) {
-			if (Generic_Output_4_type == 0)	{ //off
-				
-			}else if(Generic_Output_4_type == 1){ //Switch w/1 link
-				
-			}else if(Generic_Output_4_type == 2){ //Switch w/2 links
-				
-			}else if(Generic_Output_4_type == 3){ //Switch w/3 links
-			}else if(Generic_Output_4_type == 4){ //Switch w/4 links
-			}else if(Generic_Output_4_type == 5){ //PWM FIxed
-			}else if(Generic_Output_4_type == 6){ //PWM Fixed Frequency w/dutycycle Table
-			}else if(Generic_Output_4_type == 7){ //PWM Fixed DutyCycle w/frequency Table
-			}else if(Generic_Output_4_type == 8){ //PWM Fixed Frequency w/dutycycle contol
-			}else if(Generic_Output_4_type == 9){ //PWM Fixed DutyCycle w/frequeny contol
-			
-			}
+
+              
+       //evalluate all outputs
+       for (i = 0; i < Number_Outputs; ++i){
+       
 
 
-   
+
+
+          ///////////////////////////////////////////////////////////////////////////////////////////////////
+          //Function CONFIG_SWITCHED_OUTPUTS-switch Case
+          // In the First Section below, we establish what each link wants the OUTPUT pin to do.  In the
+          // Second Section, we check the logic of each link for each OUTPUT to account for OR or AND
+          // selections and set up the OUTPUT pin.
+          ////////////////////////////////////////////////////////////////////////////////////////////////
+          if (Config_Output_Array[i] == 3){
+          
+
+             //Initialize all of the interim variables, LINKx, to zero
+
             
-        } // for
+             
+			 //First Section-check each link against the user selected thresholds and save the result as the
+			 //interim variable "LINKx" 
 
-    task_close();     
+			 //Check if the first of four "Link_x" is selected
+			 //If the Link is selected (Output_Link_1_Array(i)==1) evaluate the Link.  If not,
+			 //proceed to the next Link_x
+			 
+             if (Output_Link_1_Array[i] > 0) { ////this is probobly not needed since 1 link is always used
 
-} // Cam_Pulse_Task()*/
+                //Get the value against whichthe threshold is evaluated
+                Ref = Link_Variables[Output_Link_1_Array[i]];
+  
+                //Check to see if the Output is ON above or below the selected "on_set" threshold value
+                //  Note: LINKx = 1  is ON, =0 is OFF 
+                //Output is ON above 'on_set' threshold,
+                if (Output_Link_1_on_Array[i] == 1) {
 
+                   if (Ref > Output_Link_1_on_set_Array[i]) {
+                      LINK1[i]= 1;
+
+                   //Check if Output (i) is OFF below "off_set" threshold
+                   } else if (Ref < Output_Link_1_off_set_Array[i]){
+                      LINK1[i]= 0;
+                   } //endif
+
+                   // Output is ON  below  "on_set" threshold value,
+     			} else {
+
+				   if (Ref < Output_Link_1_on_set_Array[i]) {
+                      LINK1[i]= 1;
+
+                   //Check if Output (i) is off below threshold
+                   } else if (Ref > Output_Link_1_off_set_Array[i]){
+                      LINK1[i]= 0;
+                   } //endif
+
+                }  //endif      
+
+             }  //endif
+                           
+             //Check if the second of four "Link_x" is selected
+			 //If the Link is selected (Output_Link_1_Array(i)==1) evaluate the Link.  If not,
+			 //proceed to the next Link_x
+             if (Output_Link_2_Array[i] > 0) {
+
+                //Get the value against whichthe threshold is evaluated
+                Ref = Link_Variables[Output_Link_2_Array[i]];
+
+                //Check to see if the Output is ON above or below the selected "on_set" threshold value
+                //  Note: LINKx = 1  is ON, =0 is OFF 
+                //Output is ON above 'on_set' threshold,
+                if (Output_Link_2_on_Array[i] == 1) {
+
+                   if (Ref > Output_Link_2_on_set_Array[i]) {
+                      LINK2[i]= 1;
+
+                   //Check if Output (i) is OFF below "off_set" threshold
+                   } else if (Ref< Output_Link_2_off_set_Array[i]){ 
+                       LINK2[i]= 0;
+                   } //endif
+
+                      // Output is ON  below  "on_set" threshold value,
+     			} else {
+
+				   if (Ref < Output_Link_2_on_set_Array[i]) {
+                      LINK2[i]= 1;
+
+                   //Check if Output (i) is off below threshold
+                   } else if (Ref > Output_Link_2_off_set_Array[i]){
+                      LINK2[i]= 0;
+                   } //endif
+
+                }  //endif
+
+             }  //endif
+                    
+             //Check if the 3rd of four "Link_x" is selected
+			 //If the Link is selected (Output_Link_1_Array(i)==1) evaluate the Link.  If not,
+			 //proceed to the next Link_x
+             if (Output_Link_3_Array[i] > 0) {
+
+                //Get the value against whichthe threshold is evaluated
+                Ref = Link_Variables[Output_Link_3_Array[i]];
+
+                //Check to see if the Output is ON above or below the selected "on_set" threshold value
+                //  Note: LINKx = 1  is ON, =0 is OFF 
+                //Output is ON above 'on_set' threshold,
+                if (Output_Link_3_on_Array[i] == 1) {
+
+                   if(Ref > Output_Link_3_on_set_Array[i]) {
+                      LINK3[i]= 1;
+
+                   //Check if Output (i) is OFF below "off_set" threshold
+                   } else if (Ref< Output_Link_3_off_set_Array[i]){
+                      LINK3[i]= 0;
+                   } //endif
+
+                // Output is ON  below  "on_set" threshold value,
+     			} else {
+
+				   if(Ref < Output_Link_3_on_set_Array[i]) {
+                      LINK3[i]= 1;
+
+                   //Check if Output (j) is off below threshold
+                   } else if (Ref > Output_Link_3_off_set_Array[i]){
+                      LINK3[i]= 0;
+                   } //endif
+
+                }  //endif
+
+             }  //endif
+                    
+             //Check if the 4th of four "Link_x" is selected					
+             //If the Link is selected (Output_Link_1_Array(i)==1) evaluate the Link.  If not,
+			 //proceed to the next Link_x
+             if (Output_Link_4_Array[i] > 0) {
+
+                //Get the value against whichthe threshold is evaluated
+                Ref = Link_Variables[Output_Link_4_Array[i]];
+
+                //Check to see if the Output is ON above or below the selected "on_set" threshold value
+                //  Note: LINKx = 1  is ON, =0 is OFF 
+                //Output is ON above 'on_set' threshold,
+                if (Output_Link_4_on_Array[i] > 0) {
+
+                   if (Ref > Output_Link_4_on_set_Array[i]) {
+                      LINK4[i]= 1;
+
+                   //Check if Output (j) is OFF below "off_set" threshold
+                   } else if (Ref< Output_Link_4_off_set_Array[i]){
+                      LINK4[i]= 0;
+                   } //endif
+
+                // Output is ON  below  "on_set" threshold value,
+     			} else {
+
+				   if (Ref < Output_Link_4_on_set_Array[i]) {
+                      LINK4[i]= 1;
+
+                   //Check if Output (j) is off below threshold
+                   } else if (Ref > Output_Link_4_off_set_Array[i]){
+                      LINK4[i]= 0;
+                   } //endif
+
+                }  //endif
+
+             }  //endif
+
+
+              //////////////////////////////////////////////////////////////////////////////////////////////////
+
+              //Second Section-check the logic selected and setup the OUTPUT pin.
+
+              //The OR selections are checked first and the result is returned as variable TURN_IT_ON
+              //If any Link_xselected (Output_Link_x_Array(i) == 1) and
+              // is OR'd (Output_Link_x_logic_Array (i)==0) and
+              //is ON (LINKx=1), turn the selected channel ON
+              
+              //First default to off
+              Turn_It_On = 0;              
+
+              if ((LINK1[i]==1) 
+                 || ((Output_Link_2_Array[i] > 0) &&(Output_Link_2_logic_Array[i]==0) && (LINK2[i]==1)) 
+                 || ((Output_Link_3_Array[i] > 0) && (Output_Link_3_logic_Array[i]==0) && (LINK3[i]==1)) 
+                 || ((Output_Link_4_Array[i] > 0) &&(Output_Link_4_logic_Array[i]==0) && (LINK4[i]==1))) {
+
+                 Turn_It_On = 1;  //OR logic says TURNITON--NOW
+
+              } //endif
+
+              //Now evaluate the AND logic selections
+              //Each Link_x is evaluated and andany one of the if AND'd Linksis OFF,
+              //then  the OUTPUT should be OFF.  
+              //If the Link_x is not selected (Output_Link_x_Array(i)==0) or
+              // is a logical OR (Output_Link_x_logic_Array (i)==0), that Link_x cannot effect the outcome
+              //of the AND process.
+
+              if ((LINK1[i]==1)
+                 && ((LINK2[i]==1) || (Output_Link_2_Array[i]==0) || (Output_Link_2_logic_Array[i]==0))
+                 && ((LINK3[i]==1) || (Output_Link_3_Array[i]==0) || (Output_Link_3_logic_Array[i]==0)) 
+                 && ((LINK4[i]==1) || (Output_Link_4_Array[i]==0) || (Output_Link_4_logic_Array[i]==0))) {
+
+                 Turn_It_On = 1;  //AND logic says TURN IT ON--NOW
+
+              } //endif
+
+              //Finally, after all of this logic, we can set the OUTUT Pin
+              //If both the OR and AND processes has not turned on the output, ensure that it is OFF
+
+              //TURN_IT_ON was set to zero on entering this sub function and before the OR and AND logic.
+
+              if (Turn_It_On ==0) {
+                 SIU.GPDO[116 + i].R = 0;
+              } else {
+                 SIU.GPDO[116 + i].R = 1;
+              }  //endif
+
+          }//if (Config_Output_Array == 3)
+
+       } //for (i = 0; i < Number_Outputs; ++i)  
+   
+             task_wait(97);    
+   } // for
+
+   task_close();     
+
+} // Output_Task()

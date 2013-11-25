@@ -67,18 +67,9 @@ void main( void )
         if (Sync_Mode_Select == 1){   // user option to generate a cam signal
            (void)task_create(Cam_Pulse_Task, 4 + 128, 0, 0, 0);      // create the task
         }
-        //if (Generic_Output_1_type != 0){  //optional user configured output
-        (void)task_create(Generic_Output_1_Task, 5 + 128, 0, 0, 0); // create the task	
-        //}
-        //if (Generic_Output_2_type != 0){  //optional user configured output
-       // (void)task_create(Generic_Output_2_Task, 6 + 128, 0, 0, 0); // create the task	
-       // }                
-        //if (Generic_Output_3_type != 0){  //optional user configured output
-        //(void)task_create(Generic_Output_3_Task, 7 + 128, 0, 0, 0); // create the task	
-        //}
-        //if (Generic_Output_4_type != 0){  //optional user configured output
-        //(void)task_create(Generic_Output_4_Task, 8 + 128, 0, 0, 0); // create the task	
-        //}       
+
+        (void)task_create(Output_Task, 5 + 128, 0, 0, 0); // create the task	
+      
         
         
     } 

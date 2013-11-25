@@ -94,7 +94,7 @@ void Get_Accel_Decel_Corr(void)
             /**********************************************************************************/
      //is Accel/decel enabled?  If no the correction is 0
     if (Enable_Accel_Decel == 0)
-       Accel_Decel_Corr = 0;
+       Accel_Decel_Corr = 1;
         // set the accel/deccel variables to current conditions
 	
     else{
