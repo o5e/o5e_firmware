@@ -52,7 +52,7 @@
 #endif
 
 
-void Get_Accel_Decel_Corr(void)
+float Get_Accel_Decel_Corr(void)
 {
 
 
@@ -94,7 +94,7 @@ void Get_Accel_Decel_Corr(void)
             /**********************************************************************************/
      //is Accel/decel enabled?  If no the correction is 0
     if (Enable_Accel_Decel == 0)
-       Accel_Decel_Corr = 1;
+       Accel_Decel_Corr = 0;
         // set the accel/deccel variables to current conditions
 	
     else{
@@ -160,10 +160,27 @@ void Get_Accel_Decel_Corr(void)
               Accel_Decel_Corr = TPS_Dot_Corr;
           Accel_Decel_Corr = 1.0f + (Accel_Decel_Corr * Inverse100);
     }            
-
+    return Accel_Decel_Corr;
 }// Get_Accel_Decel_Corr
-        
-void Get_Prime_Corr(void)    
+
+static float Get_Prime_Decay() {
+	// Update Prime decay each cycle - this is a log decay of the prime pulse
+	if (Post_Start_Cycles > Prime_Post_Start_Last) {
+		// reset cycle number
+		Prime_Post_Start_Last = Post_Start_Cycles;
+		// Get the decay rate for current conditions
+		Prime_Decay = table_lookup(RPM, 1, Prime_Decay_Table );
+
+		Prime_Decay = 1.0f + (Prime_Decay * Inverse100);
+		// decrease decay by the new value
+		Prime_Decay = Prime_Decay_Last * Prime_Decay;
+		// reset last
+		Prime_Decay_Last = Prime_Decay;
+	}
+	return Prime_Decay;
+}
+
+float Get_Prime_Corr(void)
 {
 	
                 // check if enrichment cals shold be done - this might want to be a % of redline
@@ -174,23 +191,10 @@ void Get_Prime_Corr(void)
             // check if in prime needed conditions   
             if (Post_Start_Cycles < Prime_Cycles_Threshold) {
 
-                Prime_Corr = table_lookup(CLT, 1, Prime_Corr_Table) * Inverse100;
+                float table_value = table_lookup(CLT, 1, Prime_Corr_Table) * Inverse100;
 
-                // Update Prime decay each cycle - this is a log decay of the prime pulse
-                if (Post_Start_Cycles > Prime_Post_Start_Last) {
-                    // reset cycle number
-                    Prime_Post_Start_Last = Post_Start_Cycles;
-                    // Get the decay rate for current conditions
-                    Prime_Decay = table_lookup(RPM, 1, Prime_Decay_Table);
-                    
-                   Prime_Decay = 1.0f + (Prime_Decay * Inverse100);
-                    // decrease decay by the new value
-                    Prime_Decay = Prime_Decay_Last * Prime_Decay;
-                    // reset last
-                    Prime_Decay_Last = Prime_Decay;
-                }
                 // apply the decay
-                Prime_Corr = 1+ (Prime_Corr * Prime_Decay);
+                Prime_Corr = 1+ (table_value * Get_Prime_Decay());
                
                 // Reduce the Prime correction by the decay rate and add to pulse_width            
             }
@@ -198,6 +202,7 @@ void Get_Prime_Corr(void)
         }
         else
            Prime_Corr = 1;
+        return Prime_Corr;
 }//Get_Prime_Corr
 
 #if __CWCC__

@@ -39,7 +39,7 @@
 
 
 uint32_t *fs_free_param;
-float Pulse_Width;
+
 uint32_t etpu_Pulse_Width;
 //uint32_t Injector_Flow;
 static void Check_Engine(void);
@@ -156,6 +156,12 @@ void Engine10_Task(void)
     }                           // for      
     task_close();
 }                               // Engine10_Task()
+
+static float Get_Dwell(float v_batt) {
+	float table_value = (table_lookup(v_batt, 1, Dwell_Table )) * Inverse100;
+	return Dwell_Set * (1 + table_value);
+}
+
 /***************************************************************************************/
 // All spark calcs go here
 
@@ -170,7 +176,6 @@ static void Set_Spark()
        
         // Looks up the desired spark advance in degrees before Top Dead Center (TDC)
         Spark_Advance = table_lookup(RPM, Reference_VE, Spark_Advance_Table);
-
         
         // TODO Knock_Retard(); Issue #7
         // TODO  Air Temp retard                
@@ -197,10 +202,7 @@ static void Set_Spark()
           //Update re-calculation angle in eTPU
         fs_etpu_spark_set_recalc_offset_angle(Spark_Channels[0], Spark_Recalc_Angle_eTPU); // global value despite the channel param
 
-        // Dwell
-           Dwell = (table_lookup(V_Batt, 1, Dwell_Table)) * Inverse100;  //
-           Dwell = Dwell_Set * (1+ Dwell);
-           
+        Dwell = Get_Dwell(V_Batt);
              //the engine position is not known, of over rev limit, shut off the spark
               if (Enable_Ignition == 0 //spark disabled
                  || fs_etpu_eng_pos_get_engine_position_status() != FS_ETPU_ENG_POS_FULL_SYNC //crank position unknow
@@ -232,12 +234,63 @@ static void Set_Spark()
 //#define Run_Threshold 250       // RPM below this then not running
 
 
+static float Get_Air_Temp_Fuel_Corr(void)
+{
+    if (Enable_Air_Temp_Corr == 1){
+       Air_Temp_Fuel_Corr = table_lookup(IAT, 1, IAT_Fuel_Corr_Table);
+       Air_Temp_Fuel_Corr = 1.0f + (Air_Temp_Fuel_Corr * Inverse100);
+       return Air_Temp_Fuel_Corr;
+    }
+    return 1;
+}
+
+static float Get_Dead_Time(float v_batt) {
+	// fuel dead time - extra pulse needed to open the injector
+	// take user value and adjust based on battery voltage
+	float table_value = table_lookup(v_batt, 1, Inj_Dead_Time_Table );
+	return Dead_Time_Set * (1 + (table_value * Inverse100));
+}
+
+static float Get_Fuel_Temp_Corr(float clt) {
+	// Coolant temp correction from enrichment_ops
+	if (Enable_Coolant_Temp_Corr == 1) {
+		float table_value = table_lookup(clt, 1, Fuel_Temp_Corr_Table );
+		Fuel_Temp_Corr = 1.0f + (table_value * Inverse100);
+		return Fuel_Temp_Corr;
+	}
+	return 1;
+}
+
+static float Get_Main_Fuel_Corr(float rpm, float reference_ve) {
+	// Main fuel table correction - this is used to adjust for RPM effects
+	float table_value = table_lookup(rpm, reference_ve, Inj_Time_Corr_Table);
+	return 1.0f + (table_value * Inverse100);
+}
+
+static float Get_Pulse_Width() {
+// calc fuel pulse width
+	//Set to a base value
+	float width = Base_Pulse_Width;
+
+	// apply various multiplier adjustments
+	// Reference_VE correction - assumes fuel required is roughly proportional to Reference_VE
+	width *= Reference_VE * Inverse100;
+
+	width *= Get_Main_Fuel_Corr(RPM, Reference_VE);
+	width *= Get_Fuel_Temp_Corr(CLT);
+    // Coolant temp correction from enrichment_ops
+	width *= Get_Air_Temp_Fuel_Corr();
+    // Prime/warmup correction
+	width *= Get_Prime_Corr();
+    // Acel/decel correction
+	width *= Get_Accel_Decel_Corr();
+	return width;
+}
 
 // Primary purpose is to set the fuel pulse width/injection time
 
 static void Set_Fuel(void)
 {
-    static float Corr;
     static uint32_t error_code;
     static float Dead_Time;
     static uint32_t Dead_Time_etpu;
@@ -247,62 +300,19 @@ static void Set_Fuel(void)
     // if the engine is not turning, the engine position is not known, or over reving, shut off the fuel channels
 
 
+    	float Pulse_Width = Get_Pulse_Width();
 
-
-        // calc fuel pulse width
-        //Set to a base value
-        Pulse_Width = Base_Pulse_Width;
-
-        // apply various multiplier adjustments
-
-
-        // Reference_VE correction - assumes fuel required is roughly proportional to Reference_VE
-        Pulse_Width = Pulse_Width * Reference_VE * Inverse100;
-
-
-        // Main fuel table correction - this is used to adjust for RPM effects
-        Corr = table_lookup(RPM, Reference_VE, Inj_Time_Corr_Table);        
-        Corr = 1.0f + (Corr * Inverse100);
-        Pulse_Width = Pulse_Width * Corr;
-
-        // Coolant temp correction from enrichment_ops
-        if (Enable_Coolant_Temp_Corr == 1){
-           Fuel_Temp_Corr = table_lookup(CLT, 1, Fuel_Temp_Corr_Table);
-           Fuel_Temp_Corr = 1.0f + (Fuel_Temp_Corr * Inverse100);
-           Pulse_Width = Pulse_Width * Fuel_Temp_Corr;
-        }
-
-                // Coolant temp correction from enrichment_ops
-        if (Enable_Air_Temp_Corr == 1){
-           Air_Temp_Fuel_Corr = table_lookup(IAT, 1, IAT_Fuel_Corr_Table);
-           Air_Temp_Fuel_Corr = 1.0f + (Air_Temp_Fuel_Corr * Inverse100);
-           Pulse_Width = Pulse_Width * Air_Temp_Fuel_Corr;
-        }
-                
-        // Prime/warmup correction
-        Get_Prime_Corr();
-        Pulse_Width = Pulse_Width * Prime_Corr;
-         
-        // Acel/decel correction
-        Get_Accel_Decel_Corr();
-        
-        Pulse_Width = Pulse_Width * Accel_Decel_Corr;
-
-                 
         // TODO adjust based on O2 sensor data Issue #8
         // Corr = O2_Fuel();
         // Pulse_Width = (Pulse_Width * Corr) >> 14;
         
         // Assume fuel pressure is constant
 
-        // fuel dead time - extra pulse needed to open the injector
-        // take user value and adjust based on battery voltage
-        Dead_Time = table_lookup(V_Batt, 1, Inj_Dead_Time_Table);
-        Dead_Time = Dead_Time_Set *  (1+ (Dead_Time * Inverse100));     
+        Dead_Time = Get_Dead_Time(V_Batt);
         Dead_Time_etpu = (uint32_t)(Dead_Time * 1000);//etpu wants usec
          
-         //this gives the tuner the current pulse width
-        Injection_Time = (Pulse_Width + Dead_Time);
+         //this give the tuner the current pulse width
+       Injection_Time = (Pulse_Width + Dead_Time);
         
         
         // TODO - add code for semi-seq fuel

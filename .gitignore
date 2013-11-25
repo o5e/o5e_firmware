@@ -9,3 +9,5 @@
 bin/*
 Open5xxxECU_Data/**/*.tdt
 o5e/src/backup/*
+.project
+.cproject
