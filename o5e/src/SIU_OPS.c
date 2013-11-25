@@ -14,6 +14,7 @@
 #include "config.h"
 #include "mpc563xm.h"
 #include "SIU_OPS.h"
+#include "variables.h"
 
 // PCR - Pad Configuration Register 
 // OBE - Output Buffer Enable 
@@ -52,6 +53,7 @@
 #define CONFIG_INJ PRIMARY
 #define CONFIG_IGN PRIMARY
 
+
 /******************************************************************************************/
 /* FUNCTION     : initSIU                                                                 */
 /* PURPOSE      :   Setup MPC5554 Pads for inputs and Outputs                             */
@@ -77,7 +79,7 @@ void init_SIU(void)
         SIU.PCR[116].R = B0001 | OUTPUT; 	// eTPU[2]  ignition 1
         SIU.PCR[117].R = B0001 | OUTPUT; 	// eTPU[3] ignition 2
         SIU.PCR[118].R = B0001 | OUTPUT; 	// eTPU[4] ignition 3
-        SIU.PCR[119].R = GPIO  | OUTPUT; 	// eTPU[5] ignition 4
+        SIU.PCR[119].R = B0001 | OUTPUT; 	// eTPU[5] ignition 4
         SIU.PCR[120].R = B0001 | OUTPUT; 	// eTPU[6] injector 1
         SIU.PCR[121].R = B0001 | OUTPUT; 	// eTPU[7] injector 2
         SIU.PCR[122].R = B0001 | OUTPUT; 	// eTPU[8] injector 3
@@ -86,24 +88,25 @@ void init_SIU(void)
         SIU.PCR[125].R = B0001 | OUTPUT; 	// eTPU[11] injector 6  - injector 12
         SIU.PCR[126].R = B0001 | OUTPUT; 	// eTPU[12] injector 7
         SIU.PCR[127].R = B0001 | OUTPUT; 	// eTPU[13] injector 8   - injector 11
-        SIU.PCR[128].R = B0001 | INPUT; 	// eTPU[14] Tach 
-        SIU.PCR[129].R = GPIO  | INPUT; 	// eTPU[15] fuel pump
-        SIU.PCR[130].R = B0001 | INPUT;     // eTPU[16] wheelspeed FL
-        SIU.PCR[131].R = B0001 | INPUT;     // eTPU[17] wheelspeed FR
-        SIU.PCR[132].R = B0001 | INPUT;    // eTPU[18] wheelspeed RL 
-        SIU.PCR[133].R = B0001 | INPUT;    // eTPU[19] wheelspeed RR
-        SIU.PCR[134].R = B0001 | INPUT;    // eTPU[20] pin available
-        SIU.PCR[135].R = GPIO  | OUTPUT; 	// eTPU[21] Fan Control
-        SIU.PCR[136].R = GPIO  | OUTPUT; 	// eTPU[22] Water injection
-        SIU.PCR[137].R = GPIO  | OUTPUT; 	// eTPU[23] fake cam signal
-        SIU.PCR[138].R = B0001 | OUTPUT; 	// eTPU[24] 
-        SIU.PCR[139].R = B0001 | OUTPUT; 	// eTPU[25]  
-        SIU.PCR[140].R = GPIO  | UNUSED; 	// eTPU[26] pin available, eTPU26 used for MAP window internal
-        SIU.PCR[141].R = B0001 | OUTPUT; 	// eTPU[27] Stepper PWM signal  Fuel Pump & etpu channel
-        SIU.PCR[142].R = GPIO  | UNUSED; 	// eTPU[28] pin available, & Knock window internal
-        SIU.PCR[143].R = B0001 | OUTPUT; 	// eTPU[29] PWM_Pad &  
+        SIU.PCR[128].R = B0001 | OUTPUT; 	// eTPU[14]  
+        SIU.PCR[129].R = B0001 | OUTPUT; 	// eTPU[15] 
+        SIU.PCR[130].R = B0001 | OUTPUT;    // eTPU[16] 
+        SIU.PCR[131].R = B0001 | OUTPUT;    // eTPU[17] 
+        SIU.PCR[132].R = B0001 | UNUSED;    // eTPU[18]  
+        SIU.PCR[133].R = B0001 | UNUSED;    // eTPU[19] 
+        SIU.PCR[134].R = B0001 | UNUSED;    // eTPU[20] 
+        SIU.PCR[135].R = B0001 | UNUSED; 	// eTPU[21] 
+        SIU.PCR[136].R = GPIO  | UNUSED; 	// eTPU[22] 
+        SIU.PCR[137].R = B0001 | OUTPUT; 	// eTPU[23] fake cam signal
+        SIU.PCR[138].R = B0001 | UNUSED; 	// eTPU[24] 
+        SIU.PCR[139].R = B0001 | UNUSED; 	// eTPU[25]  
+        SIU.PCR[140].R = B0001 | UNUSED; 	// eTPU[26] pin available, eTPU26 used for MAP window internal
+        SIU.PCR[141].R = B0001 | UNUSED; 	// eTPU[27] Stepper PWM signal  Fuel Pump & etpu channel
+        SIU.PCR[142].R = B0001 | UNUSED; 	// eTPU[28] pin available, & Knock window internal
+        SIU.PCR[143].R = B0001 | UNUSED; 	// eTPU[29] PWM_Pad &  
         SIU.PCR[144].R = B0011 | OUTPUT;    // eTPU[30] toothgen simulator, eTPU30 hardwired to eTPU1 
         SIU.PCR[145].R = B0011 | OUTPUT;    // eTPU[31] toothgen simulator, eTPU31 hardwired to eTPU0
+        
 
         //EMIOS primary
         SIU.PCR[179].R = B0001 | OUTPUT; 	// eMIOS 0 DBW1
@@ -163,6 +166,8 @@ Spark   eTPU2 eTPU3 eTPU4 eTPU5
 Crank   eTPU0
 Cam     eTPU1
 */
+
+
 
 
 

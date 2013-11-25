@@ -35,6 +35,7 @@
 #define PWM1_HZ      50     // recommend 50 for servos, 200 or 300 for IAC
 
 //Outptional outputs
+#define Number_Outputs 15
 #define GENERIC_OUPUT_1 135 //assign pad #
 #define GENERIC_OUPUT_2 136 //assign pad #
 //#define GENERIC_OUPUT_3 217 //assign pad #

@@ -26,17 +26,17 @@
 #include "Optional_Output_Ops.h"
 #include "Table_Lookup.h"
 
-#define Number_Outputs 15
+
 
 
 U08 Turn_It_On;
 U08 i;
-U08 LINK1[16];
-U08 LINK2[16];
-U08 LINK3[16];
-U08 LINK4[16];
+U08 LINK1[Number_Outputs];
+U08 LINK2[Number_Outputs];
+U08 LINK3[Number_Outputs];
+U08 LINK4[Number_Outputs];
 float Ref;
-float Link_Variables[16];
+float Link_Variables[Number_Outputs];
 
 
 void Output_Task(void)
@@ -46,14 +46,18 @@ void Output_Task(void)
    task_wait(1);
 
        //set all outputs to off
-       for (i = 0; i < Number_Outputs; ++i){
+       for (i = 0; i < (Number_Outputs-1); ++i){
           LINK1[i]=0;
           LINK2[i]=0;
           LINK3[i]=0;
-          LINK4[i]=0;       	
+          LINK4[i]=0;  
+          
+        //set up the optional GPIO pins
+        //GPIO = (0 << 10)
+        //OUTPUT = (1 << 9)            
+         SIU.PCR[(116 + i)].R = (0 << 10) | (1 << 9);               	
        }
           
-
 
        
     for (;;) {
@@ -77,7 +81,7 @@ void Output_Task(void)
 
               
        //evalluate all outputs
-       for (i = 0; i < Number_Outputs; ++i){
+       for (i = 0; i < (Number_Outputs-1); ++i){
        
 
 
