@@ -9,6 +9,7 @@
 
 **********************************************************************************/
 // Portions Copyright 2011, 2013 M. Eberhardt - BSD 3 clause  License
+// Portions Copyright 2013 P. Schlein - BSD 3 clause  License
 
 
 #include <stdint.h>
@@ -45,12 +46,14 @@ void Output_Task(void)
    task_wait(1);
 
        //set all outputs to off
-       for (i = 0; i < Number_Outputs; ++i)       
-          
+       for (i = 0; i < Number_Outputs; ++i){
           LINK1[i]=0;
           LINK2[i]=0;
           LINK3[i]=0;
-          LINK4[i]=0;
+          LINK4[i]=0;       	
+       }
+          
+
 
        
     for (;;) {
