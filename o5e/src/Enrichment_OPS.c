@@ -94,7 +94,7 @@ float Get_Accel_Decel_Corr(void)
             /**********************************************************************************/
      //is Accel/decel enabled?  If no the correction is 0
     if (Enable_Accel_Decel == 0)
-       Accel_Decel_Corr = 0;
+       Accel_Decel_Corr = 1;
         // set the accel/deccel variables to current conditions
 	
     else{
@@ -112,7 +112,7 @@ float Get_Accel_Decel_Corr(void)
             Degree_Clock_Last = Degree_Clock;
 		  }//if
             //get a TPS change         
-          TPS_Dot_Temp = (TPS_Last - TPS);
+          TPS_Dot_Temp = (TPS - TPS_Last);
           //smooth by 4
           TPS_Last = (3 * TPS_Last + TPS) / 4.0f;
             //get           

@@ -234,10 +234,10 @@ static void Set_Spark()
 //#define Run_Threshold 250       // RPM below this then not running
 
 
-static float Get_Air_Temp_Fuel_Corr(void)
+static float Get_Air_Temp_Fuel_Corr(float iat)
 {
     if (Enable_Air_Temp_Corr == 1){
-       Air_Temp_Fuel_Corr = table_lookup(IAT, 1, IAT_Fuel_Corr_Table);
+       Air_Temp_Fuel_Corr = table_lookup(iat, 1, IAT_Fuel_Corr_Table);
        Air_Temp_Fuel_Corr = 1.0f + (Air_Temp_Fuel_Corr * Inverse100);
        return Air_Temp_Fuel_Corr;
     }
@@ -270,20 +270,20 @@ static float Get_Main_Fuel_Corr(float rpm, float reference_ve) {
 static float Get_Pulse_Width() {
 // calc fuel pulse width
 	//Set to a base value
-	float width = Base_Pulse_Width;
+	float width = Base_Pulse_Width;	
 
 	// apply various multiplier adjustments
 	// Reference_VE correction - assumes fuel required is roughly proportional to Reference_VE
-	width *= Reference_VE * Inverse100;
-
+	width *= Reference_VE * Inverse100;	
 	width *= Get_Main_Fuel_Corr(RPM, Reference_VE);
+	// Coolant temp correction from enrichment_ops
 	width *= Get_Fuel_Temp_Corr(CLT);
-    // Coolant temp correction from enrichment_ops
-	width *= Get_Air_Temp_Fuel_Corr();
+	width *= Get_Air_Temp_Fuel_Corr(IAT);	
     // Prime/warmup correction
-	width *= Get_Prime_Corr();
+	width *= Get_Prime_Corr();	
     // Acel/decel correction
 	width *= Get_Accel_Decel_Corr();
+Injection_Time = width;	
 	return width;
 }
 
@@ -312,7 +312,7 @@ static void Set_Fuel(void)
         Dead_Time_etpu = (uint32_t)(Dead_Time * 1000);//etpu wants usec
          
          //this give the tuner the current pulse width
-       Injection_Time = (Pulse_Width + Dead_Time);
+//       Injection_Time = (Pulse_Width + Dead_Time);
         
         
         // TODO - add code for semi-seq fuel

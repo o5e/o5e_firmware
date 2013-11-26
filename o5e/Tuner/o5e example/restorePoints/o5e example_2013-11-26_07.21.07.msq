@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <msq xmlns="http://www.msefi.com/:msq">
-<bibliography author="TunerStudio MS 2.5.00 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;" writeDate="Mon Nov 25 13:07:04 EST 2013"/>
+<bibliography author="TunerStudio MS 2.5.00 - EFI Analytics, Inc." tuneComment="&lt;html&gt;Restore Point: Project close - &lt;br&gt;" writeDate="Tue Nov 26 07:21:07 EST 2013"/>
 <versionInfo fileFormat="4.0" firmwareInfo="O5e1.0.0" nPages="15" signature="MShift 2.111       "/>
 <page>
 <pcVariable name="tsCanId">"0"</pcVariable>
@@ -274,7 +274,7 @@
 <constant name="Test_Value">"Sensor Value"</constant>
 <constant name="Test_Value_zero">"0"</constant>
 <constant digits="0" name="Test_RPM" units="rpm">0.0</constant>
-<constant digits="3" name="Test_TPS" units="%">30.0</constant>
+<constant digits="3" name="Test_TPS" units="%">50.0</constant>
 <constant digits="2" name="Test_Lambda_1" units="lambda">0.0</constant>
 <constant digits="2" name="Test_Lambda_2" units="lambda">0.0</constant>
 <constant digits="1" name="Test_MAP_1" units="kPa">20.0</constant>
@@ -299,7 +299,7 @@
 <constant digits="0" name="RPM_Change_Rate_2">-1.0</constant>
 <constant digits="0" name="RPM_Change_Rate_3">-1.0</constant>
 <constant digits="0" name="RPM_Change_Rate_4">-1.0</constant>
-<constant digits="0" name="Test_RPM_1" units="rpm">1500.0</constant>
+<constant digits="0" name="Test_RPM_1" units="rpm">1000.0</constant>
 <constant digits="0" name="Test_RPM_2" units="rpm">0.0</constant>
 <constant digits="0" name="Test_RPM_3" units="rpm">0.0</constant>
 <constant digits="0" name="Test_RPM_4" units="rpm">0.0</constant>
@@ -369,7 +369,7 @@
          100.0 
          120.0 
          150.0 
-         0.0 
+         200.0 
       </constant>
 <constant cols="1" digits="1" name="IAT_Fuel_Corr_Cal" rows="16" units="%">
          0.0 
@@ -508,7 +508,7 @@
 <constant digits="0" name="Fuel_Pump_Prime_Time" units="sec">-0.001</constant>
 </page>
 <page number="2" size="1756">
-<constant name="Enable_Accel_Decel">"off"</constant>
+<constant name="Enable_Accel_Decel">"On"</constant>
 <constant digits="0" name="Accel_Limit_Rows">8.0</constant>
 <constant digits="0" name="Accel_Limit_Cols">1.0</constant>
 <constant cols="1" digits="0" name="Accel_Limit_x_Bins" rows="8" units="rpm">
@@ -1600,7 +1600,7 @@
 <constant name="Output_Link_1_3_Zero">"0"</constant>
 <constant name="Output_Link_2_1">"Not Used"</constant>
 <constant name="Output_Link_2_1_Zero">"0"</constant>
-<constant name="Output_Link_2_3">"TPS"</constant>
+<constant name="Output_Link_2_3">"Not Used"</constant>
 <constant name="Output_Link_2_3_Zero">"0"</constant>
 <constant name="Output_Link_3_1">"Not Used"</constant>
 <constant name="Output_Link_3_1_Zero">"0"</constant>
@@ -1912,8 +1912,8 @@
       </constant>
 </page>
 <page number="13" size="1548">
-<constant digits="0" name="Output_PWM_2_Rows">8.0</constant>
-<constant digits="0" name="Output_PWM_2_Cols">1.0</constant>
+<constant digits="0" name="Output_PWM_2_Rows">0.0</constant>
+<constant digits="0" name="Output_PWM_2_Cols">0.0</constant>
 <constant cols="1" digits="1" name="Output_PWM_2_x_Bins" rows="8">
          0.0 
          0.0 
