@@ -282,8 +282,7 @@ static float Get_Pulse_Width() {
     // Prime/warmup correction
 	width *= Get_Prime_Corr();	
     // Acel/decel correction
-	width *= Get_Accel_Decel_Corr();
-Injection_Time = width;	
+	width *= Get_Accel_Decel_Corr();	
 	return width;
 }
 
@@ -312,8 +311,8 @@ static void Set_Fuel(void)
         Dead_Time_etpu = (uint32_t)(Dead_Time * 1000);//etpu wants usec
          
          //this give the tuner the current pulse width
-//       Injection_Time = (Pulse_Width + Dead_Time);
-        
+        Injection_Time = (Pulse_Width + Dead_Time);
+         
         
         // TODO - add code for semi-seq fuel
        
