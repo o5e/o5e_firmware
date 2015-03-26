@@ -35,7 +35,7 @@
 
 // subroutines related to this file
 void init_variables(void);
-void Set_Page_Locations(uint8_t block);
+void Set_Page_Locations(uint32_t block);
 
 //************************************************************************************
 
@@ -361,24 +361,22 @@ extern struct Outputs Output_Channels;
 // A page is 2048 bytes, a block is 128K.  
 // Only one block is in use at a time. This allows a flip/flop use/erase & burn strategy
 
-#define MAX_PAGE_SIZE 2048    /**< self imposed. tuner has no say in this */
+#define MAX_PAGE_SIZE 2048                   /**< self imposed. tuner has no say in this */
 
-// Current flash or ram location of each page
-extern volatile uint8_t *Page_Ptr[NPAGES];
-extern int8_t Ram_Page_Buffer_Page;	// which page # is in the buffer (-1 means none)
-extern int Flash_OK;		// is flash empty or has values
-extern uint8_t Burn_Count;		// how many flash burns 
+extern volatile uint8_t *Page_Ptr[NPAGES];   // Current flash or ram location of each page
+extern int8_t Ram_Page_Buffer_Page;	         // which page # is in the buffer (-1 means none)
+extern int Flash_OK;                         // is flash empty or has values
+extern uint8_t Burn_Count;		             // how many flash burns 
 
 // This 8 byte (not counting directory) structure is written as a header to the beginning of a used flash block
 struct Flash_Header {
-    uint8_t Cookie[4];          // set to ABCD to indicate block is not blank
-    uint8_t Burn_Count;        	// how many flash burns, used to pick 'newest' on powerup
+    uint8_t Cookie[4];                   // set to SIGNATURE to indicate block is not blank
+    uint8_t Burn_Count;        	         // how many flash burns, used to pick 'newest' on powerup
 } ;
 
 #define BLOCK_HEADER_SIZE       1024U    // bigger than needed
 
-extern uint8_t Flash_Block;		// flash block currently being used
-extern uint8_t *Flash_Addr[2];
+extern uint8_t Flash_Block;		         // flash block currently being used
 
 // ------------------
 

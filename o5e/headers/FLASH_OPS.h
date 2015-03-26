@@ -19,15 +19,34 @@ extern "C"
 
 /* missing guard, so I added it until I can figure out what's going on here */
 
-#define BLK1B_BASE 0x00008000
-#define BLK2A_BASE 0x00010000
+/* Block names like user manual to index into attributes array below */
+#define BLOCK0      0
+#define BLOCK1A     1
+#define BLOCK1B     2
+#define BLOCK2A     3
+#define BLOCK2B     4
+#define BLOCK3      5
+#define BLOCK4      6
+#define BLOCK5      7
+#define BLOCK6      8
+#define BLOCK7      9
+#define BLOCK8     10
 
-/*This function Initializes, Erases and Programs the MPC5xxx FLASH Memory */
 
-void *Flash_Program(uint8_t block, long long *source, uint32_t destination);
-void Flash_Erase(uint8_t block);
+struct flash_attr {
+	uint16_t bitno_mlr;
+	uint32_t size;
+	uint8_t  *addr;
+};
+
+extern struct flash_attr flash_attr[];
+
+/*These functions Initialize, Erase and Program the MPC5xxx FLASH Memory */
+
+void flash_program(uint32_t block, long long *source, uint32_t destination);
+void flash_erase( uint32_t block );
 int32_t Flash_Ready(void);
-void Flash_Finish(uint8_t block);
+void Flash_Finish();
 
 #ifdef __cplusplus
 }

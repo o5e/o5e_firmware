@@ -115,7 +115,7 @@ asm void
   stw     r4, 0(r3)
   wrteei  1
 
-  li      r3, LED0
+/*  li      r3, LED0         temp remoe, mcb
   bl      led_invert        /**< toggle led for fun                       */
 
   xor     r3, r3, r3        /**< 'master' clock tick:                     */

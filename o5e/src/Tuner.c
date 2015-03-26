@@ -23,9 +23,10 @@
 #include "FLASH_OPS.h"
 #include "variables.h"
 #include "Tuner.h"
+#include "led.h"
 
-#define PAYLOAD_OFFSET 2        // accounts for packet with crc and size
-#define PAGE_OFFSET 1           // page #s start with 1
+#define PAYLOAD_OFFSET 2                // accounts for packet with crc and size
+#define PAGE_OFFSET 1                   // page #s start with 1
 
 #define write_serial_busy()  (EDMA.TCD[18].DONE != 1)     // a macro for speed reasons
 
@@ -95,7 +96,7 @@ static uint32_t Crc32_ComputeBuf(uint32_t inCrc32, const void *buf, uint32_t buf
 static uint16_t write_tuner(const uint8_t *bytes, const uint16_t count);
 static int16_t check_crc(uint8_t * packet);
 static int32_t make_packet(uint8_t code, const void *buf, uint16_t size);
-static uint8_t Page_Is_Blank(uint8_t *ptr);
+static uint32_t block_is_dirty(uint32_t block);
 
 /**
  * @name   Tuner_Task
@@ -128,15 +129,16 @@ void Tuner_Task(void)
         while (write_serial_busy())
             task_wait(111);
 
-        for (;;) {              // loop until we get a packet (delimited by no activity)
+                                         // mcb??? some issues here
+        for (;;) {                       // loop until we get a packet (delimited by no activity)
             i = read_serial(tmp_buf + count, (uint16_t)(sizeof(tmp_buf) - count));  // get block of bytes from serial port
 
             if (i == 0 && count > 0)    // we received nothing in the last n msec - process the packet
                 break;
 
-            count += i;         // keep receiving
+            count += i;                 // keep receiving
             task_wait(99);
-        }                       // for
+        }
 
         // process received packet
         // don't use switch because we use the OS
@@ -150,20 +152,18 @@ void Tuner_Task(void)
             continue;
         }
 
-        if (tmp_buf[0] == 'T' && count == 1) {        //  reboot cpu
-            __start();  /**< this is NOT a reboot, this is a restart */
+        if (tmp_buf[0] == 'T' && count == 1) {        //  restart ECU code
+            __start();
             continue;
         }
 
         if (tmp_buf[0] == 'F' && count == 1) {        // protocol interrogation
             write_tuner((const void *)PROTOCOL, sizeof(PROTOCOL));
-
             continue;
         }
 
         if (tmp_buf[0] == 'Q' && count == 1) {        // signature
             write_tuner((const void *)SIGNATURE, sizeof(SIGNATURE));
-
             continue;
         }
 
@@ -192,6 +192,7 @@ void Tuner_Task(void)
             continue;
         }
 
+
         if (tmp_buf[2] == 'S') {                        // receive authorization
             if ((count = check_crc(tmp_buf)) == -1) {   // check crc on packet
                 err_push( CODE_OLDJUNK_F8 );
@@ -203,40 +204,38 @@ void Tuner_Task(void)
           continue;
         }
 
-        // burn command
-        if (tmp_buf[2] == 'b') {                        // burn
+
+        if (tmp_buf[2] == 'b') {                        // burn command
+            static uint32_t new_flash_block;
+            
+			new_flash_block = Flash_Block == BLOCK4 ? BLOCK5 : BLOCK4;
+       
             if ((count = check_crc(tmp_buf)) == -1) {   // check crc on packet
                 err_push( CODE_OLDJUNK_F7 );
                 continue;
             }
-
             if (count != 3)  {   // sanity check
                 err_push( CODE_OLDJUNK_F6 );
                 continue;
-            }
+            }         
 
             // ignore the page # and burn everything to the other block
             // select unused flash block (ping pongs 0 or 1)
-            static uint8_t new_flash_block;
-            new_flash_block = Flash_Block ^ 1;       // toggle to one not in use
 
-            // erase new flash block
-            if (!Page_Is_Blank(Flash_Addr[new_flash_block])) {  // if not already erased
-              asm("wrteei 0");
-               Flash_Erase(new_flash_block);
-               while (!Flash_Ready()) { };
-               Flash_Finish(new_flash_block);
-              asm("wrteei 1");
+            if ( block_is_dirty( new_flash_block ) ) {
+               asm("wrteei 0");                                      // erase new flash block
+               flash_erase( new_flash_block );
+               while ( !Flash_Ready() ) ;
+               Flash_Finish( new_flash_block );
+               asm("wrteei 1");
             }
-
-            // check erase
-            if (!Page_Is_Blank(Flash_Addr[new_flash_block])) {
+            if ( block_is_dirty( new_flash_block ) ) {               // check erasure
                 err_push( CODE_OLDJUNK_F4 );
                 make_packet(sequence_failure_1, "", 0);
                 continue;
             }
 
-            static uint32_t flash_index;                // index into block, not a pointer
+            static uint32_t flash_index;                           // index into block, not a pointer
             static uint8_t *ptr;
 
             // write & burn each page to new flash, 8 bytes at a time.
@@ -247,19 +246,20 @@ void Tuner_Task(void)
 
                 // write and program 8 bytes at a time
                 for (count = 0; count < pageSize[i]; count += 8) {
-                    static uint64_t tmp;               // 8 bytes, properly aligned in ram
+                    static uint64_t tmp;                      // 8 bytes, properly aligned in ram
                     tmp = *(uint64_t *)ptr;
 
                     asm("wrteei 0");
-                    Flash_Program(new_flash_block, &tmp, flash_index);  // setup + copy
-                    while (!Flash_Ready()) { };                         // wait till ready
-                    Flash_Finish(new_flash_block);                      // terminate
+                    flash_program(new_flash_block, &tmp, flash_index);
+                    while (!Flash_Ready()) { };
+                    Flash_Finish(new_flash_block);
                     asm("wrteei 1");
 
                     // check it by reading it back
-                    if (tmp != *(uint64_t *)(Flash_Addr[new_flash_block] + flash_index)) {
+                    if ( tmp != *(uint64_t *)(flash_attr[new_flash_block].addr + flash_index) ) {
                         err_push( CODE_OLDJUNK_F3 );
                         i = 9999;  // abort out loop
+led_set(0xf);
                         break;
                     }
 
@@ -272,7 +272,7 @@ void Tuner_Task(void)
                 // check again - compare full page
                 flash_index = BLOCK_HEADER_SIZE + (uint32_t) (i * MAX_PAGE_SIZE);    // skip over header
                 ptr = (uint8_t *)(Page_Ptr[i]);         // current values, usually in old flash, could be ram
-                if (memcmp(ptr,Flash_Addr[new_flash_block] + flash_index,pageSize[i])) {
+                if (memcmp(ptr, flash_attr[new_flash_block].addr + flash_index, pageSize[i])) {
                    err_push( CODE_OLDJUNK_F2 );
                 }
 
@@ -288,34 +288,30 @@ void Tuner_Task(void)
                 header.Burn_Count = ++Burn_Count;
                 // burn first portion of header
                 asm("wrteei 0");
-                Flash_Program(new_flash_block, (uint64_t *)&header, 0);
+                flash_program( new_flash_block, (uint64_t *)&header, 0 );
                 while (!Flash_Ready()) { };                // wait till burn is done
-                Flash_Finish(new_flash_block);
+                Flash_Finish( new_flash_block );
                 asm("wrteei 1");
                 // check for success
-                if (*Flash_Addr[new_flash_block] != 'A') {
+                if (*flash_attr[new_flash_block].addr != 'A') {
                     err_push( CODE_OLDJUNK_F1 );
                     make_packet(sequence_failure_2, "", 0);
                     continue;
                 }
             }
 
-            // update all Page_Ptrs to point to new, freshly written flash
-            Set_Page_Locations(new_flash_block);                // update pointers to new flash
+            Set_Page_Locations(new_flash_block);                    // update pointers to new flash
 
-            // erase old block
-            new_flash_block ^= 1;               // the new new one
+led_set( (uint32_t) new_flash_block<<1 );
             asm("wrteei 0");
-            Flash_Erase(new_flash_block);
+            flash_erase( Flash_Block );
             while (!Flash_Ready()) { };
-            Flash_Finish(new_flash_block);
+            Flash_Finish( Flash_Block );
             asm("wrteei 1");
 
-            // we are now running with all variables in the new flash
+            Flash_Block = (uint8_t)new_flash_block;
             make_packet(burn_ok, "", 0);
-
-            // make sure response gets out
-            while (write_serial_busy()) {};
+            while (write_serial_busy()) {};            // make sure response gets out
             continue;
         }
 
@@ -345,20 +341,19 @@ void Tuner_Task(void)
                 continue;
             }
 */
-            // find page #
+
             page = *(uint16_t *) (tmp_buf + PAYLOAD_OFFSET + 1) - PAGE_OFFSET;
             if (page >= NPAGES)
                 continue;
-            // find offset
             offset = *(uint16_t *) (tmp_buf + PAYLOAD_OFFSET + 3);
-            // find length
             length = *(uint16_t *) (tmp_buf + PAYLOAD_OFFSET + 5);
 
             make_packet(OK, (void *)(Page_Ptr[page] + offset), length);
             continue;
         }
 
-        // write page to flash
+
+        // move flash page to SRAM and write data to it
         if (tmp_buf[2] == 'w') {
             // Example: SENT, 15 bytes
             // x00 x09 x77 x00 x05 x00 x00 x00 x02 x00 x18 x30 x1B xD9 x2D
@@ -369,23 +364,18 @@ void Tuner_Task(void)
                 err_push( CODE_OLDJUNK_EE );
                 continue;
             }
-
             if (count < 7 || count > MAX_PAGE_SIZE) {     // sanity check
                 err_push( CODE_OLDJUNK_ED );
                 continue;
             }
 
-            // find page #
+
             page = *(uint16_t *) (tmp_buf + PAYLOAD_OFFSET + 1) - PAGE_OFFSET;
             if (page >= NPAGES) {
                 err_push( CODE_OLDJUNK_EC );
                 continue;
             }
-
-            // find offset
             offset = *(uint16_t *) (tmp_buf + PAYLOAD_OFFSET + 3);
-
-            // find length
             length = *(uint16_t *) (tmp_buf + PAYLOAD_OFFSET + 5);
 
             if (offset + length > MAX_PAGE_SIZE) {
@@ -393,19 +383,16 @@ void Tuner_Task(void)
                 continue;       // too big
             }
 
-            if (Ram_Page_Buffer_Page != -1 && Ram_Page_Buffer_Page != page)  {    // some other page is using the ram buffer
+            if (Ram_Page_Buffer_Page != -1 && Ram_Page_Buffer_Page != page)  {          // ram buffer busy
                 err_push( CODE_OLDJUNK_EA );
                 continue;
             }
 
             // if first write to this page, copy previous data from flash to ram
             if (Page_Ptr[page] != Ram_Page_Buffer) {
-                // copy
                 memcpy(Ram_Page_Buffer, (void *)(Page_Ptr[page]), MAX_PAGE_SIZE);
-
-                // move ptr from flash to ram - puts new data into use
-                Page_Ptr[page] = Ram_Page_Buffer;
-                Ram_Page_Buffer_Page = (int8_t)page;    // mark as in use
+                Page_Ptr[page] = Ram_Page_Buffer;                    // update page pointer
+                Ram_Page_Buffer_Page = (int8_t)page;                 // mark as in use
             }
 
             // copy new data from tuner to ram page buffer
@@ -415,6 +402,7 @@ void Tuner_Task(void)
             make_packet(OK, "", 0);
             continue;
         }
+
 
         // send crc32 of flash page
         if (tmp_buf[2] == 'k') {
@@ -480,6 +468,8 @@ void Tuner_Task(void)
     task_close();
 }                               // Tuner_Task()
 
+
+
 // write to serial or CAN when it is ready
 static uint16_t write_tuner(const uint8_t *bytes, const uint16_t count)
 {
@@ -487,8 +477,9 @@ static uint16_t write_tuner(const uint8_t *bytes, const uint16_t count)
       return write_serial(bytes, count);
 }
 
-// Add byte count to the beginning of a packet and a crc at the end.  Then send the packet.
 
+
+// Add byte count to the beginning of a packet and a crc at the end.  Then send the packet.
 static int32_t make_packet(const uint8_t code, const void *buf, const uint16_t size)
 {
     *(uint16_t *) tmp_buf = size + 1;   // size - includes code
@@ -502,10 +493,9 @@ static int32_t make_packet(const uint8_t code, const void *buf, const uint16_t s
     return 0;
 }
 
-// return size or -1 if packet is corrupt
 
-// check the crc value in a packet
 
+// check the crc value in a packet, return size or -1 if packet is corrupt
 static int16_t check_crc(uint8_t * packet)
 {
     static uint32_t crc;
@@ -527,21 +517,22 @@ static int16_t check_crc(uint8_t * packet)
     return size;                // size of payload
 }
 
-// check if page is completely blank
-static uint8_t
-Page_Is_Blank(uint8_t *ptr)
+
+
+
+static uint32_t
+block_is_dirty( uint32_t block )
 {
-      uint32_t * ptr32 = (uint32_t *) ptr;  // faster to do 4 bytes at a time
-      int i;
+    uint32_t *p = (uint32_t *)(flash_attr[block].addr),
+             *plim = (uint32_t *)(flash_attr[block].addr + ( flash_attr[block].size >> 2 ));
+     
 
-      for (i = 0; i < MAX_PAGE_SIZE; i += sizeof(uint32_t)) {
-          if (*ptr32  != 0xffffffff)  // 0xff is value of erased flash
-             return 0;
-          ++ptr32;                  // move to next word
-      } // for
-
-      return 1;
+    while( p < plim )
+       if ( *p++ != 0xffffffff )
+          return 1;
+    return 0;
 }
+
 
 /*----------------------------------------------------------------------------*\
  *  NAME:

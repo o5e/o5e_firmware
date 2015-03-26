@@ -20,210 +20,76 @@
 #include "FLASH_OPS.h"
 #include "trap.h"
 
-#define BLOCK0 0  // BLK1B
-#define BLOCK1 1  // BLK2A
-
-static void Erase_BLK1B(void);
-static void Erase_BLK2A(void);
-static void *Program_BLK1B(long long *source, uint32_t destination);
-static void *Program_BLK2A(long long *source, uint32_t destination);
-
-
-//********************************************************************************************
-
-// Note: MPC5634 has 3 flash controllers instead of one.  We use the last 2 with the program code in the first
-// We are using two high blocks, not a mid block
-
-/* WRONG - Rev2 devices are 2 banks ONLY - this scheme is broken TODO: fix */
-
-/**********************************************************************************/
-/* FUNCTION     : Erase the First Block in the Mid Address Space, M0              */
-/* PURPOSE      :                                                                 */
-/* INPUT NOTES  : None                                                            */
-/* RETURN NOTES : None                                                            */
-/* WARNING      : No Abort or Suspend Logic Included                              */
-/**********************************************************************************/
-static void Erase_BLK1B(void)
+struct flash_attr flash_attr[] = 
 {
-    uint32_t *FLASH_Pntr = (uint32_t *)BLK1B_BASE;
+	0,  16*1024, (uint8_t *)0x00000000,    // block 0, low address space, bank 0, array0
+	1,  16*1024, (uint8_t *)0x00004000,    // block 1a
+	2,  32*1024, (uint8_t *)0x00008000,    // block 1b, not bootable
+	3,  32*1024, (uint8_t *)0x00010000,    // block 2a
+	4,  16*1024, (uint8_t *)0x00018000,    // block 2b, not bootable
+	5,  16*1024, (uint8_t *)0x0001c000,    // block 3
+	6,  64*1024, (uint8_t *)0x00020000,    // block 4
+	7,  64*1024, (uint8_t *)0x00030000,    // block 5
+	8, 128*1024, (uint8_t *)0x00040000,	   // block 6, middle address space
+	9, 128*1024, (uint8_t *)0x00060000,    // block 7,
+    0, 128*1024, (uint8_t *)0x00080000,    // block 8, high address space, bank 1, array 1
+    1, 128*1024, (uint8_t *)0x000A0000,    // block 9
+    2, 128*1024, (uint8_t *)0x000C0000,    // block 10
+    3, 128*1024, (uint8_t *)0x000E0000,    // block 11
+};
 
-    /*  First, Perform the Block Unlocking by Writing Passwords to the LMLR            */
-    CFLASH0.LMLR.R = 0xA1A11111;
-    trap( CFLASH0.LMLR.B.LME );           /**< assert LMLR is modifiable  */
-    CFLASH0.LMLR.R &= ~(1<<2);            /**< unlock BLK1B               */
+
+
+void flash_erase( uint32_t block ) {                                    // we just handle bank 0 now...
+
+
+    CFLASH0.LMLR.R = 0xA1A11111;                                        // magic number
+    CFLASH0.LMLR.R &= ~( 1U << flash_attr[block].bitno_mlr );           // unlock
     CFLASH0.SLMLR.R = 0xC3C33333;
-    trap( CFLASH0.SLMLR.B.SLE );          /**< assert SLMLR is modifiable */
-    CFLASH0.SLMLR.R &= ~(1<<2);           /**< unlock BLK1B               */
+    CFLASH0.SLMLR.R &= ~( 1U << flash_attr[block].bitno_mlr );
 
-    CFLASH0.MCR.B.ERS = 0x01;     // Step 1 - Enter Erase Sequence 
+    CFLASH0.MCR.B.ERS = 1;
+    CFLASH0.LMSR.R = ( 1U << flash_attr[block].bitno_mlr );
 
-    // Bank0, Array 0, block 1b
-    CFLASH0.LMSR.R = (1<<2);
+    *(uint32_t *)(flash_attr[block].addr) = 0xffffffff;                 // erase interlock write
+    CFLASH0.MCR.B.EHV = 1;                                              // start erase
+    }
 
-    /*Write to Anywhere in Flash */// Step 3 - Erase Interlock Write to Array
-    /*Write to first M0 Address */// Erase Interlock Write
-    *FLASH_Pntr = 0xffffffff;
-    CFLASH0.MCR.B.EHV = 0x01;     // Step 4 - Start Internal Erase Sequence
-}
 
-/**********************************************************************************/
-/* FUNCTION     : Program the First Block                                         */
-/* PURPOSE      :                                                                 */
-/* INPUT NOTES  : None                                                            */
-/* RETURN NOTES : address written                                                 */
-/* WARNING      : No Abort or Suspend Logic Included                              */
-//  NOTE:  destination is bytes relative to the begining of the flash block
 
-/**********************************************************************************/
-static void *Program_BLK1B(long long *source, uint32_t destination)
-{
-    long long *FLASH_Pntr = (long long *)BLK1B_BASE;
-    void *address;
+void flash_program( uint32_t block, long long *src, uint32_t block_offset ) { // just handle bank 0 now...
 
-    // Bank0, Array 0, block 1b
 
-    CFLASH0.MCR.B.PGM = 0x01;     // Step 1 - Enter Program Sequence 
-
-    /*  First, Perform the Block Unlocking by Writing Passwords to the LMLR            */
-    CFLASH0.LMLR.R = 0xA1A11111;
-    trap( CFLASH0.LMLR.B.LME );           /**< assert LMLR is modifiable  */
-    CFLASH0.LMLR.R &= ~(1<<2);            /**< unlock BLK1B               */
+	CFLASH0.MCR.B.PGM = 1;
+    CFLASH0.LMLR.R = 0xA1A11111;                                       // magic number
+    CFLASH0.LMLR.R &= ~( 1U << flash_attr[block].bitno_mlr );          // unlock
     CFLASH0.SLMLR.R = 0xC3C33333;
-    trap( CFLASH0.SLMLR.B.SLE );          /**< assert SLMLR is modifiable */
-    CFLASH0.SLMLR.R &= ~(1<<2);           /**< unlock BLK1B               */
-    
-    FLASH_Pntr += destination / 8;      //  NOTE:  destination is bytes relative to the begining of the flash block - not absolute
-    address = (void *)FLASH_Pntr;
+    CFLASH0.SLMLR.R &= ~( 1U << flash_attr[block].bitno_mlr );
 
-    *FLASH_Pntr = *source;      // 8 bytes
+    *(long long *)(flash_attr[block].addr + block_offset) = *src;      // program 64 bits
+    CFLASH0.MCR.B.EHV = 0x01;                                          // start programming
+    }
 
-    CFLASH0.MCR.B.EHV = 0x01;     // Step 4 - Start Internal Program Sequence
 
-    return address;
-}
 
-/**********************************************************************************/
-/* FUNCTION     : Erase the First Block in the High Address Space, H0             */
-/* PURPOSE      :                                                                 */
-/* INPUT NOTES  : None                                                            */
-/* RETURN NOTES : None                                                            */
-/* WARNING      : No Abort or Suspend Logic Included                              */
-/**********************************************************************************/
-static void Erase_BLK2A(void)
-{
-    uint32_t *FLASH_Pntr = (uint32_t *)BLK2A_BASE;
-
-    /*  First, Perform the Block Unlocking by Writing Passwords to the LMLR            */
-    CFLASH0.LMLR.R = 0xA1A11111;
-    trap( CFLASH0.LMLR.B.LME );           /**< assert LMLR is modifiable  */
-    CFLASH0.LMLR.R &= ~(1<<3);            /**< unlock BLK2A               */
-    CFLASH0.SLMLR.R = 0xC3C33333;
-    trap( CFLASH0.SLMLR.B.SLE );          /**< assert SLMLR is modifiable */
-    CFLASH0.SLMLR.R &= ~(1<<3);           /**< unlock BLK2A               */
-    
-    CFLASH0.MCR.B.ERS = 0x01;     // Enter Erase Sequence 
-
-    // Bank0, Array 0, block 2a
-    CFLASH0.LMSR.R = (1<<3);
-
-    // Write to first H0 Address - Erase Interlock Write
-    *FLASH_Pntr = 0xffffffff;
-
-    CFLASH0.MCR.B.EHV = 0x01;     //Step 4 - Start Internal Erase Sequence
-}
-
-/**********************************************************************************/
-/* FUNCTION     : Program the First Block in the High Address Space, H0             */
-/* PURPOSE      :                                                                 */
-/* INPUT NOTES  : None                                                            */
-/* RETURN NOTES : None                                                            */
-/* WARNING      : No Abort or Suspend Logic Included                              */
-//  NOTE:  destination is bytes relative to the begining of the flash block 
-/**********************************************************************************/
-static void *Program_BLK2A(long long *source, uint32_t destination)
-{
-    long long *FLASH_Pntr = (long long *)BLK2A_BASE;
-    void *address;
-
-    // Bank0, Array 0, block 2a
-
-    CFLASH0.MCR.B.PGM = 0x01;     // Step 1 - Enter Program Sequence 
-
-    /*  First, Perform the Block Unlocking by Writing Passwords to the LMLR            */
-    CFLASH0.LMLR.R = 0xA1A11111;
-    trap( CFLASH0.LMLR.B.LME );           /**< assert LMLR is modifiable  */
-    CFLASH0.LMLR.R &= ~(1<<3);            /**< unlock BLK2A               */
-    CFLASH0.SLMLR.R = 0xC3C33333;
-    trap( CFLASH0.SLMLR.B.SLE );          /**< assert SLMLR is modifiable */
-    CFLASH0.SLMLR.R &= ~(1<<3);           /**< unlock BLK2A               */
-
-    FLASH_Pntr += destination / 8;      //  NOTE:  destination is relative to the begining of the flash block - not absolute
-    address = (void *)FLASH_Pntr;       // save for return
-
-    *FLASH_Pntr = *source;      // 8 bytes
-
-    CFLASH0.MCR.B.EHV = 0x01;     //Step 4 - Start Internal Program Sequence
-    return address;
-}
-
-/**********************************************************************/
-
-// Test if flash is done erasing or programming
-// 1 = done, otherwise 0
-
-int32_t Flash_Ready()
-{
+int32_t Flash_Ready()                          // Test if flash is done erasing or programming
+{                                              // 1 = done, otherwise 0
 
     if (CFLASH0.MCR.B.DONE != 1)
         return 0;
 
-    trap( CFLASH0.MCR.B.PEG );   /**< if we're done, it better have been succesful */
+    trap( CFLASH0.MCR.B.PEG );                 /**< if we're done, it better have been succesful */
     return 1;
-
 }
 
-/**********************************************************************/
 
-// Clear all programming - put back to read mode
 
-void Flash_Finish( uint8_t block )
+void Flash_Finish()                           // Clear programming, back to read mode
 {
-  (void)block;              /**< everything in bank0 now */
-    CFLASH0.MCR.B.EHV = 0;  //Step 7 - Program/Erase Sequence Complete
-    CFLASH0.MCR.B.PGM = 0;  //Step 9 - Terminate Program/Erase Sequence
+    CFLASH0.MCR.B.EHV = 0;                    // Step 7 - Program/Erase Sequence Complete
+    CFLASH0.MCR.B.PGM = 0;                    // Step 9 - Terminate Program/Erase Sequence
     CFLASH0.MCR.B.ERS = 0;
-    /* CAN'T DO THE FOLLOWING FROM FLASH! */
-//    CFLASH0.BIUCR.B.BFEN = 0;       //FBIU Line Read Buffers Enable
-//    CFLASH0.BIUCR.B.BFEN = 1;       //FBIU Line Read Buffers Enable
-
-}                               // Flash_Finish()
-
-/***********************************************************************/
-
-// program either flash block - 8 bytes will be written
-// destination is a multiple of 8, and a
-// !!! BYTE OFFSET within the block, not an ptr/address
-// returns first address written
-
-void *Flash_Program(uint8_t block, long long *source, uint32_t destination)
-{
-    //if (*source == 0xffffffffffffffff)   // erased flash is already 0xff...
-    //   return 0;  // TODO fix this
-
-    if (block == BLOCK0)
-        return Program_BLK1B(source, destination);
-    else
-        return Program_BLK2A(source, destination);
 }
 
-/***********************************************************************/
 
-// erase either flash block
 
-void Flash_Erase(uint8_t block)
-{
-    if (block == BLOCK0)
-        Erase_BLK1B();
-    else
-        Erase_BLK2A();
-}

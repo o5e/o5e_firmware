@@ -19,72 +19,71 @@
 #include "err.h"
 #include "FLASH_OPS.h"    /**< pickup xx_BASE #define's */
 
+#include "led.h"
+
 struct Outputs Output_Channels;
 
 uint16_t const pageSize[NPAGES] = {1768,1664,1756,1760,1620,1668,1668,1668,1668,1808,1808,1808 };
-// Current flash or ram location of each page
-volatile uint8_t *Page_Ptr[NPAGES];
-// Ram buffer to store a single page before writing to flash
-uint8_t Ram_Page_Buffer[MAX_PAGE_SIZE];
-int8_t Ram_Page_Buffer_Page;	// which page # is in the buffer (-1 means none)
-int Flash_OK;		// is flash empty or has values
-uint8_t Burn_Count;		// how many flash burns 
 
-uint8_t Flash_Block;		// flash block currently being used - 0=BLK1B_BASE or 1=BLK2A_BASE
-uint8_t *Flash_Addr[2] = { (uint8_t *)BLK1B_BASE, (uint8_t *)BLK2A_BASE };
+volatile uint8_t *Page_Ptr[NPAGES];                // Current flash or ram location of each page
+uint8_t Ram_Page_Buffer[MAX_PAGE_SIZE];            // single page ram buffer for writing to flash
+int8_t Ram_Page_Buffer_Page;                       // which page # is in the buffer (-1 means none)
+int Flash_OK;		                               // is flash empty or has values
+uint8_t Burn_Count; 
+uint8_t Flash_Block;		                       // flash block currently being used
 
-// Called on cpu startup
+
+
+/* Called on cpu startup.
+   Find most recent valid flash block and set the page pointers.
+   Instead of a special signature we could just use a larger burn count. The whole
+   page should also have a CRC...  */
+  
 
 void
 init_variables(void)
 {
-  // find the newest (last written) block
-  if (*(Flash_Addr[1]) == 'A') 
-     if ((*(Flash_Addr[0]) != 'A') || ((struct Flash_Header *)Flash_Addr[1])->Burn_Count > ((struct Flash_Header *)Flash_Addr[0])->Burn_Count)
-         Set_Page_Locations(1);		// record where each page is in block 1
-     else
-         Set_Page_Locations(0);		// best to use first block
-  else
-     Set_Page_Locations(0);		// record where each page is in block 0
-     
-  /* if both blocks are wiped out, Page_Ptr[]'s always default to block 0 (M0_BASE) */
 
-  // check for signature at beginning of page #1
-  // TODO - check that all pages have data in them, not just the header
-  if (*(Flash_Addr[Flash_Block]) != 'A') // flash is invalid (probably all 0xff)
-      Flash_OK = 0;	   		 // flash appears to be empty
-  else {
+   uint8_t *blk1, *blk2;
+   
+
+   Flash_Block = BLOCK4;                                         // default flash block
+   blk1 = flash_attr[BLOCK4].addr;
+   blk2 = flash_attr[BLOCK5].addr;
+
+   if ( *blk1 == 'A'  &&  *blk2 == 'A' ) {                       // 2 valid, check burn count
+      if ( ((struct Flash_Header *)blk2)->Burn_Count > ((struct Flash_Header *)blk1)->Burn_Count )
+         Flash_Block = BLOCK5;
+      }
+   else if ( *blk2 == 'A' )
+      Flash_Block = BLOCK5;
+   
+   Set_Page_Locations( Flash_Block );
+
+   if ( *(flash_attr[Flash_Block].addr) == 'A' ) {
       Flash_OK = 1;
-      // take initial Burn_Count from existing flash (otherwise 0)
-      Burn_Count = ((struct Flash_Header *)Flash_Addr[Flash_Block])->Burn_Count;
-  }
+      Burn_Count =  ((struct Flash_Header *)flash_attr[Flash_Block].addr)->Burn_Count;
+   }
 
-  // halt if code and #define don't agree on this
-  // note that the compiler will round up to multiple of 4
-  if (sizeof(struct Outputs) != OUTPUT_CHANNELS_SIZE) {
-     err_push( CODE_OLDJUNK_E4 );
-     for (;;) {}
-  }
-
-  // TODO - perform sanity checks on all of flash
-
-} // init_variables()
+   if (sizeof(struct Outputs) != OUTPUT_CHANNELS_SIZE) {         // halt if code and #define don't agree
+      err_push( CODE_OLDJUNK_E4 );                               // compiler rounds up to multiple of 4
+      for (;;) {}
+   }
+}
 
 
-// set pointers to where every page is in flash
 
 void
-Set_Page_Locations(uint8_t block)
+Set_Page_Locations(uint32_t block)                                  // set pointers to every page in flash
 {
-  uint8_t i;
-  uint8_t *ptr = Flash_Addr[block] + BLOCK_HEADER_SIZE;	        // start at base + room for header data
+   uint32_t i;
+   uint8_t *ptr = flash_attr[block].addr + BLOCK_HEADER_SIZE;	    // start at base + room for header data
 
-  // page positions in flash - set defaults of page 0 at first page, etc.
-  for (i = 0; i < NPAGES; ++i) {        // 
+
+   for( i = 0; i < NPAGES; ++i) {                                   // page 0 at first page, etc.
       Page_Ptr[i] = ptr;
-      ptr += MAX_PAGE_SIZE;	        // we always use fixed page spacing
-  }
+      ptr += MAX_PAGE_SIZE;	                                        // we always use fixed page spacing
+   }
 
-  Flash_Block = block;		        // save which block we are using
-  Ram_Page_Buffer_Page = -1;            // mark as unused
+   Ram_Page_Buffer_Page = -1;                                       // mark as unused
 }
